@@ -14,7 +14,7 @@ class Role(TimeStampedModel):
     name = models.CharField(max_length=128)
 
     class Meta:
-        db_table = "role"
+        db_table = 'accounts\".\"role'
 
     def __str__(self):
         return f"{self.name}"
@@ -67,24 +67,13 @@ class User(AbstractUser, TimeStampedModel):
         max_length=128,
         unique=True
     )
-    email = models.EmailField(('email address'),
-                              unique=False
-                              )
-
-    phone = models.CharField(max_length=11,
-                             unique=True,
-                             validators=[
-                                 MinLengthValidator(
-                                     limit_value=11
-                                 )
-                             ],
-                             blank=True
-                             )
+    email = models.EmailField(unique=True, db_index=True)
+    phone = models.CharField(
+        max_length=11, unique=True, db_index=True, blank=True, null=True)
     role = models.ForeignKey('accounts.Role',
                              related_name='users',
                              on_delete=models.CASCADE,
-                             null=True
-                             )
+                             null=True)
 
     def __str__(self):
         return self.email
@@ -94,6 +83,9 @@ class User(AbstractUser, TimeStampedModel):
 
     def get_full_name_with_underscore(self):
         return "_".join([self.first_name, self.last_name])
+
+    class Meta:
+        db_table = 'accounts\".\"user'
 
 
 class EmailOTP(TimeStampedModel):
@@ -107,14 +99,14 @@ class EmailOTP(TimeStampedModel):
     class Meta:
         verbose_name = "Email OTP Token"
         verbose_name_plural = "Email OTP Tokens"
+        db_table = 'accounts\".\"email_otp'
 
     def __str__(self):
         return "{} - {}".format(self.email, self.otp)
 
     @classmethod
     def create_otp_for_email(cls, email, forgot=False):
-        otp = cls.generate_otp(length=getattr(settings,
-                                              'EMAIL_LOGIN_OTP_LENGTH', 6))
+        otp = cls.generate_otp(length=getattr(settings, 'EMAIL_LOGIN_OTP_LENGTH', 6))
         email_otp = EmailOTP.objects.create(email=email,
                                             otp=otp,
                                             forgot=forgot)
@@ -135,14 +127,14 @@ class EmailOTP(TimeStampedModel):
 
 class PhoneOTP(TimeStampedModel):
     phone = models.CharField(max_length=11,
-                                     unique=True,
-                                     validators=[
-                                         MinLengthValidator(
-                                             limit_value=11
-                                         )
-                                     ],
-                                     blank=True
-                                     )
+                             unique=True,
+                             validators=[
+                                 MinLengthValidator(
+                                     limit_value=11
+                                 )
+                             ],
+                             blank=True
+                             )
     otp = models.CharField(max_length=40, editable=False)
     forgot = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True, editable=False)
@@ -152,6 +144,7 @@ class PhoneOTP(TimeStampedModel):
     class Meta:
         verbose_name = "Phone OTP Token"
         verbose_name_plural = "Phone OTP Tokens"
+        db_table = 'accounts\".\"phone_otp'
 
     def __str__(self):
         return "{} - {}".format(self.phone, self.otp)

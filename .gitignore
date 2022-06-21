@@ -12,6 +12,7 @@ Icon
 
 .idea
 .idea/*
+.env
 # Thumbnails
 ._*
 
