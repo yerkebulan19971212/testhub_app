@@ -8,6 +8,7 @@ from django.core.validators import FileExtensionValidator, MinLengthValidator
 from django.db import models
 
 from base.abstract_models import TimeStampedModel
+from base.service import validate_size_image, validate_mb_image
 
 
 class Role(TimeStampedModel):
@@ -61,7 +62,7 @@ class User(AbstractUser, TimeStampedModel):
         # upload_to=get_path_upload_avatar,
         blank=True,
         null=True,
-        # validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png']), validate_size_image]
+        validators=[validate_size_image, validate_mb_image]
     )
     username = models.CharField(
         max_length=128,

@@ -7,9 +7,9 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import EmailOTP, User, PhoneOTP
 from .serializer import (ChangePasswordSerializer, ForgotPasswordSerializer,
-                          EmailOtpSerializer, EmailOTPValidateSerializer,
-                          PhoneOtpSerializer, PhoneOTPValidateSerializer,
-                          UserRegistration)
+                         EmailOtpSerializer, EmailOTPValidateSerializer,
+                         PhoneOtpSerializer, PhoneOTPValidateSerializer,
+                         UserRegistration, AvatarSerializer)
 
 
 class UserRegisterView(CreateAPIView):
@@ -18,13 +18,14 @@ class UserRegisterView(CreateAPIView):
 
 
 class StaffLoginView(TokenObtainPairView):
-    """ логин для сотрудников """
+    """ логин """
     serializer_class = TokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
         username = self.request.data.get('username').lower()
         if "@" in username:
             user = User.objects.filter(email=username)
+
         else:
             user = User.objects.filter(username=username)
 
@@ -34,45 +35,45 @@ class StaffLoginView(TokenObtainPairView):
         else:
             return Response({"detail": "Такой пользователь не найден"},
                             status=status.HTTP_400_BAD_REQUEST)
-        role = user.role
-        if role:
-            if str(role.name) == 'client':
-                return Response({"detail": "вы не являетесть содтрудником"},
-                                status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"detail": "role net"},
-                            status=status.HTTP_400_BAD_REQUEST)
+        # role = user.role
+        # if role:
+        #     if str(role.name) == 'client':
+        #         return Response({"detail": "вы не являетесть содтрудником"},
+        #                         status=status.HTTP_400_BAD_REQUEST)
+        # else:
+        #     return Response({"detail": "role net"},
+        #                     status=status.HTTP_400_BAD_REQUEST)
         return super().post(request, *args, **kwargs)
 
 
-class ClientLoginView(TokenObtainPairView):
-    serializer_class = TokenObtainPairSerializer
-
-    def post(self, request, *args, **kwargs):
-        username = self.request.data.get('username').lower()
-        if "@" in username:
-            user = User.objects.filter(email=username)
-        else:
-            user = User.objects.filter(username=username)
-        if user:
-            user = user.first()
-        else:
-            return Response({"detail": "Такой пользователь не найден"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        company = user.company
-        if company and str(user.role.name) == 'client':
-            if company.confirm is not True:
-                return Response({"detail": "Ваша заявка еще не принято"},
-                                status=status.HTTP_400_BAD_REQUEST)
-        role = user.role
-        if role:
-            if str(role.name.lower()) != 'client':
-                return Response({"detail": "вы не являетесть клиентом"},
-                                status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"detail": "role net"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        return super().post(request, *args, **kwargs)
+# class ClientLoginView(TokenObtainPairView):
+#     serializer_class = TokenObtainPairSerializer
+#
+#     def post(self, request, *args, **kwargs):
+#         username = self.request.data.get('username').lower()
+#         if "@" in username:
+#             user = User.objects.filter(email=username)
+#         else:
+#             user = User.objects.filter(username=username)
+#         if user:
+#             user = user.first()
+#         else:
+#             return Response({"detail": "Такой пользователь не найден"},
+#                             status=status.HTTP_400_BAD_REQUEST)
+#         company = user.company
+#         if company and str(user.role.name) == 'client':
+#             if company.confirm is not True:
+#                 return Response({"detail": "Ваша заявка еще не принято"},
+#                                 status=status.HTTP_400_BAD_REQUEST)
+#         role = user.role
+#         if role:
+#             if str(role.name.lower()) != 'client':
+#                 return Response({"detail": "вы не являетесть клиентом"},
+#                                 status=status.HTTP_400_BAD_REQUEST)
+#         else:
+#             return Response({"detail": "role net"},
+#                             status=status.HTTP_400_BAD_REQUEST)
+#         return super().post(request, *args, **kwargs)
 
 
 class GenerateEmailOtpView(CreateAPIView):
@@ -216,3 +217,8 @@ class ChangePasswordView(UpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+class UploadAvatarView(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = AvatarSerializer
+    lookup_field = 'pk'

@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
-from .views import (ChangePasswordView, ClientLoginView,
+from .views import (ChangePasswordView,UploadAvatarView,
                     ForgotPasswordView, GenerateEmailOtpView, ValidateEmailOTPView,
                     GeneratePhoneOtpView, StaffLoginView, UserRegisterView,
                     ValidatePhoneOTPView,)
@@ -16,7 +16,7 @@ urlpatterns = [
     path('otp-phone/', GeneratePhoneOtpView.as_view()),
     path('otp-email/phone/', ValidatePhoneOTPView.as_view()),
     path('staff-login/', StaffLoginView.as_view()),
-    path('client-login/', ClientLoginView.as_view()),  # Клиент вход
+    path('avatar/<int:pk>/', UploadAvatarView.as_view()),
     path('pass-edit/', ChangePasswordView.as_view()),  # Пароль ауыстыру
 
 ]

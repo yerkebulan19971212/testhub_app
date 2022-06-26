@@ -163,3 +163,11 @@ class ForgotPasswordSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+class AvatarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'avatar'
+        )
