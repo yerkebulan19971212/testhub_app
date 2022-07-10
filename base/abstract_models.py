@@ -11,3 +11,26 @@ class TimeStampedModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class Ordering(models.Model):
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        abstract = True
+
+
+class IsActive(models.Model):
+    is_active = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True
+
+
+class AbstractBaseName(models.Model):
+    name_kz = models.CharField(max_length=255)
+    name_ru = models.CharField(max_length=255)
+    name_en = models.CharField(max_length=255)
+
+    class Meta:
+        abstract = True
