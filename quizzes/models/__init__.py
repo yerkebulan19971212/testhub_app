@@ -1,17 +1,14 @@
-from quizzes.models import (
-    common_question,
-    lesson,
-    lesson_pair,
-    lesson_question_level,
-    question,
-    question_answer,
-    question_level,
-    tag,
-    tag_question,
-    test_type,
-    test_type_lesson,
-    user_variant,
-    variant,
-    variant_question,
-
-)
+from .common_question import CommonQuestion
+from .lesson import Lesson
+from .lesson_pair import LessonPair
+from .lesson_question_level import LessonQuestionLevel
+from .question import Question
+from .question_answer import QuestionAnswer
+from .question_level import QuestionLevel
+from .tag import Tag
+from .tag_question import TagQuestions
+from .test_type import TestType
+from .test_type_lesson import TestTypeLesson
+from .user_variant import UserVariant
+from .variant import Variant
+from .variant_question import VariantQuestion
