@@ -1,5 +1,6 @@
-from base.abstract_models import *
 from django.db import models
+
+from base.abstract_models import *
 from quizzes.models import lesson
 from quizzes.models.question_level import QuestionLevel
 

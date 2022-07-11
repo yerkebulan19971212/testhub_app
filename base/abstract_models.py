@@ -14,14 +14,14 @@ class TimeStampedModel(models.Model):
 
 
 class Ordering(models.Model):
-    order = models.IntegerField(default=0)
+    order = models.IntegerField(default=0, db_index=True)
 
     class Meta:
         abstract = True
 
 
 class IsActive(models.Model):
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         abstract = True

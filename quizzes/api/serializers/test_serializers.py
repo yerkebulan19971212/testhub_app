@@ -1,5 +1,6 @@
-from quizzes.models import test_type
 from rest_framework import serializers
+
+from quizzes.models import test_type
 
 
 class TestTypeSerializer(serializers.ModelSerializer):

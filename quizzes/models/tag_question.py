@@ -1,4 +1,5 @@
 from django.db import models
+
 from quizzes.models.question import Question
 from quizzes.models.tag import Tag
 

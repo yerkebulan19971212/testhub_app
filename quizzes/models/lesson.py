@@ -1,7 +1,10 @@
-from base.abstract_models import *
+from base.abstract_models import (AbstractBaseName, IsActive, Ordering,
+                                  TimeStampedModel)
 
 
-class Lesson(AbstractBaseName):
+class Lesson(AbstractBaseName,
+             Ordering,
+             TimeStampedModel, IsActive):
 
     def __str__(self):
         return self.name_kz

@@ -1,7 +1,8 @@
 from rest_framework import generics
 from rest_framework.views import APIView
-from quizzes.models import *
+
 from quizzes.api.serializers import test_serializers
+from quizzes.models import *
 
 
 class TestTypeView(generics.ListAPIView):

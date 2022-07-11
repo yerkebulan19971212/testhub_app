@@ -1,4 +1,5 @@
 from django.db import models
+
 import accounts.models as account
 from quizzes.models.variant import Variant
 
