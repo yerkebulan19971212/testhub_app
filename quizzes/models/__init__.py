@@ -1,14 +1,15 @@
-from .common_question import CommonQuestion
-from .lesson import Lesson
-from .lesson_pair import LessonPair
-from .lesson_question_level import LessonQuestionLevel
-from .question import Question
-from .question_answer import QuestionAnswer
-from .question_level import QuestionLevel
-from .tag import Tag
-from .tag_question import TagQuestions
-from .test_type import TestType
-from .test_type_lesson import TestTypeLesson
-from .user_variant import UserVariant
-from .variant import Variant
-from .variant_question import VariantQuestion
+from .answer import Answer  # noqa
+from .common_question import CommonQuestion  # noqa
+from .lesson import Lesson  # noqa
+from .lesson_group import LessonGroup  # noqa
+from .lesson_pair import LessonPair  # noqa
+from .lesson_question_level import LessonQuestionLevel  # noqa
+from .question import Question  # noqa
+from .question_level import QuestionLevel  # noqa
+from .tag import Tag  # noqa
+from .tag_question import TagQuestion  # noqa
+from .test_type import TestType  # noqa
+# from .test_type_lesson import TestTypeLesson# noqa
+from .user_variant import UserVariant  # noqa
+from .variant import Variant  # noqa
+from .variant_question import VariantQuestion  # noqa

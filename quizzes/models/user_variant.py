@@ -14,5 +14,8 @@ class UserVariant(models.Model):
         on_delete=models.CASCADE
     )
 
+    class Meta:
+        db_table = 'quiz\".\"user_variant'
+
     def __str__(self):
         return f'{self.user} - {self.variant}'

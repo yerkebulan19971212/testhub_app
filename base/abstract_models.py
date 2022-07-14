@@ -1,5 +1,7 @@
 from django.db import models
 
+from base.abstract_managers import IsActiveManager
+
 
 class TimeStampedModel(models.Model):
     """
@@ -21,7 +23,8 @@ class Ordering(models.Model):
 
 
 class IsActive(models.Model):
-    is_active = models.BooleanField(default=False, db_index=True)
+    is_active = models.BooleanField(default=True, db_index=True)
+    objects = IsActiveManager()
 
     class Meta:
         abstract = True
@@ -31,6 +34,15 @@ class AbstractBaseName(models.Model):
     name_kz = models.CharField(max_length=255)
     name_ru = models.CharField(max_length=255)
     name_en = models.CharField(max_length=255)
+
+    class Meta:
+        abstract = True
+
+
+class AbstractBaseTitle(models.Model):
+    title_kz = models.CharField(max_length=255)
+    title_ru = models.CharField(max_length=255)
+    title_en = models.CharField(max_length=255)
 
     class Meta:
         abstract = True

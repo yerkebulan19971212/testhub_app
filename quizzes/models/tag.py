@@ -1,16 +1,16 @@
 from django.db import models
 
-from base.abstract_models import AbstractBaseName, IsActive, TimeStampedModel
-from quizzes.models import lesson
+from base import abstract_models
 
 
-class Tag(AbstractBaseName,
-          IsActive,
-          TimeStampedModel):
-    lesson = models.ForeignKey(
-        lesson.Lesson,
-        on_delete=models.CASCADE
-    )
+class Tag(abstract_models.AbstractBaseName,
+          abstract_models.IsActive,
+          abstract_models.Ordering,
+          abstract_models.TimeStampedModel):
+    lesson = models.ForeignKey('quizzes.Lesson', on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'quiz\".\"tag'
 
     def __str__(self):
-        return self.name_kz
+        return f"{self.name_ru}"

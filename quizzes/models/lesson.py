@@ -1,12 +1,16 @@
-from base.abstract_models import (AbstractBaseName, IsActive, Ordering,
-                                  TimeStampedModel)
+from django.db import models
+
+from base import abstract_models
 
 
-class Lesson(AbstractBaseName,
-             Ordering,
-             TimeStampedModel, IsActive):
+class Lesson(abstract_models.AbstractBaseName,
+             abstract_models.IsActive,
+             abstract_models.Ordering,
+             abstract_models.TimeStampedModel):
+    icon = models.ImageField(upload_to='lesson')
+
+    class Meta:
+        db_table = 'quiz\".\"lesson'
 
     def __str__(self):
-        return self.name_kz
-
-
+        return f"{self.name_ru}"

@@ -1,18 +1,16 @@
 from django.db import models
 
-from quizzes.models.question import Question
-from quizzes.models.variant import Variant
+from base import abstract_models
 
 
-class VariantQuestion(models.Model):
-    variant = models.ForeignKey(
-        Variant,
-        on_delete=models.CASCADE
-    )
-    question = models.ForeignKey(
-        Question,
-        on_delete=models.CASCADE
-    )
+class VariantQuestion(abstract_models.IsActive,
+                      abstract_models.Ordering,
+                      abstract_models.TimeStampedModel):
+    variant = models.ForeignKey('quizzes.Variant', on_delete=models.CASCADE)
+    question = models.ForeignKey('quizzes.Question', on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'quiz\".\"variant_question'
 
     def __str__(self):
         return f'{self.question} - {self.variant}'
