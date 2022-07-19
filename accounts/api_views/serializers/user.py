@@ -25,7 +25,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        validated_data['role'] = models.Role.objects.get(name="Student")
+        validated_data['role'] = models.Role.objects.get(name="student")
         validated_data['username'] = validated_data.get('email')
         password = validated_data.get('password')
         user = super().create(validated_data)
