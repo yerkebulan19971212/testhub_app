@@ -1,7 +1,7 @@
 from django.urls import path
 
-from quizzes.api.api_views import test_view
+from quizzes.api.api_views import test_type_view
 
 urlpatterns = [
-    path('test-view/', test_view.TestTypeView.as_view()),
+    path('test-type-list/', test_type_view),
 ]

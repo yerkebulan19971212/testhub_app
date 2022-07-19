@@ -11,6 +11,7 @@ class TestType(abstract_models.AbstractBaseName,
 
     class Meta:
         db_table = 'quiz\".\"test_type'
+        ordering = ('order',)
 
     def __str__(self):
         return f"{self.name_ru}"
