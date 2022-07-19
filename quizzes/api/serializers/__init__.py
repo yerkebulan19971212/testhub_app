@@ -1,1 +1,1 @@
-from.test_serializers import TestTypeSerializer
+from.test_type import TestTypeSerializer
