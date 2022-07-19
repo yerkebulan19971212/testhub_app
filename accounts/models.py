@@ -183,7 +183,7 @@ class UserTestType(TimeStampedModel):
         related_name='user_test_type',
         on_delete=models.CASCADE)
     test_type = models.ForeignKey(
-        'accounts.UserTestType',
+        'quizzes.TestType',
         related_name='user_test_type',
         on_delete=models.CASCADE)
 
