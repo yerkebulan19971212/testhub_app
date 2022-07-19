@@ -79,6 +79,12 @@ class User(AbstractUser, TimeStampedModel):
     def __str__(self):
         return self.email
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        self.email = self.email.lower()
+        self.username = self.username.lower()
+        return super().save()
+
     def get_full_name(self):
         return " ".join([self.first_name, self.last_name])
 
@@ -169,3 +175,17 @@ class PhoneOTP(TimeStampedModel):
         m.update(os.urandom(16))
         otp = str(int(m.hexdigest(), 16))[-length:]
         return otp
+
+
+class UserTestType(TimeStampedModel):
+    user = models.ForeignKey(
+        'accounts.User',
+        related_name='user_test_type',
+        on_delete=models.CASCADE)
+    test_type = models.ForeignKey(
+        'accounts.UserTestType',
+        related_name='user_test_type',
+        on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'accounts\".\"user_test_type'

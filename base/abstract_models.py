@@ -24,7 +24,7 @@ class Ordering(models.Model):
 
 class IsActive(models.Model):
     is_active = models.BooleanField(default=True, db_index=True)
-    objects = IsActiveManager()
+    active_manager = IsActiveManager()
 
     class Meta:
         abstract = True

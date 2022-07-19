@@ -5,7 +5,7 @@ from quizzes.models import TestType
 
 
 class TestTypeView(generics.ListAPIView):
-    queryset = TestType.objects.all()
+    queryset = TestType.active_manager.all()
     serializer_class = TestTypeSerializer
 
 
