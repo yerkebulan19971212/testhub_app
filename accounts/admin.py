@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Role, User, EmailOTP,PhoneOTP,UserTestType
+from .models import EmailOTP, PhoneOTP, Role, User, UserTestType
+
 admin.site.register(EmailOTP)
 admin.site.register(PhoneOTP)
 admin.site.register(UserTestType)

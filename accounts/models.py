@@ -3,12 +3,12 @@ import os
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, send_mail
 from django.core.validators import FileExtensionValidator, MinLengthValidator
 from django.db import models
 
 from base.abstract_models import TimeStampedModel
-from base.service import validate_size_image, validate_mb_image
+from base.service import validate_mb_image, validate_size_image
 
 
 class Role(TimeStampedModel):

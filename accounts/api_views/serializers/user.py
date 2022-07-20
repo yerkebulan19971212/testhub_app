@@ -1,19 +1,15 @@
-from accounts import models
 from rest_framework import serializers
 
-class RoleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Role
-        fields = (
-            'id',
-            'name'
-        )
+from accounts.models import Role, User, UserTestType
+
+from .role import RoleSerializer
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     role = RoleSerializer(read_only=True)
+
     class Meta:
-        model = models.User
+        model = User
         fields = (
             'id',
             'first_name',
@@ -25,7 +21,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        validated_data['role'] = models.Role.objects.get(name="student")
+        validated_data['role'] = Role.objects.get(name="student")
         validated_data['username'] = validated_data.get('email')
         password = validated_data.get('password')
         user = super().create(validated_data)
@@ -36,7 +32,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 class AddUserTestTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.UserTestType
+        model = UserTestType
         fields = (
             'id',
             'user',

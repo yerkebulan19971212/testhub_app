@@ -3,7 +3,7 @@ from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from .models import EmailOTP, Role, User, PhoneOTP
+from .models import EmailOTP, PhoneOTP, Role, User
 
 
 class RoleSerializer(serializers.ModelSerializer):

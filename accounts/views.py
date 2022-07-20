@@ -1,15 +1,16 @@
 from rest_framework import status
 from rest_framework.generics import (CreateAPIView, RetrieveAPIView,
                                      UpdateAPIView)
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import EmailOTP, User, PhoneOTP
-from .serializer import (ChangePasswordSerializer, ForgotPasswordSerializer,
+
+from .models import EmailOTP, PhoneOTP, User
+from .serializer import (AvatarSerializer, ChangePasswordSerializer,
                          EmailOtpSerializer, EmailOTPValidateSerializer,
-                         PhoneOtpSerializer, PhoneOTPValidateSerializer,
-                         UserRegistration, AvatarSerializer)
+                         ForgotPasswordSerializer, PhoneOtpSerializer,
+                         PhoneOTPValidateSerializer, UserRegistration)
 
 
 class UserRegisterView(CreateAPIView):

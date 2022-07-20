@@ -1,1 +1,1 @@
-from .user import user_register, add_test_type
+from .user import add_test_type, user_register
