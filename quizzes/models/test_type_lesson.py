@@ -20,5 +20,8 @@ class TestTypeLesson(TimeStampedModel):
     )
     main = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('test_type', 'lesson')
+
     def __str__(self):
         return f"{self.test_type} - {self.lesson}"

@@ -1,9 +1,9 @@
-from django.urls import path, include
+from django.urls import include, path
 
-from quizzes.api.api_views import test_type_view, lesson_by_test_type
+from quizzes.api.api_views import lesson_list, test_type_view
 
 lesson_urlpatterns = [
-    path('by-test-type', lesson_by_test_type, name='lesson_by_test_type')
+    path('list/', lesson_list, name='lesson_list')
 ]
 
 urlpatterns = [

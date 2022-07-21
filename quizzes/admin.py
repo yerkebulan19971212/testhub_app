@@ -1,7 +1,13 @@
 from django.contrib import admin
 
-from .models import TestType
+from .models import (Lesson, LessonGroup, LessonPair, TestType, TestTypeLesson,
+                     TestTypeLessonGroup)
 
 admin.site.register([
-    TestType
+    Lesson,
+    LessonGroup,
+    LessonPair,
+    TestType,
+    TestTypeLesson,
+    TestTypeLessonGroup
 ])
