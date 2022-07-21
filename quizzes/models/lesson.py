@@ -11,6 +11,7 @@ class Lesson(abstract_models.AbstractBaseName,
 
     class Meta:
         db_table = 'quiz\".\"lesson'
+        ordering = ['order']
 
     def __str__(self):
         return f"{self.name_ru}"
