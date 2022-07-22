@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'accounts',
     'quizzes',
+    'admin_panel'
 ]
 
 MIDDLEWARE = [
@@ -69,7 +70,8 @@ ROOT_URLCONF = 'Test_HUB.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates']
+        ,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,6 +80,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'staticfiles': 'django.templatetags.static',
+            }
         },
     },
 ]
@@ -162,12 +167,23 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+# STATIC_URL = '/static/'
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+# VENV_PATH = os.path.dirname(BASE_DIR)
+# STATIC_ROOT = os.path.join(VENV_PATH, 'static')
+#
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-VENV_PATH = os.path.dirname(BASE_DIR)
-STATIC_ROOT = os.path.join(VENV_PATH, 'static')
+
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
