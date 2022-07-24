@@ -1,6 +1,6 @@
 from rest_framework import generics
 
-from accounts.api_views import serializers
+from accounts.api import serializers
 
 
 class UserRegistrationView(generics.CreateAPIView):

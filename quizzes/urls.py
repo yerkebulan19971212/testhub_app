@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from quizzes.api.api_views import lesson_list, test_type_view
+from quizzes.api.views import lesson_list, test_type_view
 
 lesson_urlpatterns = [
     path('list/', lesson_list, name='lesson_list')
