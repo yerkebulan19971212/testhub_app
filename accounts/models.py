@@ -15,7 +15,7 @@ class Role(TimeStampedModel):
     name = models.CharField(max_length=128)
 
     class Meta:
-        db_table = 'accounts.role'
+        db_table = 'accounts\".\"role'
 
     def __str__(self):
         return f"{self.name}"
@@ -92,7 +92,7 @@ class User(AbstractUser, TimeStampedModel):
         return "_".join([self.first_name, self.last_name])
 
     class Meta:
-        db_table = 'accounts.user'
+        db_table = 'accounts\".\"user'
 
 
 class EmailOTP(TimeStampedModel):
@@ -106,7 +106,7 @@ class EmailOTP(TimeStampedModel):
     class Meta:
         verbose_name = "Email OTP Token"
         verbose_name_plural = "Email OTP Tokens"
-        db_table = 'accounts.email_otp'
+        db_table = 'accounts\".\"email_otp'
 
     def __str__(self):
         return "{} - {}".format(self.email, self.otp)
@@ -151,7 +151,7 @@ class PhoneOTP(TimeStampedModel):
     class Meta:
         verbose_name = "Phone OTP Token"
         verbose_name_plural = "Phone OTP Tokens"
-        db_table = 'accounts.phone_otp'
+        db_table = 'accounts\".\"phone_otp'
 
     def __str__(self):
         return "{} - {}".format(self.phone, self.otp)
@@ -188,4 +188,4 @@ class UserTestType(TimeStampedModel):
         on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'accounts.user_test_type'
+        db_table = 'accounts\".\"user_test_type'
