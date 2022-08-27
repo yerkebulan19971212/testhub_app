@@ -1,4 +1,15 @@
 {% extends "admin_panel/base.html" %}
 
 {% block content %}
+    {% for lesson in lessons %}
+        {{ lesson.name_kz }}
+    {% endfor %}
+    <div>
+        <br>
+        <br>
+        <br>
+    </div>
+    {% for test_type in test_types %}
+        {{ test_type.name_kz }}
+    {% endfor %}
 {% endblock content %}
