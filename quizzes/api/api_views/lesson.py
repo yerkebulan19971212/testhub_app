@@ -10,8 +10,6 @@ from quizzes.models import Lesson
 class LessonListView(generics.ListAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = LessonFilter
 
 
 lesson_list = LessonListView.as_view()

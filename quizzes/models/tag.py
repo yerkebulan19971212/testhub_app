@@ -7,7 +7,7 @@ class Tag(abstract_models.AbstractBaseName,
           abstract_models.IsActive,
           abstract_models.Ordering,
           abstract_models.TimeStampedModel):
-    lesson = models.ForeignKey('quizzes.Lesson', on_delete=models.CASCADE)
+    test_type_lesson = models.ForeignKey('quizzes.TestTypeLesson', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'quiz\".\"tag'
