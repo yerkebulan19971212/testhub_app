@@ -1,13 +1,20 @@
 {% extends "admin_panel/base.html" %}
 
 {% block content %}
-    {% for lesson in lessons %}
-        {{ lesson.name_kz }}
-    {% endfor %}
+{#    {% for lesson in lessons %}#}
+{#        {{ lesson.name_kz }}#}
+{#    {% endfor %}#}
     <div>
-        <br>
-        <br>
-        <br>
+        <form action="">
+            <select name="lesson" id="s">
+                <option value="" selected="base">nothing</option>
+                {% for t in test_types_lessons %}
+                    <option value="{{t.id}}">{{ t.lesson.name_kz }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <input type="file">
+        </form>
     </div>
     {% for test_type in test_types %}
         {{ test_type.name_kz }}

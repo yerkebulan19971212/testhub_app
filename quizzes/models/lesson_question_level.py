@@ -5,7 +5,9 @@ from base import abstract_models
 
 class LessonQuestionLevel(abstract_models.Ordering,
                           abstract_models.TimeStampedModel):
-    lesson = models.ForeignKey('quizzes.Lesson', on_delete=models.CASCADE)
+    test_type_lesson = models.ForeignKey(
+        'quizzes.TestTypeLesson',
+        on_delete=models.CASCADE)
     question_level = models.ForeignKey(
         'quizzes.QuestionLevel',
         on_delete=models.CASCADE)
