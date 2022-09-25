@@ -11,6 +11,7 @@ class FlashCard(TimeStampedModel):
     question = models.ForeignKey(
         'quizzes.Question',
         on_delete=models.CASCADE,
+        related_name='flash_cards'
     )
     passed = models.BooleanField(default=False)
 
