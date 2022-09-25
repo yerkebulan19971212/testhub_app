@@ -19,9 +19,10 @@ class TestTypeLesson(TimeStampedModel):
         blank=True
     )
     main = models.BooleanField(default=False)
+    questions_number = models.IntegerField(default=1)
 
     class Meta:
         unique_together = ('test_type', 'lesson')
 
     def __str__(self):
-        return f"{self.test_type} - {self.lesson}"
+        return f"{self.lesson.name_kz}"
