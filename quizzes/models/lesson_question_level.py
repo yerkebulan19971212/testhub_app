@@ -16,5 +16,5 @@ class LessonQuestionLevel(abstract_models.Ordering,
     class Meta:
         db_table = 'quiz\".\"lesson_question_level'
 
-    def __str__(self):
-        return f'{self.lesson} - {self.question_level}'
+    # def __str__(self):
+    #     return f'{self.lesson} - {self.question_level}'

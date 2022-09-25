@@ -5,7 +5,7 @@ from quizzes.models import Question
 class QuestionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        field = (
+        fields = (
             'id',
             'common_question',
             'lesson_question_level',

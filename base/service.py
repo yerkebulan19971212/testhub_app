@@ -1,5 +1,6 @@
 from PIL import Image
 from rest_framework.exceptions import ValidationError
+import random
 
 
 def validate_mb_image(value):
@@ -13,3 +14,4 @@ def validate_size_image(value, width=500, height=500):
     wi, hei = Image.open(value).size
     if wi > width or hei > height:
         raise ValidationError("Размер фотографий должно быть не больше 500x500")
+
