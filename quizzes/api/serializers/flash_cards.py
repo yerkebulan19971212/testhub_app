@@ -6,12 +6,11 @@ class FlashCardsSerializer(serializers.ModelSerializer):
     class Meta:
         model = FlashCard
         fields = (
-            'id'
-            # 'user'
-            'question'
-            'passed'
+            'id',
+            'question',
+            'passed',
         )
 
-    def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user
-        return super().create(validated_data)
+    # def create(self, validated_data):
+    #     validated_data['user'] = self.context['request'].user
+    #     return super().create(validated_data)
