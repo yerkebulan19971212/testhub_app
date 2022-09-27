@@ -180,11 +180,11 @@ class PhoneOTP(TimeStampedModel):
 class UserTestType(TimeStampedModel):
     user = models.ForeignKey(
         'accounts.User',
-        related_name='user_test_type',
+        related_name='user_test_types',
         on_delete=models.CASCADE)
     test_type = models.ForeignKey(
         'quizzes.TestType',
-        related_name='user_test_type',
+        related_name='user_test_types',
         on_delete=models.CASCADE)
 
     class Meta:

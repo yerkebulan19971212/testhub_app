@@ -14,3 +14,5 @@ from .test_type_lesson_group import TestTypeLessonGroup  # noqa
 from .user_variant import UserVariant  # noqa
 from .variant import Variant  # noqa
 from .variant_question import VariantQuestion  # noqa
+from .flash_card import FlashCard  # noqa
+from .number_of_questions import NumberOfQuestions  # noqa

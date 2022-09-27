@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import (Lesson, LessonGroup, LessonPair, LessonQuestionLevel,
                      Question, QuestionLevel, TestType, TestTypeLesson,
                      TestTypeLessonGroup, UserVariant, Variant,
-                     VariantQuestion)
+                     VariantQuestion, NumberOfQuestions, FlashCard, CommonQuestion)
 
 admin.site.register([
     Lesson,
@@ -17,5 +17,8 @@ admin.site.register([
     TestTypeLessonGroup,
     Variant,
     VariantQuestion,
-    UserVariant
+    UserVariant,
+    FlashCard,
+    NumberOfQuestions,
+    CommonQuestion
 ])
