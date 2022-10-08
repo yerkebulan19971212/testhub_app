@@ -10,12 +10,13 @@ class Question(abstract_models.Ordering,
         'quizzes.CommonQuestion',
         on_delete=models.CASCADE,
         blank=True,
-        null=True
+        null=True,
+        db_index=True
     )
     lesson_question_level = models.ForeignKey(
         'quizzes.LessonQuestionLevel',
-        on_delete=models.CASCADE)
-    question = models.TextField()
+        on_delete=models.CASCADE, db_index=True)
+    question = models.TextField(db_index=True)
 
     class Meta:
         db_table = 'quiz\".\"question'
