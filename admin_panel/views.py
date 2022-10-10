@@ -1,7 +1,8 @@
 from django.db import transaction
 from django.shortcuts import render
 import io
-from quizzes.models import Lesson, TestType, TestTypeLesson, Question
+from quizzes.models import Lesson, TestType, TestTypeLesson, Question, Tag, \
+    QuestionLevel, CommonQuestion, Answer, LessonQuestionLevel, TagQuestion
 
 
 def index(request):
@@ -9,80 +10,78 @@ def index(request):
 
 
 def add_question(request):
+    question_added = False
     if request.method == 'POST':
         lesson = request.POST.get('lesson')
-        # file = request.FILES['file'].read()
-        print("request.body")
-        print(request.POST.get('lesson'))
-        print(request.POST)
-        print(request.FILES)
-        print("request.body")
-        # buffer = io.BytesIO()
+        question_level = request.POST.get('question_level')
+        tag = request.POST.get('tag')
+        lesson_question_level = LessonQuestionLevel.objects.get(
+            test_type_lesson_id=lesson,
+            question_level_id=question_level
+        )
+        common_question_text = None
         with request.FILES['file'] as f:
-            print(f.read())
             with transaction.atomic():
-                line = "s"
+                line = "not None"
                 answers = []
-                questions_texts = []
-                while line:
-                    line = f.readline()
-                    if not line.strip():
-                        print(questions_texts)
-                    correct = True
-                    question = Question.objects.create(
-                        question=questions_texts[0],
-                    )
+                try:
+                    while line:
+                        line = f.readline().decode().strip()
+                        if not line:
+                            if not common_question_text:
+                                common_question_text = CommonQuestion.objects.get_or_create(
+                                    text=common_question_text
+                                )
+                            question = Question.objects.create(
+                                lesson_question_level=lesson_question_level,
+                                common_question=common_question_text,
+                                question=question_text,
+                            )
+                            answers_correct = [int(i) for i in
+                                               answers[-1].split(',')]
+                            answers_bulk_create = []
+                            for i, ans in enumerate(answers):
+                                if i + 1 in answers_correct:
+                                    correct = True
+                                else:
+                                    correct = False
+                                answers_bulk_create.append(Answer(
+                                    question=question,
+                                    answer=ans,
+                                    correct=correct
+                                ))
+                            Answer.objects.bulk_create(answers_bulk_create)
+                            if tag:
+                                TagQuestion.objects.create(
+                                    question=question,
+                                    tag_id=tag
+                                )
+                            common_question_text = ''
+                            question_text = ''
+                        else:
+                            if line[0] == '*':
+                                common_question_text = line[1:]
+                            elif line[0] == '#':
+                                question_text = line[1:]
+                            else:
+                                answers.append(line)
+                    question_added = True
+                except Exception:
+                    question_added = False
 
-        # file.t
-        # with transaction.atomic():
-            # topic = self.kwargs['topic']
-
-            # file_name = default_storage.save("txt_file/" + file.name, file)
-            answers = []
-            # with open("media/" + file_name) as f:
-            #     line = "s"
-            #     questions_texts = []
-            #     count = 0
-            #
-            #     while line:
-            #         line = f.readline()
-            #         if not line.strip():
-            #             print(questions_texts)
-            #
-            #             correct = True
-            #             question = Question.objects.create(
-            #                 question=questions_texts[0],
-            #                 topic_id=topic
-            #             )
-            #             for i in range(1, len(questions_texts)):
-            #                 if i > 1:
-            #                     correct = False
-            #                 answers.append(
-            #                     Answer(
-            #                         answer=questions_texts[i],
-            #                         correct=correct,
-            #                         question=question
-            #                     )
-            #                 )
-            #             count += 1
-            #             questions_texts = []
-            #         else:
-            #             text = line.strip().replace('<v>', '').replace('<va>',
-            #                                                            '')
-            #             if "<q>" in text:
-            #                 text = text.replace("<q>", "")[3:].strip()
-            #             questions_texts.append(text)
-            # Answer.objects.bulk_create(answers)
-            # print(count)
-        # return Response()
-    # if request.method == 'GET':
     test_types_lessons = TestTypeLesson.objects.select_related(
         'lesson', 'test_type'
     ).filter(
         test_type__name_en='ent'
     )
+    tags = Tag.objects.all()
+    question_level = QuestionLevel.objects.all()
+
     context = {
         "test_types_lessons": test_types_lessons,
+        "tags": tags,
+        "question_level": question_level,
+        "question_added": question_added
     }
     return render(
         request, 'admin_panel/contents/add_question.html', context=context)

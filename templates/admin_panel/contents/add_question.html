@@ -1,14 +1,32 @@
 {% extends "admin_panel/base.html" %}
 
 {% block content %}
-
     <div>
         <form action="" method="Post" enctype="multipart/form-data">
             {% csrf_token %}
-            <select name="lesson" id="s">
-                <option value="l" selected="base">nothing</option>
+            <label for="lesson_id">Lesson</label>
+            <select name="lesson" id="lesson_id">
+                <option value="" selected disabled>nothing</option>
                 {% for t in test_types_lessons %}
-                    <option value="{{t.id}}">{{ t.lesson.name_kz }}</option>
+                    <option value="{{ t.id }}">{{ t.lesson.name_kz }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <br>
+            <label for="question_level_id">Question Level</label>
+            <select name="question_level" id="question_level_id">
+                <option value="" selected disabled>nothing</option>
+                {% for q_l in question_level %}
+                    <option value="{{ q_l.id }}">{{ q_l.name_kz }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <br>
+            <label for="tag_id">Tag:</label>
+            <select name="tag" id="tag_id">
+                <option value="" selected disabled>nothing</option>
+                {% for t in tags %}
+                    <option value="{{ t.id }}">{{ t.name_kz }}</option>
                 {% endfor %}
             </select>
             <br>
