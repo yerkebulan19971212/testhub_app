@@ -1,6 +1,13 @@
 {% extends "admin_panel/base.html" %}
 
 {% block content %}
+    {% if question_added_try %}
+        {% if question_added %}
+            <h1 style="color: green"> Kosyldy</h1>
+        {% else %}
+            <h1 style="color: Red"> Kosylmady</h1>
+        {% endif %}
+    {% endif %}
     <div>
         <form action="" method="Post" enctype="multipart/form-data">
             {% csrf_token %}
