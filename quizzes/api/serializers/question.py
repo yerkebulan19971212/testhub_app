@@ -1,8 +1,12 @@
 from rest_framework import serializers
+
+from quizzes.api.serializers.answer import AnswerSerializer
 from quizzes.models import Question
 
 
 class QuestionsSerializer(serializers.ModelSerializer):
+    answers = AnswerSerializer(many=True)
+
     class Meta:
         model = Question
         fields = (
@@ -14,4 +18,5 @@ class QuestionsSerializer(serializers.ModelSerializer):
             'modified',
             'order',
             'is_active',
+            'answers'
         )
