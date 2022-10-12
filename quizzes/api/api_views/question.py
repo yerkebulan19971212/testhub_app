@@ -6,7 +6,7 @@ from quizzes.models import Question
 
 
 class QuestionsListView(generics.ListAPIView):
-    queryset = Question.objects.all()[:10]
+    queryset = Question.objects.all().order_by('-id')[:20]
     serializer_class = QuestionsSerializer
     permission_classes = (IsAuthenticated,)
 
