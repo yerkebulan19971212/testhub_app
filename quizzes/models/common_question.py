@@ -11,4 +11,4 @@ class CommonQuestion(abstract_models.TimeStampedModel):
         db_table = 'quiz\".\"common_question'
 
     # def __str__(self):
-    #     return self.pk
+    #     return self.text
