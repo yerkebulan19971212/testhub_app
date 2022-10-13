@@ -13,4 +13,4 @@ class Answer(abstract_models.TimeStampedModel):
         db_table = 'quiz\".\"answer'
 
     def __str__(self):
-        return f'{self.question}'
+        return f'{self.question} - {self.answer}'

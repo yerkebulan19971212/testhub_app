@@ -22,4 +22,4 @@ class Question(abstract_models.Ordering,
         db_table = 'quiz\".\"question'
 
     def __str__(self):
-        return f'{self.common_question}'
+        return f'{self.question}'
