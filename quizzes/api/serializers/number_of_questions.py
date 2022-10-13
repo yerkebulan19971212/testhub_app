@@ -1,5 +1,6 @@
-from quizzes.models import NumberOfQuestions
 from rest_framework import serializers
+
+from quizzes.models import NumberOfQuestions
 
 
 class NumberOfQuestionsSerializer(serializers.ModelSerializer):

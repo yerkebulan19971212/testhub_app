@@ -1,5 +1,5 @@
-from rest_framework import generics
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics
 
 from quizzes.api.serializers import TagListSerializer
 from quizzes.filters import TagFilter

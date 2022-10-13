@@ -1,6 +1,6 @@
 import django_filters
-from django.contrib.postgres.search import SearchVector, SearchQuery, \
-    SearchRank
+from django.contrib.postgres.search import (SearchQuery, SearchRank,
+                                            SearchVector)
 from django.db.models import Q
 from django_filters import CharFilter, NumberFilter
 from django_filters import rest_framework as filters

@@ -1,5 +1,6 @@
-from base.abstract_models import TimeStampedModel
 from django.db import models
+
+from base.abstract_models import TimeStampedModel
 
 
 class FlashCard(TimeStampedModel):

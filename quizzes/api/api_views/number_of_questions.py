@@ -1,6 +1,7 @@
+from rest_framework.generics import ListAPIView
+
 from quizzes.api.serializers import NumberOfQuestionsSerializer
 from quizzes.models import NumberOfQuestions
-from rest_framework.generics import ListAPIView
 
 
 class ListNumberOfQuestionsView(ListAPIView):
