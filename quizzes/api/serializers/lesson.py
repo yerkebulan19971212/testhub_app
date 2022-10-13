@@ -28,5 +28,4 @@ class LessonWithTestTypeLessonSerializer(abstract_serializer.NameSerializer):
 
     @staticmethod
     def get_test_type_lesson_id(obj):
-        print(obj.test_type_lessons.all())
         return obj.test_type_lessons.all()[0].id
