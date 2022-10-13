@@ -14,7 +14,7 @@ class QuestionFilter(django_filters.FilterSet):
         field_name="lesson_question_level__test_type_lesson_id"
     )
     tag_id = filters.NumberFilter(field_name="tag_questions__tag_id")
-    q = CharFilter(method='search_filter')
+    q = CharFilter(method='search_filter', required=True)
 
     class Meta:
         model = Question

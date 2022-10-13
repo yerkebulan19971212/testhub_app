@@ -20,7 +20,7 @@ class LessonWithTestTypeLessonSerializer(abstract_serializer.NameSerializer):
     class Meta:
         model = Lesson
         fields = (
-            'id',
+            # 'id',
             'name',
             'icon',
             'test_type_lesson_id'
