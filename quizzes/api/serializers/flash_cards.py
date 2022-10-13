@@ -7,9 +7,9 @@ class FlashCardsSerializer(serializers.ModelSerializer):
     class Meta:
         model = FlashCard
         fields = (
-            'id'
+            'id',
             # 'user'
-            'question'
+            'question',
             'passed'
         )
 
