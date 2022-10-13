@@ -1,22 +1,22 @@
+from django.db.models import Prefetch
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView
 
-from base.paginate import FlashCardsPaginate
 from quizzes.api.serializers import QuestionsSerializer
-from quizzes.models import FlashCard, Question
+from quizzes.filters import FlashCardFilter
+from quizzes.models import Question, Answer
 
 
 class ListFlashCardsView(ListAPIView):
     serializer_class = QuestionsSerializer
     queryset = Question.objects.all()
-    pagination_class = FlashCardsPaginate
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = FlashCardFilter
 
     def get_queryset(self):
-        lesson_id = int(self.request.query_params.get('lesson_id'))
-        num_of_quest = int(self.request.query_params.get('num_of_quest', 10))
-        query = self.queryset.filter(
-            lesson_question_level__test_type_lesson__lesson=lesson_id
-        ).exclude(flashcard__in=FlashCard.objects.all())
-        return query[:num_of_quest]
+        answers = Answer.objects.filter(correct=True)
+        return super().get_queryset(). \
+            prefetch_related(Prefetch('answers', queryset=answers))
 
 
 list_flash_card = ListFlashCardsView.as_view()
