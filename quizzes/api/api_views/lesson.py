@@ -1,8 +1,8 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 
-from quizzes.api.serializers import LessonSerializer, \
-    LessonWithTestTypeLessonSerializer
+from quizzes.api.serializers import (LessonSerializer,
+                                     LessonWithTestTypeLessonSerializer)
 from quizzes.filters import LessonFilter
 from quizzes.models import Lesson
 

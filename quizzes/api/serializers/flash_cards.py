@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from quizzes.models import FlashCard
 
 
@@ -6,9 +7,9 @@ class FlashCardsSerializer(serializers.ModelSerializer):
     class Meta:
         model = FlashCard
         fields = (
-            'id'
+            'id',
             # 'user'
-            'question'
+            'question',
             'passed'
         )
 

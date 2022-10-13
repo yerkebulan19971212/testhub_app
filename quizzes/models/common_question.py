@@ -10,5 +10,7 @@ class CommonQuestion(abstract_models.TimeStampedModel):
     class Meta:
         db_table = 'quiz\".\"common_question'
 
-    # def __str__(self):
-    #     return self.text
+    def __str__(self):
+        if self.text:
+            return str(self.text)
+        return "None"

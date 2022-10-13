@@ -8,5 +8,4 @@ class GetLessonTestTypeLessonSerializer(serializers.ModelSerializer):
         model = TestTypeLesson
         fields = (
             'id',
-
         )

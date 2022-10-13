@@ -49,9 +49,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     'rest_framework',
     'django_filters',
-    "debug_toolbar",
+    'drf_yasg',
+
     'accounts',
     'quizzes',
     'admin_panel'
@@ -68,6 +70,9 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
+    INSTALLED_APPS += [
+        'debug_toolbar',
+    ]
     MIDDLEWARE += [
         "debug_toolbar.middleware.DebugToolbarMiddleware"
     ]

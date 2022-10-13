@@ -7,8 +7,12 @@ class TagQuestion(abstract_models.AbstractBaseName,
                   abstract_models.IsActive,
                   abstract_models.Ordering,
                   abstract_models.TimeStampedModel):
-    tag = models.ForeignKey('quizzes.Tag', on_delete=models.CASCADE)
-    question = models.ForeignKey('quizzes.Question', on_delete=models.CASCADE)
+    tag = models.ForeignKey(
+        'quizzes.Tag',
+        on_delete=models.CASCADE, related_name='tag_questions')
+    question = models.ForeignKey(
+        'quizzes.Question',
+        on_delete=models.CASCADE, related_name='tag_questions')
 
     class Meta:
         db_table = 'quiz\".\"tag_question'

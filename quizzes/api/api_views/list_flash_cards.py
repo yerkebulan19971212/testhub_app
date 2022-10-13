@@ -1,8 +1,8 @@
 from rest_framework.generics import ListAPIView
 
 from base.paginate import FlashCardsPaginate
-from quizzes.models import Question, FlashCard
 from quizzes.api.serializers import QuestionsSerializer
+from quizzes.models import FlashCard, Question
 
 
 class ListFlashCardsView(ListAPIView):
