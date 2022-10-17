@@ -14,3 +14,4 @@ class TagListView(generics.ListAPIView):
 
 
 tag_list_view = TagListView.as_view()
+

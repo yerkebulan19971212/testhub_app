@@ -16,3 +16,4 @@ from .test_type_lesson_group import TestTypeLessonGroup  # noqa
 from .user_variant import UserVariant  # noqa
 from .variant import Variant  # noqa
 from .variant_question import VariantQuestion  # noqa
+from .favorite import Favorite  # noqa
