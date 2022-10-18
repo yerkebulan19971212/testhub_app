@@ -1,8 +1,8 @@
 from rest_framework import generics, status as sts
 from rest_framework.response import Response
 
-from quizzes.api.serializers import FavoritesSerializer
-from quizzes.models import Favorite
+from quizzes.api.serializers import FavoritesSerializer, QuestionsSerializer
+from quizzes.models import Favorite, Question
 
 
 class CreateFavoriteQuestions(generics.CreateAPIView):
@@ -31,4 +31,14 @@ create_favorite_questions = CreateFavoriteQuestions.as_view()
 
 
 class ListFavoritesView(generics.ListAPIView):
-    pass
+    queryset = Question.objects.all()
+    serializer_class = QuestionsSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(
+            favorites__is_favorite=True,
+            user=self.request.user
+        )
+
+
+list_favorites_questions = ListFavoritesView.as_view()

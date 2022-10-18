@@ -7,5 +7,5 @@ from .question import questions_list, questions_list_with_only_correct_answer, \
 from .tag import tag_list_view
 from .test_type import test_type_view
 from .test_type_lesson import get_lesson_test_type_lesson_view
-from .favorites import create_favorite_questions
+from .favorites import create_favorite_questions, list_favorites_questions
 

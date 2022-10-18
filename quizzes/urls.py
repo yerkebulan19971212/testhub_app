@@ -6,7 +6,7 @@ from quizzes.api.api_views import (
     list_flash_card, questions_list,
     questions_list_with_only_correct_answer,
     tag_list_view, test_type_view,
-    detail_info_question, create_favorite_questions
+    detail_info_question, create_favorite_questions, list_favorites_questions
 )
 
 lesson_urlpatterns = [
@@ -27,7 +27,8 @@ tag_urlpatterns = [
 ]
 
 favorite_urlpatterns = [
-    path('create/', create_favorite_questions)
+    path('create/', create_favorite_questions),
+    path('list/', list_favorites_questions),
 ]
 urlpatterns = [
     path('test-type-list/', test_type_view),
