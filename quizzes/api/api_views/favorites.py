@@ -1,4 +1,5 @@
-from rest_framework import generics, status as sts
+from rest_framework import generics
+from rest_framework import status as sts
 from rest_framework.response import Response
 
 from quizzes.api.serializers import FavoritesSerializer, QuestionsSerializer
@@ -16,10 +17,7 @@ class CreateFavoriteQuestions(generics.CreateAPIView):
             user=self.request.user
         )
         if status is False:
-            if obj.is_favorite:
-                obj.is_favorite = False
-            else:
-                obj.is_favorite = True
+            obj.is_favorite = not obj.is_favorite
             obj.save()
         return Response(
             {'success': True},

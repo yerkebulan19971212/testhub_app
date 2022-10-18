@@ -2,11 +2,11 @@ from django.contrib import admin
 from django.db import models
 from django.forms import Textarea
 
-from .models import (Answer, CommonQuestion, FlashCard, Lesson, LessonGroup,
-                     LessonPair, LessonQuestionLevel, NumberOfQuestions,
-                     Question, QuestionLevel, TestType, TestTypeLesson,
-                     TestTypeLessonGroup, UserVariant, Variant,
-                     VariantQuestion, Favorite)
+from .models import (Answer, CommonQuestion, Favorite, FlashCard, Lesson,
+                     LessonGroup, LessonPair, LessonQuestionLevel,
+                     NumberOfQuestions, Question, QuestionLevel, TestType,
+                     TestTypeLesson, TestTypeLessonGroup, UserVariant, Variant,
+                     VariantQuestion)
 
 admin.site.register([
     Lesson,
