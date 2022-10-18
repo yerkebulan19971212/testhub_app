@@ -27,12 +27,11 @@ tag_urlpatterns = [
 ]
 
 favorite_urlpatterns = [
-    path('create/', create_favorite_questions),
+    path('', create_favorite_questions),
     path('list/', list_favorites_questions),
 ]
 urlpatterns = [
     path('test-type-list/', test_type_view),
     path('lesson/', include(lesson_urlpatterns)),
-    path('favorite/', include(favorite_urlpatterns)),
     path('question/', include(question_urlpatterns)),
 ]
