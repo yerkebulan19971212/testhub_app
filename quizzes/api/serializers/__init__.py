@@ -1,3 +1,4 @@
+from .favorite import FavoritesSerializer
 from .flash_cards import FlashCardsSerializer
 from .lesson import LessonSerializer, LessonWithTestTypeLessonSerializer
 from .number_of_questions import NumberOfQuestionsSerializer

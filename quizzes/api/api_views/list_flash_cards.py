@@ -4,7 +4,7 @@ from rest_framework.generics import ListAPIView
 
 from quizzes.api.serializers import QuestionsSerializer
 from quizzes.filters import FlashCardFilter
-from quizzes.models import Question, Answer
+from quizzes.models import Answer, Question
 
 
 class ListFlashCardsView(ListAPIView):

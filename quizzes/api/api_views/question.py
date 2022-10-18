@@ -25,8 +25,17 @@ class QuestionsListWithOnlyCorrectAnswerView(generics.ListAPIView):
 
     def get_queryset(self):
         answers = Answer.objects.filter(correct=True)
-        return super().get_queryset().\
+        return super().get_queryset(). \
             prefetch_related(Prefetch('answers', queryset=answers))
 
 
 questions_list_with_only_correct_answer = QuestionsListWithOnlyCorrectAnswerView.as_view()
+
+
+class DetailInfoQuestionView(generics.RetrieveAPIView):
+    serializer_class = QuestionsSerializer
+    queryset = Question.objects.all()
+    lookup_field = 'id'
+
+
+detail_info_question = DetailInfoQuestionView.as_view()

@@ -1,5 +1,6 @@
 from .answer import Answer  # noqa
 from .common_question import CommonQuestion  # noqa
+from .favorite import Favorite  # noqa
 from .flash_card import FlashCard  # noqa
 from .lesson import Lesson  # noqa
 from .lesson_group import LessonGroup  # noqa
