@@ -38,6 +38,8 @@ class ListFavoritesView(generics.ListAPIView):
         return self.queryset.filter(
             favorites__is_favorite=True,
             user=self.request.user
+        ).prefetch_related(
+            'answers'
         )
 
 
