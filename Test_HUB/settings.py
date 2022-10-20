@@ -83,7 +83,11 @@ if DEBUG:
 #                                                                 "10.0.2.2"]
 
 ROOT_URLCONF = 'Test_HUB.urls'
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
