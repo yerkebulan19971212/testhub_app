@@ -4,6 +4,7 @@ from rest_framework import generics
 
 from base.paginate import SimplePagination
 from quizzes.api.serializers import QuestionsSerializer
+from quizzes.api.serializers.question import QuestionDetailSerializer
 from quizzes.filters import QuestionFilter
 from quizzes.models import Answer, Question
 
@@ -33,7 +34,7 @@ questions_list_with_only_correct_answer = QuestionsListWithOnlyCorrectAnswerView
 
 
 class DetailInfoQuestionView(generics.RetrieveAPIView):
-    serializer_class = QuestionsSerializer
+    serializer_class = QuestionDetailSerializer
     queryset = Question.objects.all()
     lookup_field = 'id'
 

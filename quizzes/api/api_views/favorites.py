@@ -1,12 +1,14 @@
 from rest_framework import generics
 from rest_framework import status as sts
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from quizzes.api.serializers import FavoritesSerializer, QuestionsSerializer
 from quizzes.models import Favorite, Question
 
 
 class CreateFavoriteQuestions(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,)
     serializer_class = FavoritesSerializer
     queryset = Favorite.objects.all()
 
@@ -36,6 +38,8 @@ class ListFavoritesView(generics.ListAPIView):
         return self.queryset.filter(
             favorites__is_favorite=True,
             user=self.request.user
+        ).prefetch_related(
+            'answers'
         )
 
 
