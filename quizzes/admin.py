@@ -53,7 +53,7 @@ class AnswerInline(admin.TabularInline):
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [AnswerInline]
     list_display = (
-        'question', 'id', 'is_active', 'created', 'modified')
+        'question', 'id', 'is_active', 'math', 'created', 'modified')
 
     # list_filter = ['topic__lesson__test_type', 'topic__lesson', 'topic']
     formfield_overrides = {
