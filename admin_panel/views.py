@@ -3,6 +3,11 @@ import logging
 from django.db import transaction
 from django.shortcuts import render
 import io
+
+from rest_framework import status
+from rest_framework.response import Response
+
+from admin_panel.utils.questions import create_question
 from quizzes.models import Lesson, TestType, TestTypeLesson, Question, Tag, \
     QuestionLevel, CommonQuestion, Answer, LessonQuestionLevel, TagQuestion
 
@@ -27,63 +32,27 @@ def add_question(request):
         with request.FILES['file'] as f:
             try:
                 with transaction.atomic():
-                    line = "not None"
-                    answers = []
+                    line = f.readline().decode().strip()
+                    questions_texts = ""
                     answers_bulk_create = []
                     while line:
-                        line = f.readline().decode().strip()
-                        print('ss', line, 'ss')
-                        if not line:
-                            if common_question_text:
-                                common_question_text = CommonQuestion.objects.get_or_create(
-                                    text=common_question_text
-                                )
-                            print("common_question_text")
-                            print(common_question_text)
-                            print(question_text)
-                            print(lesson_question_level)
-                            question = Question.objects.create(
-                                lesson_question_level=lesson_question_level,
-                                common_question=common_question_text,
-                                question=question_text,
+                        if 'end' in line:
+                            break
+                        if line.strip() == '':
+                            question, answers_list = create_question(
+                                questions_texts=questions_texts,
+                                lesson_question_level=lesson_question_level
                             )
-                            answers_correct = [int(i) for i in
-                                               answers[-1].split(',')]
-                            for i, ans in enumerate(answers[:-1]):
-                                if i + 1 in answers_correct:
-                                    correct = True
-                                else:
-                                    correct = False
-                                answers_bulk_create.append(Answer(
-                                    question=question,
-                                    answer=ans,
-                                    correct=correct
-                                ))
-                            print(answers_bulk_create)
-                            print("answers_bulk_create")
-                            if tag:
-                                TagQuestion.objects.create(
-                                    question=question,
-                                    tag_id=tag
-                                )
-                            question_text = ''
-                            line = 'SSSS'
-                            common_question_text = None
-                            answers = []
+                            answers_bulk_create += answers_list
+                            if question is None:
+                                return Response(
+                                    {"detail": "Что то не так"}, status=status.HTTP_400_BAD_REQUEST)
+                            questions_texts = ""
                         else:
-                            if 'end' == line[:3]:
-                                break
-                            if line[0] == '*':
-                                common_question_text = line[1:]
-                            elif line[0] == '#':
-                                question_text = line[1:]
-                            else:
-                                answers.append(line)
-                        print(line)
-                        print("line")
-                    question_added = True
+                            questions_texts += line.strip() + "new_line"
+                        line = f.readline().decode().strip() + ' '
                     Answer.objects.bulk_create(answers_bulk_create)
-
+                question_added = True
             except Exception as e:
                 print(e)
                 question_added = False

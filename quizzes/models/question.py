@@ -17,6 +17,7 @@ class Question(abstract_models.Ordering,
         'quizzes.LessonQuestionLevel',
         on_delete=models.CASCADE, db_index=True)
     question = models.TextField(db_index=True)
+    math = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'quiz\".\"question'

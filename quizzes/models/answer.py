@@ -8,6 +8,7 @@ class Answer(abstract_models.TimeStampedModel):
         'quizzes.Question', related_name='answers', on_delete=models.CASCADE)
     answer = models.TextField()
     correct = models.BooleanField(default=False)
+    math = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'quiz\".\"answer'
