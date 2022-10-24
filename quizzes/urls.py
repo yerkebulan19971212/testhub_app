@@ -7,7 +7,7 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    list_favorites_questions, list_flash_card,
                                    questions_list,
                                    questions_list_with_only_correct_answer,
-                                   tag_list_view, test_type_view, pass_answer)
+                                   tag_list_view, test_type_view, pass_answer_by_lesson_view)
 
 lesson_urlpatterns = [
     # path('list/', lesson_list, name='lesson_list'),
@@ -21,7 +21,7 @@ question_urlpatterns = [
 
     path('test-type-lesson-list/', lesson_list_with_test_type_lesson_view),
     path('list_flash_card/', list_flash_card),
-    path('pass-answer/', pass_answer),
+    path('pass-answer-by-lesson/', pass_answer_by_lesson_view),
     # path('create_flash_card/', create_flash_cards),
 ]
 tag_urlpatterns = [
