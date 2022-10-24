@@ -4,6 +4,7 @@ from .lesson import lesson_list, lesson_list_with_test_type_lesson_view
 from .list_flash_cards import list_flash_card
 from .number_of_questions import list_number_of_questions
 from .question import (detail_info_question, questions_list,
+                       questions_list_by_lesson,
                        questions_list_with_only_correct_answer)
 from .tag import tag_list_view
 from .test_type import test_type_view
