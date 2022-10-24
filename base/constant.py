@@ -30,3 +30,7 @@ class Role(str, Choice):
 class TestLang(str, Choice):
     KAZAKH = 'kz'
     RUSSIAN = 'ru'
+
+
+class QuizzesType(str, Choice):
+    BY_LESSON = 'BY_LESSON'
