@@ -37,4 +37,4 @@ class PassAnswerByLessonView(generics.CreateAPIView):
         return Response({}, status=status.HTTP_200_OK)
 
 
-pass_answer = PassAnswerByLessonView.as_view()
+pass_answer_by_lesson_view = PassAnswerByLessonView.as_view()
