@@ -7,11 +7,13 @@ from quizzes.models.variant import Variant
 class UserVariant(models.Model):
     user = models.ForeignKey(
         account.User,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='user_variant'
     )
     variant = models.ForeignKey(
         Variant,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='user_variant'
     )
 
     class Meta:

@@ -1,0 +1,54 @@
+{% extends "admin_panel/base.html" %}
+
+{% block content %}
+    <h1>{{ message_er }}</h1>
+    {% if question_added_try %}
+        {% if question_added %}
+            <h1 style="color: green"> Kosyldy</h1>
+        {% else %}
+            <h1 style="color: Red"> Kosylmady</h1>
+        {% endif %}
+    {% endif %}
+    <div>
+        <form action="" method="Post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="variant_group_id">Variant Groups</label>
+            <select name="variant_group" id="variant_group_id">
+                <option value="" selected disabled>nothing</option>
+                {% for t in variant_groups %}
+                    <option value="{{ t.id }}">{{ t.name_kz }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <br>
+{#            <label for="question_level_id">Question Level</label>#}
+{#            <select name="question_level" id="question_level_id">#}
+{#                <option value="" selected disabled>nothing</option>#}
+{#                {% for q_l in question_level %}#}
+{#                    <option value="{{ q_l.id }}">{{ q_l.name_kz }}</option>#}
+{#                {% endfor %}#}
+{#            </select>#}
+{#            <br>#}
+{#            <br>#}
+{#            <label for="tag_id">Tag:</label>#}
+{#            <select name="tag" id="tag_id">#}
+{#                <option value="" selected disabled>nothing</option>#}
+{#                {% for t in tags %}#}
+{#                    <option value="{{ t.id }}">{{ t.name_kz }}</option>#}
+{#                {% endfor %}#}
+{#            </select>#}
+{#            <br>#}
+{#            <br>#}
+{#            <label for="tag_id">Variant_Groups:</label>#}
+{#            <select name="variant_group" id="variant_group_id">#}
+{#                <option value="" selected disabled>nothing</option>#}
+{#                {% for t in variant_groups %}#}
+{#                    <option value="{{ t.id }}">{{ t.name_kz }}</option>#}
+{#                {% endfor %}#}
+{#            </select>#}
+{#            <br>#}
+{#            <input name="file" type="file">#}
+            <input type="submit" value="Отправить">
+        </form>
+    </div>
+{% endblock content %}
