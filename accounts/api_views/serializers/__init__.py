@@ -1,2 +1,2 @@
 from .role import RoleSerializer
-from .user import AddUserTestTypeSerializer, UserRegisterSerializer
+from .user import AddUserTestTypeSerializer, UserRegisterSerializer, MeInformationSerializer
