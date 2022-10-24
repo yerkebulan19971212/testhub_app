@@ -2,7 +2,8 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 from accounts.api_views import serializers
-from accounts.api_views.serializers import MeInformationSerializer
+from accounts.api_views.serializers import (MeInformationSerializer,
+                                            UserInformationUpdateSerializer)
 from accounts.models import User
 
 
@@ -30,3 +31,16 @@ class MeInformationView(generics.RetrieveAPIView):
 
 
 me_information = MeInformationView.as_view()
+
+
+class UserInformationUpdateView(generics.UpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = User.objects.all()
+    serializer_class = UserInformationUpdateSerializer
+    lookup_field = None
+
+    def get_object(self):
+        return self.request.user
+
+
+update_user_information = UserInformationUpdateView.as_view()
