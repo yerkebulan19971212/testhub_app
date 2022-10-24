@@ -2,7 +2,7 @@ from quizzes.models import CommonQuestion, Question, Answer
 from bs4 import BeautifulSoup
 
 
-def create_question(questions_texts, lesson_question_level):
+def create_question(questions_texts, lesson_question_level, variant_group):
     if not questions_texts and 'new_line' not in questions_texts:
         return None
     questions_detail = questions_texts.split('new_line')
@@ -31,14 +31,14 @@ def create_question(questions_texts, lesson_question_level):
         math = True
         answer_end = -3
     answers = questions_detail[answer_start:answer_end]
-    print(question_text)
     correct_answers = list(map(int, questions_detail[answer_end].split(',')))
 
     test_question = Question.objects.create(
         common_question=common_question,
         lesson_question_level=lesson_question_level,
         question=BeautifulSoup(question_text, "lxml").text,
-        math=math
+        math=math,
+        variant_group=variant_group
     )
     return test_question, [
         Answer(

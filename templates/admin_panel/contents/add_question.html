@@ -38,6 +38,15 @@
                 {% endfor %}
             </select>
             <br>
+            <br>
+            <label for="tag_id">Variant_Groups:</label>
+            <select name="variant_group" id="variant_group_id">
+                <option value="" selected disabled>nothing</option>
+                {% for t in variant_groups %}
+                    <option value="{{ t.id }}">{{ t.name_kz }}</option>
+                {% endfor %}
+            </select>
+            <br>
             <input name="file" type="file">
             <input type="submit" value="Отправить">
         </form>

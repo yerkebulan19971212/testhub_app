@@ -10,7 +10,8 @@ from rest_framework.response import Response
 from accounts.models import User
 from admin_panel.utils.questions import create_question
 from quizzes.models import Lesson, TestType, TestTypeLesson, Question, Tag, \
-    QuestionLevel, CommonQuestion, Answer, LessonQuestionLevel, TagQuestion
+    QuestionLevel, CommonQuestion, Answer, LessonQuestionLevel, TagQuestion, \
+    VariantGroup
 
 
 def index(request):
@@ -26,14 +27,17 @@ def add_question(request):
         lesson = request.POST.get('lesson')
         question_level = request.POST.get('question_level')
         tag = request.POST.get('tag')
-        lesson_question_level = LessonQuestionLevel.objects.get(
-            test_type_lesson_id=lesson,
-            question_level_id=question_level
-        )
+        variant_group_id = request.POST.get('variant_group')
+
         common_question_text = None
         with request.FILES['file'] as f:
             try:
                 with transaction.atomic():
+                    lesson_question_level = LessonQuestionLevel.objects.get(
+                        test_type_lesson_id=lesson,
+                        question_level_id=question_level
+                    )
+                    variant_group = VariantGroup.objects.get(id=variant_group_id)
                     line = f.readline().decode().strip()
                     questions_texts = ""
                     answers_bulk_create = []
@@ -43,7 +47,8 @@ def add_question(request):
                         if line.strip() == '':
                             question, answers_list = create_question(
                                 questions_texts=questions_texts,
-                                lesson_question_level=lesson_question_level
+                                lesson_question_level=lesson_question_level,
+                                variant_group=variant_group
                             )
                             answers_bulk_create += answers_list
                             if question is None:
@@ -67,7 +72,7 @@ def add_question(request):
     )
     tags = Tag.objects.all()
     question_level = QuestionLevel.objects.all()
-    question_level = VariantGroup.objects.all()
+    variant_groups = VariantGroup.objects.all()
 
     context = {
         "test_types_lessons": test_types_lessons,
@@ -75,6 +80,7 @@ def add_question(request):
         "question_level": question_level,
         "question_added": question_added,
         "question_added_try": question_added_try,
+        "variant_groups": variant_groups,
         "message_er": message,
     }
     return render(
