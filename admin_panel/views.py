@@ -9,9 +9,10 @@ from rest_framework.response import Response
 
 from accounts.models import User
 from admin_panel.utils.questions import create_question
+from base.constant import TestLang
 from quizzes.models import Lesson, TestType, TestTypeLesson, Question, Tag, \
     QuestionLevel, CommonQuestion, Answer, LessonQuestionLevel, TagQuestion, \
-    VariantGroup
+    VariantGroup, Variant, VariantQuestion
 
 
 def index(request):
@@ -88,6 +89,43 @@ def add_question(request):
 
 
 def generation_variants(request):
+    context = {}
     if request.method == 'POST':
+        variant_group = request.POST.get('variant_group')
+        variant_question = []
         students = User.objects.filter(role__name='student')
-
+        variants = Variant.objects.filter(
+            variantquestion__isnull=True
+        )
+        if not variants:
+            context['created'] = False
+        else:
+            context['created'] = False
+        test_type_lessons = TestTypeLesson.objects.filter(
+            test_type__code='ent',
+            lang=TestLang.KAZAKH
+        )
+        for tt in test_type_lessons:
+            lesson_question_levels = LessonQuestionLevel\
+                .objects\
+                .select_related('question_level')\
+                .filter(
+                    test_type_lesson=tt)
+            for lql in lesson_question_levels:
+                for v in variants:
+                    questions = Question.objects.filter(
+                        variantquestion__isnull=True,
+                        variant_group_id=variant_group,
+                        lesson_question_level=lql)[:lql.number_of_questions]
+                    if questions:
+                        variant_question += [
+                            VariantQuestion(
+                                question=q,
+                                variant=v
+                            ) for q in questions]
+        VariantQuestion.objects.bulk_create(variant_question)
+        # students_variant =
+    variant_groups = VariantGroup.objects.filter(is_active=True)
+    context['variant_groups'] = variant_groups
+    return render(
+        request, 'admin_panel/contents/variant_create.html', context=context)

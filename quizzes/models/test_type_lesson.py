@@ -1,6 +1,7 @@
 from django.db import models
 
 from base.abstract_models import *
+from base.constant import TestLang
 from quizzes.models import lesson
 from quizzes.models.test_type import TestType
 
@@ -18,6 +19,9 @@ class TestTypeLesson(TimeStampedModel):
         on_delete=models.CASCADE,
         blank=True
     )
+    lang = models.IntegerField(
+        choices=TestLang.choices(),
+        default=TestLang.KAZAKH)
     main = models.BooleanField(default=False)
     questions_number = models.IntegerField(default=1)
 
