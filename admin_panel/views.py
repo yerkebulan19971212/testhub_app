@@ -7,6 +7,7 @@ import io
 from rest_framework import status
 from rest_framework.response import Response
 
+from accounts.models import User
 from admin_panel.utils.questions import create_question
 from quizzes.models import Lesson, TestType, TestTypeLesson, Question, Tag, \
     QuestionLevel, CommonQuestion, Answer, LessonQuestionLevel, TagQuestion
@@ -19,6 +20,7 @@ def index(request):
 def add_question(request):
     question_added = False
     question_added_try = False
+    message = ''
     if request.method == 'POST':
         question_added_try = True
         lesson = request.POST.get('lesson')
@@ -55,6 +57,7 @@ def add_question(request):
                 question_added = True
             except Exception as e:
                 print(e)
+                message = str(e)
                 question_added = False
 
     test_types_lessons = TestTypeLesson.objects.select_related(
@@ -71,6 +74,13 @@ def add_question(request):
         "question_level": question_level,
         "question_added": question_added,
         "question_added_try": question_added_try,
+        "message_er": message,
     }
     return render(
         request, 'admin_panel/contents/add_question.html', context=context)
+
+
+def generation_variants(request):
+    if request.method == 'POST':
+        students = User.objects.filter(role__name='student')
+
