@@ -10,3 +10,12 @@ class TestTypeSerializer(NameSerializer):
             'name',
             'icon'
         )
+
+
+class TestTypeOnlyNameSerializer(NameSerializer):
+    class Meta:
+        model = TestType
+        fields = (
+            'id',
+            'name'
+        )

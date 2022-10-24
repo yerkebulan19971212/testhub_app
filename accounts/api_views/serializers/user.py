@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from accounts.models import Role, User, UserTestType
+from quizzes.api.serializers import TestTypeOnlyNameSerializer
 
 from .role import RoleSerializer
 
@@ -41,12 +42,17 @@ class AddUserTestTypeSerializer(serializers.ModelSerializer):
 
 
 class MeInformationSerializer(serializers.ModelSerializer):
+    test_type = TestTypeOnlyNameSerializer()
+
     class Meta:
         model = User
         fields = (
             'id',
             'first_name',
             'last_name',
+            'email',
+            'language',
+            'test_type'
         )
 
 
