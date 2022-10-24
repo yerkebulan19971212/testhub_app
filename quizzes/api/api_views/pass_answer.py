@@ -1,8 +1,7 @@
 from rest_framework import generics, status
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from base.constant import QuizzesType
 from quizzes.api.serializers import PassAnswerSerializer
 from quizzes.models import PassAnswer
 
@@ -16,11 +15,12 @@ class PassAnswerByLessonView(generics.CreateAPIView):
         user = self.request.user
         answers = self.request.data.get('answers')
         question = self.request.data.get('question')
+        quiz_event = self.request.data.get('quiz_event')
         try:
             PassAnswer.objects.filter(
                 question_id=question,
                 user=user,
-                quizzes_type=QuizzesType.BY_LESSON
+                quiz_event_id=quiz_event
             ).delete()
 
             pass_ans = [
@@ -28,7 +28,7 @@ class PassAnswerByLessonView(generics.CreateAPIView):
                     answer_id=ans,
                     question_id=question,
                     user=user,
-                    quizzes_type=QuizzesType.BY_LESSON)
+                    quiz_event_id=quiz_event)
                 for ans in answers]
             PassAnswer.objects.bulk_create(pass_ans)
         except Exception as e:

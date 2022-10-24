@@ -1,7 +1,6 @@
 from django.db import models
 
 from base import abstract_models
-from base.constant import QuizzesType
 
 
 class PassAnswer(abstract_models.TimeStampedModel):
@@ -9,6 +8,13 @@ class PassAnswer(abstract_models.TimeStampedModel):
         'accounts.User',
         on_delete=models.CASCADE,
         db_index=True,
+        related_name='pass_answers'
+    )
+    quiz_event = models.ForeignKey(
+        'quizzes.QuizEvent',
+        on_delete=models.CASCADE,
+        db_index=True,
+        null=True,
         related_name='pass_answers'
     )
     question = models.ForeignKey(
@@ -22,12 +28,6 @@ class PassAnswer(abstract_models.TimeStampedModel):
         on_delete=models.CASCADE,
         db_index=True,
         related_name='pass_answers'
-    )
-    quizzes_type = models.CharField(
-        max_length=128,
-        choices=QuizzesType.choices(),
-        null=True,
-        db_index=True
     )
 
     class Meta:

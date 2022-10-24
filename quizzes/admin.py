@@ -4,9 +4,10 @@ from django.forms import Textarea
 
 from .models import (Answer, CommonQuestion, Favorite, FlashCard, Lesson,
                      LessonGroup, LessonPair, LessonQuestionLevel,
-                     NumberOfQuestions, Question, QuestionLevel, TestType,
-                     TestTypeLesson, TestTypeLessonGroup, UserVariant, Variant,
-                     VariantQuestion, PassAnswer)
+                     NumberOfQuestions, PassAnswer, Question, QuestionLevel,
+                     QuizEvent, QuizEventQuestion, TestType, TestTypeLesson,
+                     TestTypeLessonGroup, UserVariant, Variant,
+                     VariantQuestion)
 from .models.variant_group import VariantGroup
 
 admin.site.register([
@@ -26,8 +27,9 @@ admin.site.register([
     NumberOfQuestions,
     CommonQuestion,
     Favorite,
-    PassAnswer
-
+    PassAnswer,
+    QuizEvent,
+    QuizEventQuestion
 ])
 
 

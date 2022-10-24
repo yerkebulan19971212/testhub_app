@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from quizzes.api.serializers.answer import AnswerSerializer
-from quizzes.models import Question, Favorite
+from quizzes.models import Favorite, Question
 
 
 class QuestionsSerializer(serializers.ModelSerializer):
