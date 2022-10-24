@@ -19,3 +19,4 @@ from .variant import Variant  # noqa
 from .variant_question import VariantQuestion  # noqa
 from .variant_group import VariantGroup  # noqa
 from .pass_answer import PassAnswer  # noqa
+from .quizze_event import QuizEvent, QuizEventQuestion  # noqa
