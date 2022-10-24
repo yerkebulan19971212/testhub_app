@@ -26,10 +26,11 @@ def create_question(questions_texts, lesson_question_level):
         answer_start = 1
         question_text = questions_detail[0][1:].strip()
     math = False
-    if questions_detail.pop() == 'math':
+    if questions_detail[-1] == 'math':
         math = True
-    answers = questions_detail[answer_start:-2]
-    correct_answers = list(map(int, questions_detail[-2].split(',')))
+        a = questions_detail.pop()
+    answers = questions_detail[answer_start:-1]
+    correct_answers = list(map(int, questions_detail[-1].split(',')))
 
     test_question = Question.objects.create(
         common_question=common_question,
