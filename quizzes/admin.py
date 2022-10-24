@@ -7,6 +7,7 @@ from .models import (Answer, CommonQuestion, Favorite, FlashCard, Lesson,
                      NumberOfQuestions, Question, QuestionLevel, TestType,
                      TestTypeLesson, TestTypeLessonGroup, UserVariant, Variant,
                      VariantQuestion)
+from .models.variant_group import VariantGroup
 
 admin.site.register([
     Lesson,
@@ -54,6 +55,17 @@ class QuestionAdmin(admin.ModelAdmin):
     inlines = [AnswerInline]
     list_display = (
         'question', 'id', 'is_active', 'math', 'created', 'modified')
+
+    # list_filter = ['topic__lesson__test_type', 'topic__lesson', 'topic']
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows': 5, 'cols': 180})},
+    }
+
+
+@admin.register(VariantGroup)
+class VariantGroupAdmin(admin.ModelAdmin):
+    list_display = (
+        'name_kz', 'id', 'is_active', 'order', 'created', 'modified')
 
     # list_filter = ['topic__lesson__test_type', 'topic__lesson', 'topic']
     formfield_overrides = {

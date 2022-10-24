@@ -67,6 +67,7 @@ def add_question(request):
     )
     tags = Tag.objects.all()
     question_level = QuestionLevel.objects.all()
+    question_level = VariantGroup.objects.all()
 
     context = {
         "test_types_lessons": test_types_lessons,

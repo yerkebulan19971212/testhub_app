@@ -18,6 +18,11 @@ class Question(abstract_models.Ordering,
         on_delete=models.CASCADE, db_index=True)
     question = models.TextField(db_index=True)
     math = models.BooleanField(default=False)
+    variant_group = models.ForeignKey(
+        'quizzes.VariantGroup',
+        on_delete=models.CASCADE,
+        null=True,
+        db_index=True)
 
     class Meta:
         db_table = 'quiz\".\"question'
