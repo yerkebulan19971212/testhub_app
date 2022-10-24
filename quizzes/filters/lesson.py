@@ -10,7 +10,11 @@ from quizzes.models import Answer, Lesson, Question
 class LessonFilter(django_filters.FilterSet):
     test_type = filters.NumberFilter(
         field_name="test_type_lessons__test_type", required=True)
+    # language = filters.CharFilter(
+    #     field_name="test_type_lessons__language", required=True)
 
     class Meta:
         model = Lesson
-        fields = ('test_type',)
+        fields = (
+            'test_type',
+        )

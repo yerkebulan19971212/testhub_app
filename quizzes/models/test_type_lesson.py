@@ -19,9 +19,12 @@ class TestTypeLesson(TimeStampedModel):
         on_delete=models.CASCADE,
         blank=True
     )
-    lang = models.IntegerField(
+    language = models.CharField(
+        max_length=64,
         choices=TestLang.choices(),
-        default=TestLang.KAZAKH)
+        default=TestLang.KAZAKH,
+        db_index=True
+    )
     main = models.BooleanField(default=False)
     questions_number = models.IntegerField(default=1)
 

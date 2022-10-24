@@ -7,7 +7,9 @@ from accounts.models import User
 from quizzes.models import Answer, Lesson, Question, TestTypeLesson
 
 
-class LessonFilter(django_filters.FilterSet):
+class TestTypeLessonFilter(django_filters.FilterSet):
+    test_type = filters.NumberFilter(field_name="test_type", required=True)
+
     class Meta:
         model = TestTypeLesson
         fields = ('test_type',)

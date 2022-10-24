@@ -24,5 +24,11 @@ class LessonListWithTestTypeLessonView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = LessonFilter
 
+    def get_queryset(self):
+        language = self.request.headers.get('language', 'kz')
+        queryset = super().get_queryset().filter(
+            test_type_lessons__language=language)
+        return queryset
+
 
 lesson_list_with_test_type_lesson_view = LessonListWithTestTypeLessonView.as_view()
