@@ -6,7 +6,7 @@ from .models import (Answer, CommonQuestion, Favorite, FlashCard, Lesson,
                      LessonGroup, LessonPair, LessonQuestionLevel,
                      NumberOfQuestions, Question, QuestionLevel, TestType,
                      TestTypeLesson, TestTypeLessonGroup, UserVariant, Variant,
-                     VariantQuestion)
+                     VariantQuestion, PassAnswer)
 from .models.variant_group import VariantGroup
 
 admin.site.register([
@@ -25,7 +25,8 @@ admin.site.register([
     FlashCard,
     NumberOfQuestions,
     CommonQuestion,
-    Favorite
+    Favorite,
+    PassAnswer
 
 ])
 

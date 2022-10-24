@@ -9,3 +9,4 @@ from .question import (detail_info_question, questions_list,
 from .tag import tag_list_view
 from .test_type import test_type_view
 from .test_type_lesson import get_lesson_test_type_lesson_view
+from .pass_answer import pass_answer
