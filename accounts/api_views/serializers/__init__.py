@@ -1,2 +1,3 @@
 from .role import RoleSerializer
-from .user import AddUserTestTypeSerializer, UserRegisterSerializer, MeInformationSerializer
+from .user import (AddUserTestTypeSerializer, MeInformationSerializer,
+                   UserInformationUpdateSerializer, UserRegisterSerializer)

@@ -8,6 +8,7 @@ from django.core.validators import FileExtensionValidator, MinLengthValidator
 from django.db import models
 
 from base.abstract_models import TimeStampedModel
+from base.constant import TestLang
 from base.service import validate_mb_image, validate_size_image
 
 
@@ -74,7 +75,20 @@ class User(AbstractUser, TimeStampedModel):
     role = models.ForeignKey('accounts.Role',
                              related_name='users',
                              on_delete=models.CASCADE,
-                             null=True)
+                             null=True,
+                             db_index=True)
+    language = models.CharField(
+        max_length=64,
+        choices=TestLang.choices(),
+        default=TestLang.KAZAKH,
+        db_index=True
+    )
+    test_type = models.ForeignKey(
+        'quizzes.TestType',
+        on_delete=models.CASCADE,
+        null=True,
+        db_index=True
+    )
 
     def __str__(self):
         return self.email

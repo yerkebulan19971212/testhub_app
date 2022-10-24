@@ -46,5 +46,18 @@ class MeInformationSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'first_name',
-            'last_name'
+            'last_name',
+        )
+
+
+class UserInformationUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'first_name',
+            'last_name',
+            'phone',
+            'language',
+            'test_type'
         )
