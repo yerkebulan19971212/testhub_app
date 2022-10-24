@@ -72,7 +72,7 @@ def add_question(request):
     )
     tags = Tag.objects.all()
     question_level = QuestionLevel.objects.all()
-    variant_groups = VariantGroup.objects.all()
+    variant_groups = VariantGroup.objects.filter(is_active=True)
 
     context = {
         "test_types_lessons": test_types_lessons,
