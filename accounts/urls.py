@@ -10,11 +10,11 @@ from .views import (ChangePasswordView, ForgotPasswordView,
 
 urlpatterns = [
     path('register/', views.user_register, name='register'),
+    path('me/', views.me_information, name='me_information'),
     path('add_test_type/', views.add_test_type),
 
-
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    # path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('forpass/', ForgotPasswordView.as_view()),
     path('otp-email/', GenerateEmailOtpView.as_view()),
     path('otp-email/validate/', ValidateEmailOTPView.as_view()),
