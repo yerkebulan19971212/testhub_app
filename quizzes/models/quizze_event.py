@@ -23,6 +23,13 @@ class QuizEventQuestion(abstract_models.TimeStampedModel):
         db_index=True,
         related_name='quiz_event_questions'
     )
+    user = models.ForeignKey(
+        'accounts.User',
+        on_delete=models.CASCADE,
+        db_index=True,
+        null=True,
+        related_name='quiz_event_questions'
+    )
     question = models.ForeignKey(
         'quizzes.Question',
         on_delete=models.CASCADE,

@@ -7,3 +7,4 @@ from .tag import TagListSerializer
 from .test_type import TestTypeSerializer, TestTypeOnlyNameSerializer
 from .test_type_lesson import GetLessonTestTypeLessonSerializer
 from .pass_answer import PassAnswerSerializer
+from .quiz_event import QuizEventSerializer
