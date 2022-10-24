@@ -27,6 +27,6 @@ class Role(str, Choice):
     STUDENT = 'STUDENT'
 
 
-class TestLang(int, Choice):
-    KAZAKH = 0
-    RUSSIAN = 1
+class TestLang(str, Choice):
+    KAZAKH = 'kz'
+    RUSSIAN = 'ru'
