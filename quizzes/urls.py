@@ -1,15 +1,15 @@
 from django.urls import include, path
 
 from quizzes.api.api_views import (create_favorite_questions,
-                                   create_flash_cards, detail_info_question,
-                                   lesson_list, questions_list_by_lesson,
+                                   create_flash_cards,
+                                   create_quiz_event_by_lesson_view,
+                                   detail_info_question, lesson_list,
                                    lesson_list_with_test_type_lesson_view,
                                    list_favorites_questions, list_flash_card,
-                                   questions_list,
+                                   pass_answer_by_lesson_view, questions_list,
+                                   questions_list_by_lesson,
                                    questions_list_with_only_correct_answer,
-                                   tag_list_view, test_type_view,
-                                   pass_answer_by_lesson_view,
-                                   create_quiz_event_by_lesson_view)
+                                   tag_list_view, test_type_view)
 
 lesson_urlpatterns = [
     # path('list/', lesson_list, name='lesson_list'),

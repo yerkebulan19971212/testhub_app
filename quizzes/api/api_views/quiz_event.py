@@ -1,10 +1,13 @@
+from django.db.models import Prefetch
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from base.constant import QuizzesType
-from quizzes.api.serializers import QuizEventSerializer
-from quizzes.models import Question, QuizEvent, QuizEventQuestion
+from quizzes.api.serializers import QuestionsSerializer, QuizEventSerializer
+from quizzes.filters import QuestionByLessonFilterByEvent
+from quizzes.models import Answer, Question, QuizEvent, QuizEventQuestion
 
 
 class CreateQuizEventByLessonView(generics.CreateAPIView):
@@ -39,3 +42,18 @@ class CreateQuizEventByLessonView(generics.CreateAPIView):
 
 
 create_quiz_event_by_lesson_view = CreateQuizEventByLessonView.as_view()
+
+
+class QuestionsListByLessonView(generics.ListAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionsSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = QuestionByLessonFilterByEvent
+
+    def get_queryset(self):
+        answers = Answer.objects.all()
+        return super().get_queryset(). \
+            prefetch_related(Prefetch('answers', queryset=answers))
+
+
+questions_list_by_lesson = QuestionsListByLessonView.as_view()
