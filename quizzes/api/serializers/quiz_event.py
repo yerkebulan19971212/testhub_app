@@ -10,6 +10,7 @@ class QuizEventSerializer(serializers.Serializer):
 
 class QuizEventInformationSerializer(serializers.ModelSerializer):
     lesson = LessonNameSerializer(source='test_type_lesson.lesson')
+    number_of_question = serializers.IntegerField(default=15)
 
     class Meta:
         model = QuizEvent
@@ -17,5 +18,6 @@ class QuizEventInformationSerializer(serializers.ModelSerializer):
             'id',
             'quizzes_type',
             'lesson',
+            'number_of_question',
             'status'
         )

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from base.constant import QuizzesType
 from quizzes.api.serializers import QuestionsSerializer, QuizEventSerializer, \
-    QuizEventInformationSerializer
+    QuizEventInformationSerializer, LessonNameSerializer
 from quizzes.filters import QuestionByLessonFilterByEvent
 from quizzes.models import Answer, Question, QuizEvent, QuizEventQuestion
 
@@ -58,6 +58,23 @@ class QuestionsListByLessonView(generics.ListAPIView):
         answers = Answer.objects.all()
         return super().get_queryset(). \
             prefetch_related(Prefetch('answers', queryset=answers))
+
+    def get(self, request, *args, **kwargs):
+        quiz_event_id = self.request.query_params.get('quiz_event_id')
+        try:
+            quiz_event = QuizEvent.objects.select_related(
+                'test_type_lesson',
+                'test_type_lesson__lesson'
+            ).get(id=quiz_event_id)
+            questions = self.list(request, *args, **kwargs).data
+            data = LessonNameSerializer([quiz_event.test_type_lesson.lesson], many=True).data
+            data[0]['questions'] = questions
+            return Response(data)
+        except Exception as e:
+            print(e)
+            return Response({}, status=status.HTTP_400_BAD_REQUEST)
+
+        # return self.list(request, *args, **kwargs)
 
 
 questions_list_by_lesson = QuestionsListByLessonView.as_view()
