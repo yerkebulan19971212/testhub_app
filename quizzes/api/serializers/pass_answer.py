@@ -6,3 +6,7 @@ class PassAnswerSerializer(serializers.Serializer):
                                          required=True)
     question = serializers.IntegerField(required=True)
     quiz_event = serializers.IntegerField(required=True)
+
+
+class FinishByLessonSerializer(serializers.Serializer):
+    quiz_event = serializers.IntegerField(required=True)
