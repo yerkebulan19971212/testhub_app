@@ -18,7 +18,7 @@ questions_list = QuestionsListView.as_view()
 
 
 class QuestionsListWithOnlyCorrectAnswerView(generics.ListAPIView):
-    queryset = Question.objects.all()
+    queryset = Question.objects.filter(answers__correct=True)
     serializer_class = QuestionsSerializer
     pagination_class = SimplePagination
     filter_backends = [DjangoFilterBackend]
