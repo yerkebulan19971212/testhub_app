@@ -1,7 +1,7 @@
 from django.db import models
 
 from base import abstract_models
-from base.constant import QuizzesType
+from base.constant import QuizzesType, Status
 
 
 class QuizEvent(abstract_models.TimeStampedModel):
@@ -10,6 +10,18 @@ class QuizEvent(abstract_models.TimeStampedModel):
         choices=QuizzesType.choices(),
         null=True,
         db_index=True
+    )
+    test_type_lesson = models.ForeignKey(
+        'quizzes.TestTypeLesson',
+        on_delete=models.CASCADE,
+        null=True,
+        db_index=True,
+        related_name='quiz_event'
+    )
+    status = models.CharField(
+        max_length=128,
+        choices=Status.choices(),
+        default=Status.NOT_PASSED
     )
 
     class Meta:

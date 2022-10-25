@@ -14,6 +14,15 @@ class LessonSerializer(abstract_serializer.NameSerializer):
         )
 
 
+class LessonNameSerializer(abstract_serializer.NameSerializer):
+    class Meta:
+        model = Lesson
+        fields = (
+            'id',
+            'name'
+        )
+
+
 class LessonWithTestTypeLessonSerializer(abstract_serializer.NameSerializer):
     test_type_lesson_id = serializers.SerializerMethodField()
 

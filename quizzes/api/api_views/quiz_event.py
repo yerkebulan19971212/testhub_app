@@ -5,7 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from base.constant import QuizzesType
-from quizzes.api.serializers import QuestionsSerializer, QuizEventSerializer
+from quizzes.api.serializers import QuestionsSerializer, QuizEventSerializer, \
+    QuizEventInformationSerializer
 from quizzes.filters import QuestionByLessonFilterByEvent
 from quizzes.models import Answer, Question, QuizEvent, QuizEventQuestion
 
@@ -17,13 +18,15 @@ class CreateQuizEventByLessonView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         user = self.request.user
         lesson = self.request.data.get('lesson')
-        num_of_question = self.request.data.get('num_of_question')
+        num_of_question = 15
         try:
             questions = Question.objects.filter(
                 lesson_question_level__test_type_lesson_id=lesson
             )[:num_of_question]
             quiz_event = QuizEvent.objects.create(
-                quizzes_type=QuizzesType.BY_LESSON)
+                quizzes_type=QuizzesType.BY_LESSON,
+                test_type_lesson_id=lesson
+            )
             QuizEventQuestion.objects.bulk_create([
                 QuizEventQuestion(
                     quiz_event=quiz_event,
@@ -37,7 +40,8 @@ class CreateQuizEventByLessonView(generics.CreateAPIView):
                 {"status": False},
                 status=status.HTTP_400_BAD_REQUEST)
         return Response(
-            {"quiz_event": quiz_event.id, "status": True},
+            {"quiz_event": QuizEventInformationSerializer(quiz_event).data,
+             "status": True},
             status=status.HTTP_200_OK)
 
 

@@ -34,3 +34,8 @@ class TestLang(str, Choice):
 
 class QuizzesType(str, Choice):
     BY_LESSON = 'BY_LESSON'
+
+
+class Status(str, Choice):
+    NOT_PASSED = 'NOT_PASSED'
+
