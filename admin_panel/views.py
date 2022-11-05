@@ -43,7 +43,7 @@ def add_question(request):
                     questions_texts = ""
                     answers_bulk_create = []
                     while line:
-                        if 'end' in line:
+                        if '*end*' in line:
                             break
                         if line.strip() == '':
                             question, answers_list = create_question(
@@ -59,6 +59,8 @@ def add_question(request):
                         else:
                             questions_texts += line.strip() + "new_line"
                         line = f.readline().decode().strip() + ' '
+                        print(line)
+                        print("line")
                     Answer.objects.bulk_create(answers_bulk_create)
                 question_added = True
             except Exception as e:

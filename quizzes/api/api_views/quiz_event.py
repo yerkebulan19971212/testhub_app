@@ -5,8 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from base.constant import QuizzesType
-from quizzes.api.serializers import QuestionsSerializer, QuizEventSerializer, \
-    QuizEventInformationSerializer, LessonNameSerializer
+from quizzes.api.serializers import (LessonNameSerializer, QuestionsSerializer,
+                                     QuizEventInformationSerializer,
+                                     QuizEventSerializer)
 from quizzes.filters import QuestionByLessonFilterByEvent
 from quizzes.models import Answer, Question, QuizEvent, QuizEventQuestion
 
@@ -67,14 +68,17 @@ class QuestionsListByLessonView(generics.ListAPIView):
                 'test_type_lesson__lesson'
             ).get(id=quiz_event_id)
             questions = self.list(request, *args, **kwargs).data
-            data = LessonNameSerializer([quiz_event.test_type_lesson.lesson], many=True).data
+            data = LessonNameSerializer([quiz_event.test_type_lesson.lesson],
+                                        many=True).data
             data[0]['questions'] = questions
-            return Response(data)
+
+            return Response({
+                "lessons": data,
+                "user_answers": []
+            })
         except Exception as e:
             print(e)
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
-
-        # return self.list(request, *args, **kwargs)
 
 
 questions_list_by_lesson = QuestionsListByLessonView.as_view()
