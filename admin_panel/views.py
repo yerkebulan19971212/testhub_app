@@ -43,7 +43,7 @@ def add_question(request):
                     questions_texts = ""
                     answers_bulk_create = []
                     while line:
-                        if '*end*' in line:
+                        if 'end' in line:
                             break
                         if line.strip() == '':
                             question, answers_list = create_question(
