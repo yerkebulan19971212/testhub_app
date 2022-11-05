@@ -54,14 +54,16 @@ create_quiz_event_by_lesson_view = CreateQuizEventByLessonView.as_view()
 
 class QuestionsListByLessonView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
-    queryset = Question.objects.all()
+    queryset = Question.objects.select_related(
+        "lesson_question_level__question_level"
+    ).all()
     serializer_class = QuestionsSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = QuestionByLessonFilterByEvent
 
     def get_queryset(self):
         answers = Answer.objects.all()
-        return super().get_queryset(). \
+        return super().get_queryset().\
             prefetch_related(Prefetch('answers', queryset=answers))
 
     def get(self, request, *args, **kwargs):
@@ -75,11 +77,17 @@ class QuestionsListByLessonView(generics.ListAPIView):
             data = LessonNameSerializer([quiz_event.test_type_lesson.lesson],
                                         many=True).data
             data[0]['questions'] = questions
-
-            return Response({
+            result = {
                 "lessons": data,
                 "user_answers": []
-            })
+            }
+
+            return Response({
+                "message": "Success",
+                "result": result,
+                "status_code": 0,
+                "status": True
+            }, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response({}, status=status.HTTP_400_BAD_REQUEST)

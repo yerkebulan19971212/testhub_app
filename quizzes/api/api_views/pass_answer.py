@@ -3,6 +3,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from base.constant import ChoiceType
 from quizzes.api.serializers import (FinishByLessonSerializer,
                                      PassAnswerSerializer)
 from quizzes.models import PassAnswer, Question, QuizEventQuestion
@@ -42,7 +43,8 @@ class PassAnswerByLessonView(generics.CreateAPIView):
             }, status=status.HTTP_400_BAD_REQUEST)
         return Response({
             "message": "Success",
-            "result": None,
+            "result"
+            "": None,
             "status_code": 0,
             "status": True
         }, status=status.HTTP_200_OK)
@@ -53,23 +55,42 @@ pass_answer_by_lesson_view = PassAnswerByLessonView.as_view()
 
 class FinishByLessonView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = FinishByLessonSerializer
+    serializer_class = None
 
     def post(self, request, *args, **kwargs):
-        quiz_event = self.request.data.get('quiz_event')
-        questions = Question.objects.filter(
-            quiz_event_questions__quiz_event_id=quiz_event)
+        quiz_event = self.kwargs.get('quiz_event')
+        questions = Question.objects.select_related(
+            "lesson_question_level",
+            "lesson_question_level__question_level"
+        ).filter(quiz_event_questions__quiz_event_id=quiz_event)
+        correct_answer_count = 0
         for q in questions:
-            pass_answers = PassAnswer.objects. \
-                select_related('question',
-                               'question__lesson_question_level',
-                               'question__lesson_question_level__question_level',
-                               'answer') \
-                .filter(question=q, quiz_event_id=quiz_event)
-            for p in pass_answers:
-                pass
+            pass_answers = PassAnswer.objects.filter(
+                question=q, quiz_event_id=quiz_event
+            )
+            question_level = q.lesson_question_level.question_level
+            if question_level.choice == ChoiceType.CHOICE:
+                pass_answers = pass_answers.filter(answer__correct=True)
+                if pass_answers.exists():
+                    correct_answer_count += 1
 
-        return Response({}, status=status.HTTP_200_OK)
+            # else:
+            #
+            # pass_answers = PassAnswer.objects.select_related(
+            #     'question',
+            #     'question__lesson_question_level',
+            #     'question__lesson_question_level__question_level',
+            #     'answer')\
+            #     .filter()
+            # for p in pass_answers:
+            #     pass
+
+        return Response({
+            "message": "Success",
+            "result": correct_answer_count,
+            "status_code": 0,
+            "status": True
+        }, status=status.HTTP_200_OK)
 
 
 finish_by_lesson_view = FinishByLessonView.as_view()
