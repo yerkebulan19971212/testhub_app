@@ -2,8 +2,8 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from quizzes.api.serializers import PassAnswerSerializer, \
-    FinishByLessonSerializer
+from quizzes.api.serializers import (FinishByLessonSerializer,
+                                     PassAnswerSerializer)
 from quizzes.models import PassAnswer, Question, QuizEventQuestion
 
 
