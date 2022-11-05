@@ -16,7 +16,7 @@ class PassAnswerByLessonView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         user = self.request.user
         user_answers = self.request.data.get('user_answers')
-        quiz_event = self.request.kwargs.get('quiz_event')
+        quiz_event = self.kwargs.get('quiz_event')
         pass_ans = []
         try:
             with transaction.atomic():
@@ -37,8 +37,15 @@ class PassAnswerByLessonView(generics.CreateAPIView):
                 PassAnswer.objects.bulk_create(pass_ans)
         except Exception as e:
             print(e)
-            return Response({}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"status_code"}, status=status.HTTP_200_OK)
+            return Response({
+                "message": str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            "message": "Success",
+            "result": None,
+            "status_code": 0,
+            "status": True
+        }, status=status.HTTP_200_OK)
 
 
 pass_answer_by_lesson_view = PassAnswerByLessonView.as_view()
