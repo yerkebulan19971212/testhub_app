@@ -41,8 +41,11 @@ class CreateQuizEventByLessonView(generics.CreateAPIView):
                 {"status": False},
                 status=status.HTTP_400_BAD_REQUEST)
         return Response(
-            {"quiz_event": QuizEventInformationSerializer(quiz_event).data,
-             "status": True},
+            {
+                "status_code": 0,
+                "message": None,
+                "result": QuizEventInformationSerializer(quiz_event).data,
+                "status": True},
             status=status.HTTP_200_OK)
 
 
