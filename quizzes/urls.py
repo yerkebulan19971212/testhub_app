@@ -24,7 +24,7 @@ question_urlpatterns = [
     path('test-type-lesson-list/', lesson_list_with_test_type_lesson_view),
     path('list_flash_card/', list_flash_card),
     path('quize-event-by-lesson/', create_quiz_event_by_lesson_view),
-    path('pass-answer-by-lesson/', pass_answer_by_lesson_view),
+    path('pass-answer-by-lesson/<int:quiz_event>/', pass_answer_by_lesson_view),
     # path('create_flash_card/', create_flash_cards),
 ]
 tag_urlpatterns = [
