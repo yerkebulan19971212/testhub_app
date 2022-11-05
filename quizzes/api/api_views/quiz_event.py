@@ -50,6 +50,7 @@ create_quiz_event_by_lesson_view = CreateQuizEventByLessonView.as_view()
 
 
 class QuestionsListByLessonView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = Question.objects.all()
     serializer_class = QuestionsSerializer
     filter_backends = [DjangoFilterBackend]
