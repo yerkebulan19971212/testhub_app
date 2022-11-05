@@ -39,3 +39,7 @@ class QuizzesType(str, Choice):
 class Status(str, Choice):
     NOT_PASSED = 'NOT_PASSED'
 
+
+class ChoiceType(int, Choice):
+    CHOICE = 0
+    MULTI_CHOICE = 0

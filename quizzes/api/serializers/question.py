@@ -6,6 +6,9 @@ from quizzes.models import Favorite, Question
 
 class QuestionsSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True)
+    choice = serializers.IntegerField(
+        source='lesson_question_level.question_level.choice'
+    )
 
     class Meta:
         model = Question
@@ -18,7 +21,9 @@ class QuestionsSerializer(serializers.ModelSerializer):
             'modified',
             'order',
             'is_active',
-            'answers'
+            'choice',
+            'math',
+            'answers',
         )
 
 
