@@ -11,6 +11,7 @@ class QuizEventSerializer(serializers.Serializer):
 class QuizEventInformationSerializer(serializers.ModelSerializer):
     lesson = LessonNameSerializer(source='test_type_lesson.lesson')
     number_of_question = serializers.IntegerField(default=15)
+    test_time = serializers.SerializerMethodField()
 
     class Meta:
         model = QuizEvent
@@ -19,5 +20,10 @@ class QuizEventInformationSerializer(serializers.ModelSerializer):
             'quizzes_type',
             'lesson',
             'number_of_question',
-            'status'
+            'status',
+            'test_time'
         )
+
+    @staticmethod
+    def get_test_time():
+        return 14
