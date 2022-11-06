@@ -11,7 +11,7 @@ class QuizEventSerializer(serializers.Serializer):
 class QuizEventInformationSerializer(serializers.ModelSerializer):
     lesson = LessonNameSerializer(source='test_type_lesson.lesson')
     number_of_question = serializers.IntegerField(default=15)
-    test_time = serializers.IntegerField(default=0)
+    test_time = serializers.IntegerField(default=14)
 
     class Meta:
         model = QuizEvent
