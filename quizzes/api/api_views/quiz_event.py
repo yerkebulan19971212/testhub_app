@@ -84,10 +84,8 @@ class QuestionsListByLessonView(generics.ListAPIView):
                     "answers": [],
                     "is_mark": False
                 })
-            result = {
-                "lessons": data,
-                "user_answers": user_answers
-            }
+            data[0]["user_answers"] = user_answers
+            result = {"lessons": data}
 
             return Response({
                 "message": "Success",
