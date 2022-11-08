@@ -77,9 +77,16 @@ class QuestionsListByLessonView(generics.ListAPIView):
             data = LessonNameSerializer([quiz_event.test_type_lesson.lesson],
                                         many=True).data
             data[0]['questions'] = questions
+            user_answers = []
+            for q in questions:
+                user_answers.append({
+                    "question": q.get('id'),
+                    "answers": [],
+                    "is_mark": False
+                })
             result = {
                 "lessons": data,
-                "user_answers": []
+                "user_answers": user_answers
             }
 
             return Response({
