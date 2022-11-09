@@ -64,15 +64,18 @@ class FinishByLessonView(generics.CreateAPIView):
             "lesson_question_level__question_level"
         ).filter(quiz_event_questions__quiz_event_id=quiz_event)
         correct_answer_count = 0
+        point = 0
         for q in questions:
             pass_answers = PassAnswer.objects.filter(
                 question=q, quiz_event_id=quiz_event
             )
             question_level = q.lesson_question_level.question_level
+            point += question_level.point
             if question_level.choice == ChoiceType.CHOICE:
                 pass_answers = pass_answers.filter(answer__correct=True)
                 if pass_answers.exists():
                     correct_answer_count += 1
+
 
             # else:
             #
@@ -84,10 +87,13 @@ class FinishByLessonView(generics.CreateAPIView):
             #     .filter()
             # for p in pass_answers:
             #     pass
-
+        data = {
+            'correct_answer_count': correct_answer_count,
+            'answer_count': point
+        }
         return Response({
             "message": "Success",
-            "result": correct_answer_count,
+            "result": data,
             "status_code": 0,
             "status": True
         }, status=status.HTTP_200_OK)
