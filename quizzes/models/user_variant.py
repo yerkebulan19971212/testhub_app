@@ -1,6 +1,7 @@
 from django.db import models
 
 import accounts.models as account
+from base.constant import Status
 from quizzes.models.variant import Variant
 
 
@@ -14,6 +15,11 @@ class UserVariant(models.Model):
         Variant,
         on_delete=models.CASCADE,
         related_name='user_variant'
+    )
+    status = models.CharField(
+        max_length=128,
+        choices=Status.choices(),
+        default=Status.NOT_PASSED
     )
 
     class Meta:

@@ -14,6 +14,7 @@ class Variant(abstract_models.IsActive,
         db_index=True,
         related_name='variants'
     )
+    sum_question = models.IntegerField(default=0)
     main = models.BooleanField(default=False)
 
     class Meta:
