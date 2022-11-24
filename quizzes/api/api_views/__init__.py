@@ -11,3 +11,4 @@ from .quiz_event import (create_quiz_event_by_lesson_view,
 from .tag import tag_list_view
 from .test_type import test_type_view
 from .test_type_lesson import get_lesson_test_type_lesson_view
+from .variants import user_variants_list, variant_groups

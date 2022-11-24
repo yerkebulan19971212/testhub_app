@@ -7,13 +7,14 @@ class Variant(abstract_models.IsActive,
               abstract_models.Ordering,
               abstract_models.TimeStampedModel):
     variant = models.IntegerField()
-    variant_groups = models.ForeignKey(
+    variant_group = models.ForeignKey(
         'quizzes.VariantGroup',
         on_delete=models.CASCADE,
         null=True,
         db_index=True,
         related_name='variants'
     )
+    sum_question = models.IntegerField(default=0)
     main = models.BooleanField(default=False)
 
     class Meta:
