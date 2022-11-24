@@ -10,7 +10,8 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    questions_list_by_lesson,
                                    questions_list_with_only_correct_answer,
                                    tag_list_view, test_type_view,
-                                   finish_by_lesson_view)
+                                   finish_by_lesson_view, user_variants_list,
+                                   variant_groups)
 
 lesson_urlpatterns = [
     # path('list/', lesson_list, name='lesson_list'),
@@ -29,6 +30,11 @@ question_urlpatterns = [
     path('finish-by-lesson/<int:quiz_event>/', finish_by_lesson_view),
     # path('create_flash_card/', create_flash_cards),
 ]
+
+ent_urlpatterns = [
+    path('variant-group-list/', variant_groups),
+    path('variant-list/', user_variants_list)
+]
 tag_urlpatterns = [
     path('list/', tag_list_view)
 ]
@@ -41,4 +47,5 @@ urlpatterns = [
     path('test-type-list/', test_type_view),
     path('lesson/', include(lesson_urlpatterns)),
     path('question/', include(question_urlpatterns)),
+    path('full-test/', include(ent_urlpatterns)),
 ]
