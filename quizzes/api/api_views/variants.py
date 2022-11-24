@@ -1,9 +1,10 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 
 from quizzes.api.serializers import (UserVariantsSerializer,
                                      VariantGroupSerializer)
-from quizzes.filters.variant import VariantGroupFilter
+from quizzes.filters import VariantGroupFilter, UserVariantFilter
 from quizzes.models import UserVariant, VariantGroup
 
 
@@ -18,11 +19,14 @@ variant_groups = VariantGroupsView.as_view()
 
 
 class UserVariantsView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
     serializer_class = UserVariantsSerializer
     queryset = UserVariant.objects.select_related(
         'variant',
         'variant__variant_group'
     ).all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = UserVariantFilter
 
     def get_queryset(self):
         user = self.request.user
