@@ -35,7 +35,7 @@ question_urlpatterns = [
 ent_urlpatterns = [
     path('variant-group-list/', variant_groups),
     path('variant-list/', user_variants_list),
-    path('lesson-list/', lesson_list_variant)
+    path('varinat-lesson-list/', lesson_list_variant)
 ]
 tag_urlpatterns = [
     path('list/', tag_list_view)
