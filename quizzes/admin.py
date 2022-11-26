@@ -12,7 +12,7 @@ from .models.variant_group import VariantGroup
 
 admin.site.register([
     Lesson,
-    LessonGroup,
+
     LessonPair,
     LessonQuestionLevel,
 
@@ -74,3 +74,14 @@ class VariantGroupAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': Textarea(attrs={'rows': 5, 'cols': 180})},
     }
+
+
+class LessonPairInline(admin.TabularInline):
+    model = LessonPair
+
+
+@admin.register(LessonGroup)
+class LessonGroupAdmin(admin.ModelAdmin):
+    inlines = [
+        LessonPairInline,
+    ]
