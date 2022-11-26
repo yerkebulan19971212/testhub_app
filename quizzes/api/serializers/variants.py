@@ -13,6 +13,7 @@ class VariantGroupSerializer(NameSerializer):
         fields = (
             'id',
             'name',
+            'icon',
             'duration',
             'passed_variants',
             'count_variants'
