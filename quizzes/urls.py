@@ -12,6 +12,7 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    tag_list_view, test_type_view,
                                    finish_by_lesson_view, user_variants_list,
                                    variant_groups)
+from quizzes.api.api_views.lesson import lesson_list_variant
 
 lesson_urlpatterns = [
     # path('list/', lesson_list, name='lesson_list'),
@@ -33,7 +34,8 @@ question_urlpatterns = [
 
 ent_urlpatterns = [
     path('variant-group-list/', variant_groups),
-    path('variant-list/', user_variants_list)
+    path('variant-list/', user_variants_list),
+    path('lesson-list/', lesson_list_variant)
 ]
 tag_urlpatterns = [
     path('list/', tag_list_view)

@@ -20,5 +20,5 @@ class LessonPair(abstract_models.TimeStampedModel):
     class Meta:
         db_table = 'quiz\".\"lesson_pair'
 
-    def __str__(self):
-        return self.lessons
+    # def __str__(self):
+    #     return self.lesson.lesson.name_kz
