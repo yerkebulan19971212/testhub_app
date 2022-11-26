@@ -15,6 +15,7 @@ class VariantGroup(abstract_models.AbstractBaseName,
         null=True,
         blank=True
     )
+    duration = models.DurationField(null=True)
 
     class Meta:
         db_table = 'quiz\".\"variant_group'

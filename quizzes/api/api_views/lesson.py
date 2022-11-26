@@ -1,5 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 
 from quizzes.api.serializers import (LessonSerializer,
                                      LessonWithTestTypeLessonSerializer)
@@ -32,3 +33,12 @@ class LessonListWithTestTypeLessonView(generics.ListAPIView):
 
 
 lesson_list_with_test_type_lesson_view = LessonListWithTestTypeLessonView.as_view()
+
+
+class LessonListVariantView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    # serializer_class =
+    pass
+
+
+lesson_list_variant = LessonListVariantView.as_view()

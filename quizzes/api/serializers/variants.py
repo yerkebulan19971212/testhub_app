@@ -5,11 +5,17 @@ from quizzes.models import UserVariant, Variant, VariantGroup
 
 
 class VariantGroupSerializer(NameSerializer):
+    passed_variants = serializers.IntegerField(default=0)
+    count_variants = serializers.IntegerField(default=0)
+
     class Meta:
         model = VariantGroup
         fields = (
             'id',
-            'name'
+            'name',
+            'duration',
+            'passed_variants',
+            'count_variants'
         )
 
 
