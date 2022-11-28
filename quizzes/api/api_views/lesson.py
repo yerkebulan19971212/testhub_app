@@ -4,9 +4,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from quizzes.api.serializers import (LessonSerializer,
-                                     LessonWithTestTypeLessonSerializer)
+                                     LessonWithTestTypeLessonSerializer,
+                                     SaveLessonPairsForUserSerializer)
 from quizzes.filters import LessonFilter
-from quizzes.models import Lesson, LessonGroup
+from quizzes.models import Lesson, LessonGroup, UserVariant
 
 
 class LessonListView(generics.ListAPIView):
@@ -37,14 +38,10 @@ lesson_list_with_test_type_lesson_view = LessonListWithTestTypeLessonView.as_vie
 
 
 class LessonListVariantView(generics.ListAPIView):
-    # permission_classes = (IsAuthenticated,)
     queryset = Lesson.objects.prefetch_related(
         'test_type_lessons',
-        'test_type_lessons__test_type'
     ).all()
     serializer_class = LessonWithTestTypeLessonSerializer
-    # filter_backends = [DjangoFilterBackend]
-    # filterset_class = LessonFilter
 
     def get_queryset(self):
         language = self.request.headers.get('language', 'kz')
@@ -58,8 +55,8 @@ class LessonListVariantView(generics.ListAPIView):
         data = self.list(request, *args, **kwargs).data
         for lesson in data:
             test_type_lesson_id = lesson.get('test_type_lesson_id')
-            lesson_group = LessonGroup.objects\
-                .prefetch_related('lesson_pairs')\
+            lesson_group = LessonGroup.objects \
+                .prefetch_related('lesson_pairs') \
                 .filter(lesson_pairs__lesson_id=test_type_lesson_id)
             lesson_pair_ids = []
             for lg in lesson_group:
@@ -73,3 +70,13 @@ class LessonListVariantView(generics.ListAPIView):
 
 
 lesson_list_variant = LessonListVariantView.as_view()
+
+
+class SaveLessonPairsForUserView(generics.UpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = UserVariant.objects.all()
+    serializer_class = SaveLessonPairsForUserSerializer
+    lookup_field = 'pk'
+
+
+save_lesson_pairs = SaveLessonPairsForUserView.as_view()
