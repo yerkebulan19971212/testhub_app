@@ -5,7 +5,9 @@ from base.constant import ChoiceType
 
 
 class QuestionLevel(abstract_models.AbstractBaseName,
+                    abstract_models.AbstractBaseNameCode,
                     abstract_models.IsActive,
+                    abstract_models.Ordering,
                     abstract_models.TimeStampedModel):
     point = models.PositiveSmallIntegerField(default=0)
     choice = models.PositiveSmallIntegerField(
