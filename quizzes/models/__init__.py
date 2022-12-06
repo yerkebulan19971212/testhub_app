@@ -1,4 +1,5 @@
 from .answer import Answer  # noqa
+from .answer_sign import AnswerSign  # noqa
 from .common_question import CommonQuestion  # noqa
 from .favorite import Favorite  # noqa
 from .flash_card import FlashCard  # noqa

@@ -24,6 +24,7 @@ class Ordering(models.Model):
 
 class IsActive(models.Model):
     is_active = models.BooleanField(default=True, db_index=True)
+
     # active_manager = IsActiveManager()
 
     class Meta:
@@ -34,6 +35,13 @@ class AbstractBaseName(models.Model):
     name_kz = models.CharField(max_length=255)
     name_ru = models.CharField(max_length=255)
     name_en = models.CharField(max_length=255)
+
+    class Meta:
+        abstract = True
+
+
+class AbstractBaseNameCode(models.Model):
+    name_code = models.CharField(max_length=255, db_index=True)
 
     class Meta:
         abstract = True
