@@ -21,6 +21,12 @@ class UserVariant(models.Model):
         choices=Status.choices(),
         default=Status.NOT_PASSED
     )
+    lesson_group = models.ForeignKey(
+        'quizzes.LessonGroup',
+        on_delete=models.CASCADE,
+        related_name='user_variants',
+        null=True
+    )
 
     class Meta:
         db_table = 'quiz\".\"user_variant'

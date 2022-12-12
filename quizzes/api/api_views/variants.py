@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from quizzes.api.serializers import (UserVariantsSerializer,
                                      VariantGroupSerializer)
-from quizzes.filters import VariantGroupFilter, UserVariantFilter
+from quizzes.filters import UserVariantFilter, VariantGroupFilter
 from quizzes.models import UserVariant, VariantGroup
 
 

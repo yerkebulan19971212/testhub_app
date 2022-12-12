@@ -9,6 +9,8 @@ class Answer(abstract_models.TimeStampedModel):
     answer = models.TextField()
     correct = models.BooleanField(default=False)
     math = models.BooleanField(default=False)
+    answer_sign = models.ForeignKey(
+        'quizzes.AnswerSign', related_name='answers', on_delete=models.CASCADE, null=True)
 
     class Meta:
         db_table = 'quiz\".\"answer'

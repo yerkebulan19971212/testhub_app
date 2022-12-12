@@ -1,7 +1,8 @@
 from .favorite import FavoritesSerializer
 from .flash_cards import FlashCardsSerializer
 from .lesson import (LessonNameSerializer, LessonSerializer,
-                     LessonWithTestTypeLessonSerializer)
+                     LessonWithTestTypeLessonSerializer,
+                     SaveLessonPairsForUserSerializer)
 from .number_of_questions import NumberOfQuestionsSerializer
 from .pass_answer import FinishByLessonSerializer, PassAnswerSerializer
 from .question import QuestionsSerializer

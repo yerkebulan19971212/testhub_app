@@ -1,7 +1,7 @@
 import django_filters
 from django_filters import rest_framework as filters
 
-from quizzes.models import VariantGroup, Variant, UserVariant
+from quizzes.models import UserVariant, Variant, VariantGroup
 
 
 class VariantGroupFilter(django_filters.FilterSet):
