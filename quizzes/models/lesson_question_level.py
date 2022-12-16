@@ -7,11 +7,13 @@ class LessonQuestionLevel(abstract_models.Ordering,
                           abstract_models.TimeStampedModel):
     test_type_lesson = models.ForeignKey(
         'quizzes.TestTypeLesson',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        db_index=True)
     question_level = models.ForeignKey(
         'quizzes.QuestionLevel',
-        on_delete=models.CASCADE)
-    number_of_questions = models.IntegerField(default=0)
+        on_delete=models.CASCADE,
+        db_index=True)
+    number_of_questions = models.IntegerField(default=0, db_index=True)
 
     class Meta:
         db_table = 'quiz\".\"lesson_question_level'

@@ -11,13 +11,13 @@ class TestTypeLesson(TimeStampedModel):
         lesson.Lesson,
         related_name='test_type_lessons',
         on_delete=models.CASCADE,
-        blank=True
+        db_index=True
     )
     test_type = models.ForeignKey(
         TestType,
         related_name='test_type_lessons',
         on_delete=models.CASCADE,
-        blank=True
+        db_index=True
     )
     language = models.CharField(
         max_length=64,

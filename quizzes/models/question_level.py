@@ -9,10 +9,12 @@ class QuestionLevel(abstract_models.AbstractBaseName,
                     abstract_models.IsActive,
                     abstract_models.Ordering,
                     abstract_models.TimeStampedModel):
-    point = models.PositiveSmallIntegerField(default=0)
+    point = models.PositiveSmallIntegerField(default=0, db_index=True)
     choice = models.PositiveSmallIntegerField(
         choices=ChoiceType.choices(),
-        default=ChoiceType.CHOICE)
+        default=ChoiceType.CHOICE,
+        db_index=True
+    )
 
     class Meta:
         db_table = 'quiz\".\"question_level'

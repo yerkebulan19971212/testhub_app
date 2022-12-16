@@ -9,17 +9,20 @@ class UserVariant(models.Model):
     user = models.ForeignKey(
         account.User,
         on_delete=models.CASCADE,
-        related_name='user_variant'
+        related_name='user_variant',
+        db_index=True
     )
     variant = models.ForeignKey(
         Variant,
         on_delete=models.CASCADE,
-        related_name='user_variant'
+        related_name='user_variant',
+        db_index=True
     )
     status = models.CharField(
         max_length=128,
         choices=Status.choices(),
-        default=Status.NOT_PASSED
+        default=Status.NOT_PASSED,
+        db_index=True
     )
     lesson_group = models.ForeignKey(
         'quizzes.LessonGroup',

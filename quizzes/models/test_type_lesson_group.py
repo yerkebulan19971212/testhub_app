@@ -7,11 +7,15 @@ class TestTypeLessonGroup(abstract_models.TimeStampedModel):
     test_type = models.ForeignKey(
         'quizzes.TestType',
         related_name='test_type_lesson_groups',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        db_index=True
+    )
     lesson_group = models.ForeignKey(
         'quizzes.LessonGroup',
         related_name='test_type_lesson_groups',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        db_index=True
+    )
 
     class Meta:
         db_table = 'quiz\".\"test_type_lesson_group'

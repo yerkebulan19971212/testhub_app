@@ -5,12 +5,19 @@ from base import abstract_models
 
 class Answer(abstract_models.TimeStampedModel):
     question = models.ForeignKey(
-        'quizzes.Question', related_name='answers', on_delete=models.CASCADE)
+        'quizzes.Question',
+        related_name='answers',
+        on_delete=models.CASCADE,
+        db_index=True,
+    )
     answer = models.TextField()
     correct = models.BooleanField(default=False)
     math = models.BooleanField(default=False)
     answer_sign = models.ForeignKey(
-        'quizzes.AnswerSign', related_name='answers', on_delete=models.CASCADE, null=True)
+        'quizzes.AnswerSign',
+        related_name='answers',
+        on_delete=models.CASCADE,
+        db_index=True)
 
     class Meta:
         db_table = 'quiz\".\"answer'
