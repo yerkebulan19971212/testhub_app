@@ -8,11 +8,15 @@ class LessonQuestionLevel(abstract_models.Ordering,
     test_type_lesson = models.ForeignKey(
         'quizzes.TestTypeLesson',
         on_delete=models.CASCADE,
-        db_index=True)
+        db_index=True,
+        related_name='lesson_question_level'
+    )
     question_level = models.ForeignKey(
         'quizzes.QuestionLevel',
         on_delete=models.CASCADE,
-        db_index=True)
+        db_index=True,
+        related_name='lesson_question_level'
+    )
     number_of_questions = models.IntegerField(default=0, db_index=True)
 
     class Meta:

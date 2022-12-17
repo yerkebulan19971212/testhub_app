@@ -1,4 +1,8 @@
-from quizzes.models import CommonQuestion, Question, Answer
+import random
+
+from accounts.models import User
+from quizzes.models import CommonQuestion, Question, Answer, Variant, \
+    UserVariant
 from bs4 import BeautifulSoup
 
 
@@ -48,3 +52,22 @@ def create_question(questions_texts, lesson_question_level, variant_group):
             math=math
         ) for i, ans in enumerate(answers)
     ]
+
+def user_variant():
+    variants = Variant.objects.filter(
+        is_active=True, main=True
+    )
+    variants = list(variants)
+    users = User.objects.filter(
+        role__name='student'
+    )
+
+    user_variants = []
+    for u in users:
+        random.shuffle(variants, random=random.random)
+        for v in variants:
+            user_variants.append(UserVariant(
+                user=u,
+                variant=v
+            ))
+    UserVariant.objects.bulk_create(user_variants)

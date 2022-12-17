@@ -95,39 +95,50 @@ def generation_variants(request):
     if request.method == 'POST':
         variant_group = request.POST.get('variant_group')
         variant_question = []
-        students = User.objects.filter(role__name='student')
+        # students = User.objects.filter(role__name='student')
         variants = Variant.objects.filter(
-            variantquestion__isnull=True
+            variant_questions__isnull=True,
+            variant_group_id=variant_group
         )
         if not variants:
             context['created'] = False
         else:
             context['created'] = False
         test_type_lessons = TestTypeLesson.objects.filter(
-            test_type__code='ent',
-            lang=TestLang.KAZAKH
+            test_type__name_code='ent',
+            language=TestLang.KAZAKH
         )
-        for tt in test_type_lessons:
-            lesson_question_levels = LessonQuestionLevel\
-                .objects\
-                .select_related('question_level')\
-                .filter(
-                    test_type_lesson=tt)
-            for lql in lesson_question_levels:
-                for v in variants:
-                    questions = Question.objects.filter(
-                        variantquestion__isnull=True,
-                        variant_group_id=variant_group,
-                        lesson_question_level=lql)[:lql.number_of_questions]
-                    if questions:
-                        variant_question += [
-                            VariantQuestion(
-                                question=q,
-                                variant=v
-                            ) for q in questions]
-        VariantQuestion.objects.bulk_create(variant_question)
-        # students_variant =
+        try:
+            with transaction.atomic():
+                for tt in test_type_lessons:
+                    lesson_question_levels = LessonQuestionLevel\
+                        .objects\
+                        .select_related('question_level')\
+                        .filter(test_type_lesson=tt)
+                    print(tt.questions_number)
+                    print(tt.lesson.name_kz)
+                    print("tt.lesson.name_kz")
+
+                    for lql in lesson_question_levels[:tt.questions_number//5 + 1]:
+                        for v in variants:
+                            questions = Question.objects.filter(
+                                variant_questions__isnull=True,
+                                variant_group_id=variant_group,
+                                lesson_question_level=lql)
+                            if questions.count() >= lql.number_of_questions:
+                                questions = questions[:lql.number_of_questions]
+                            if questions:
+                                variant_question += [
+                                    VariantQuestion(
+                                        question=q,
+                                        variant=v
+                                    ) for q in questions]
+
+                VariantQuestion.objects.bulk_create(variant_question)
+        except Exception as e:
+            print(e)
     variant_groups = VariantGroup.objects.filter(is_active=True)
     context['variant_groups'] = variant_groups
     return render(
         request, 'admin_panel/contents/variant_create.html', context=context)
+

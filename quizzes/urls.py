@@ -11,8 +11,9 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    questions_list_by_lesson,
                                    questions_list_with_only_correct_answer,
                                    tag_list_view, test_type_view,
-                                   user_variants_list, variant_groups)
-from quizzes.api.api_views.lesson import lesson_list_variant, save_lesson_pairs
+                                   user_variants_list, variant_groups,
+                                   save_lesson_pairs, lesson_list_variant,
+                                   test_lesson_list)
 
 lesson_urlpatterns = [
     # path('list/', lesson_list, name='lesson_list'),
@@ -36,8 +37,10 @@ ent_urlpatterns = [
     path('variant-group-list/', variant_groups),
     path('variant-list/', user_variants_list),
     path('variant-lesson-list/', lesson_list_variant),
-    path('variant-chose-lesson-pairs/<int:pk>/', save_lesson_pairs)
+    path('variant-chose-lesson-pairs/<int:pk>/', save_lesson_pairs),
+    path('lesson-list/<int:user_variant_id>/', test_lesson_list)
 ]
+
 tag_urlpatterns = [
     path('list/', tag_list_view)
 ]
@@ -46,9 +49,9 @@ favorite_urlpatterns = [
     path('', create_favorite_questions),
     path('list/', list_favorites_questions),
 ]
+
 urlpatterns = [
     path('test-type-list/', test_type_view),
     path('lesson/', include(lesson_urlpatterns)),
     path('question/', include(question_urlpatterns)),
-    path('full-test/', include(ent_urlpatterns)),
 ]

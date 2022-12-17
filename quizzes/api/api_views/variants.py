@@ -2,7 +2,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from quizzes.api.serializers import (UserVariantsSerializer,
+from quizzes.api.serializers import (SaveLessonPairsForUserSerializer,
+                                     UserVariantsSerializer,
                                      VariantGroupSerializer)
 from quizzes.filters import UserVariantFilter, VariantGroupFilter
 from quizzes.models import UserVariant, VariantGroup
@@ -35,3 +36,14 @@ class UserVariantsView(generics.ListAPIView):
 
 
 user_variants_list = UserVariantsView.as_view()
+
+
+class SaveLessonPairsForUserView(generics.UpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = UserVariant.objects.all()
+    serializer_class = SaveLessonPairsForUserSerializer
+    lookup_field = 'pk'
+    http_method_names = ['patch']
+
+
+save_lesson_pairs = SaveLessonPairsForUserView.as_view()

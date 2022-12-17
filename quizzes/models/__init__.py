@@ -21,3 +21,4 @@ from .user_variant import UserVariant  # noqa
 from .variant import Variant  # noqa
 from .variant_group import VariantGroup  # noqa
 from .variant_question import VariantQuestion  # noqa
+from .score import QuestionScore  # noqa
