@@ -1,11 +1,14 @@
 from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 
 from base.paginate import SimplePagination
 from quizzes.api.serializers import QuestionsSerializer
-from quizzes.api.serializers.question import QuestionDetailSerializer
+from quizzes.api.serializers.question import QuestionDetailSerializer, \
+    FullTestQuestionSerializer
 from quizzes.filters import QuestionFilter
+from quizzes.filters.question import FullTestQuestionFilter
 from quizzes.models import Answer, Question
 
 
@@ -42,16 +45,14 @@ class DetailInfoQuestionView(generics.RetrieveAPIView):
 detail_info_question = DetailInfoQuestionView.as_view()
 
 
-# class QuestionsListByLessonView(generics.ListAPIView):
-#     queryset = Question.objects.all()
-#     serializer_class = QuestionsSerializer
-#     filter_backends = [DjangoFilterBackend]
-#     filterset_class = QuestionByLessonFilter
-#
-#     def get_queryset(self):
-#         answers = Answer.objects.all()
-#         return super().get_queryset(). \
-#             prefetch_related(Prefetch('answers', queryset=answers))
-#
-#
-# questions_list_by_lesson = QuestionsListByLessonView.as_view()
+class FullTestQuestionView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FullTestQuestionSerializer
+    queryset = Question.objects.select_related(
+        'lesson_question_level__question_level'
+    ).prefetch_related('answers').all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = FullTestQuestionFilter
+
+
+full_test_question = FullTestQuestionView.as_view()

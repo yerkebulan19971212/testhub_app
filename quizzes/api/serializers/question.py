@@ -52,3 +52,26 @@ class QuestionDetailSerializer(serializers.ModelSerializer):
             return status.is_favorite
         except:
             return False
+
+
+class FullTestQuestionSerializer(serializers.ModelSerializer):
+    answers = AnswerSerializer(many=True)
+    choice = serializers.IntegerField(
+        source='lesson_question_level.question_level.choice'
+    )
+
+    class Meta:
+        model = Question
+        fields = (
+            'id',
+            'common_question',
+            'lesson_question_level',
+            'question',
+            'created',
+            'modified',
+            'order',
+            'is_active',
+            'choice',
+            'math',
+            'answers',
+        )
