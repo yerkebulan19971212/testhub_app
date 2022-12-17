@@ -88,7 +88,7 @@ class FullTestLessonList(generics.ListAPIView):
         variant = user_variant.variant
         queryset = super().get_queryset()
         main_lessons = queryset.filter(main=True, test_type=test_type)
-        other_lessons = TestTypeLesson.objects.filter(
+        other_lessons = queryset.objects.filter(
             lesson_pairs__lesson_group=user_variant.lesson_group
         )
         lessons = main_lessons | other_lessons
