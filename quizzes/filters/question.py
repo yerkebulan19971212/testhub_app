@@ -47,3 +47,21 @@ class QuestionByLessonFilterByEvent(django_filters.FilterSet):
         fields = (
             'quiz_event_id',
         )
+
+
+class FullTestQuestionFilter(django_filters.FilterSet):
+    lesson_id = filters.NumberFilter(
+        field_name="lesson_question_level__test_type_lesson_id",
+        required=True
+    )
+    user_variant_id = filters.NumberFilter(
+        field_name="variant_questions__variant__user_variant__id",
+        required=True
+    )
+
+    class Meta:
+        model = Question
+        fields = (
+            'lesson_id',
+            'user_variant_id'
+        )
