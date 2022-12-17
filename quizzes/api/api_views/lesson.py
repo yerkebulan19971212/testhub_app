@@ -1,11 +1,15 @@
+from django.db.models import Sum, Q, Count
+from django.db.models.functions import Coalesce
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from quizzes.api.serializers import (LessonSerializer,
-                                     LessonWithTestTypeLessonSerializer)
+                                     LessonWithTestTypeLessonSerializer,
+                                     FullTestLessonSerializer)
 from quizzes.filters import LessonFilter
-from quizzes.models import Lesson, LessonGroup
+from quizzes.models import Lesson, LessonGroup, TestTypeLesson, UserVariant
 
 
 class LessonListView(generics.ListAPIView):
@@ -70,4 +74,42 @@ class LessonListVariantView(generics.ListAPIView):
 lesson_list_variant = LessonListVariantView.as_view()
 
 
+class FullTestLessonList(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = TestTypeLesson.objects.select_related('lesson').all()
+    serializer_class = FullTestLessonSerializer
 
+    def get_queryset(self):
+        user_variant_id = self.kwargs.get('user_variant_id')
+        user_variant = UserVariant.objects.select_related(
+            'variant__variant_group__test_type'
+        ).get(pk=user_variant_id)
+        test_type = user_variant.variant.variant_group.test_type
+        variant = user_variant.variant
+        queryset = super().get_queryset()
+        main_lessons = queryset.filter(main=True, test_type=test_type)
+        other_lessons = TestTypeLesson.objects.filter(
+            lesson_pairs__lesson_group=user_variant.lesson_group
+        )
+        lessons = main_lessons | other_lessons
+        lessons = lessons.annotate(
+            number_of_questions=Coalesce(
+                Count('lesson_question_level__questions',
+                      filter=Q(
+                          lesson_question_level__questions__variant_questions__variant=variant)),
+                0),
+            number_of_score=Coalesce(
+                Sum('lesson_question_level__question_level__point',
+                    filter=Q(
+                        lesson_question_level__questions__variant_questions__variant=variant)),
+                0),
+            my_score=Coalesce(
+                Sum('lesson_question_level__questions__question_score__score',
+                    filter=Q(
+                        lesson_question_level__questions__question_score__user_variant=user_variant)),
+                0),
+        ).order_by('-main', 'lesson__order')
+        return lessons
+
+
+test_lesson_list = FullTestLessonList.as_view()

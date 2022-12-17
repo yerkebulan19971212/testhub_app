@@ -2,7 +2,7 @@ from django.db.models import Count
 from rest_framework import serializers
 
 from base import abstract_serializer
-from quizzes.models import Lesson, LessonGroup, UserVariant
+from quizzes.models import Lesson, LessonGroup, UserVariant, TestTypeLesson
 
 
 class LessonSerializer(abstract_serializer.NameSerializer):
@@ -59,3 +59,30 @@ class SaveLessonPairsForUserSerializer(serializers.ModelSerializer):
         ).first()
         validated_data['lesson_group'] = lesson_group
         return super().update(instance, validated_data)
+
+
+class FullTestLessonSerializer(serializers.ModelSerializer):
+    number_of_questions = serializers.IntegerField(default=0)
+    number_of_score = serializers.IntegerField(default=0)
+    my_score = serializers.IntegerField(default=0)
+    icon = serializers.ImageField(source='lesson.icon')
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TestTypeLesson
+        fields = (
+            'id',
+            'name',
+            'language',
+            'main',
+            'number_of_questions',
+            'number_of_score',
+            'my_score',
+            'icon'
+        )
+
+    def get_name(self, obj):
+        language = self.context.get('request').headers.get('language', 'kz')
+        if language == 'kz':
+            return obj.lesson.name_kz
+        return obj.lesson.name_ru
