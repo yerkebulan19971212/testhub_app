@@ -124,6 +124,14 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
+    },
+    'probnyi': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'probnyi',
+        'USER': 'probnyi',
+        'PASSWORD': 'probnyi',
+        'HOST': '86.107.199.59',
+        'PORT': '5432',
     }
 }
 # Password validation

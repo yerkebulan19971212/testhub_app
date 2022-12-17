@@ -15,7 +15,9 @@ class Question(abstract_models.Ordering,
     )
     lesson_question_level = models.ForeignKey(
         'quizzes.LessonQuestionLevel',
-        on_delete=models.CASCADE, db_index=True)
+        on_delete=models.CASCADE,
+        db_index=True
+    )
     question = models.TextField(db_index=True)
     math = models.BooleanField(default=False)
     variant_group = models.ForeignKey(

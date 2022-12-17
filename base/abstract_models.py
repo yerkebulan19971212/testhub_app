@@ -41,7 +41,7 @@ class AbstractBaseName(models.Model):
 
 
 class AbstractBaseNameCode(models.Model):
-    name_code = models.CharField(max_length=255, db_index=True)
+    name_code = models.CharField(max_length=255, unique=True, null=True)
 
     class Meta:
         abstract = True

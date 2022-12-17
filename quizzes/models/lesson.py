@@ -4,6 +4,7 @@ from base import abstract_models
 
 
 class Lesson(abstract_models.AbstractBaseName,
+             abstract_models.AbstractBaseNameCode,
              abstract_models.IsActive,
              abstract_models.Ordering,
              abstract_models.TimeStampedModel):
