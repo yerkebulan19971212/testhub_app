@@ -9,10 +9,15 @@ class TagQuestion(abstract_models.AbstractBaseName,
                   abstract_models.TimeStampedModel):
     tag = models.ForeignKey(
         'quizzes.Tag',
-        on_delete=models.CASCADE, related_name='tag_questions')
+        on_delete=models.CASCADE, related_name='tag_questions',
+        db_index=True
+    )
     question = models.ForeignKey(
         'quizzes.Question',
-        on_delete=models.CASCADE, related_name='tag_questions')
+        on_delete=models.CASCADE,
+        related_name='tag_questions',
+        db_index=True
+    )
 
     class Meta:
         db_table = 'quiz\".\"tag_question'

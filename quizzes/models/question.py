@@ -23,7 +23,6 @@ class Question(abstract_models.Ordering,
     variant_group = models.ForeignKey(
         'quizzes.VariantGroup',
         on_delete=models.CASCADE,
-        null=True,
         db_index=True)
 
     class Meta:

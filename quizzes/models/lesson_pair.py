@@ -4,21 +4,18 @@ from base import abstract_models
 
 
 class LessonPair(abstract_models.TimeStampedModel):
-    # lesson = models.ForeignKey(
-    #     'quizzes.Lesson',
-    #     related_name='lesson_pairs',
-    #     on_delete=models.CASCADE)
     lesson = models.ForeignKey(
         'quizzes.TestTypeLesson',
         related_name='lesson_pairs',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        db_index=True
+    )
     lesson_group = models.ForeignKey(
         'quizzes.LessonGroup',
         related_name='lesson_pairs',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        db_index=True
+    )
 
     class Meta:
         db_table = 'quiz\".\"lesson_pair'
-
-    # def __str__(self):
-    #     return self.lesson.lesson.name_kz
