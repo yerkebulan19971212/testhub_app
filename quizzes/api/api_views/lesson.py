@@ -1,13 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from quizzes.api.serializers import (LessonSerializer,
-                                     LessonWithTestTypeLessonSerializer,
-                                     SaveLessonPairsForUserSerializer)
+                                     LessonWithTestTypeLessonSerializer)
 from quizzes.filters import LessonFilter
-from quizzes.models import Lesson, LessonGroup, UserVariant
+from quizzes.models import Lesson, LessonGroup
 
 
 class LessonListView(generics.ListAPIView):
@@ -72,11 +70,4 @@ class LessonListVariantView(generics.ListAPIView):
 lesson_list_variant = LessonListVariantView.as_view()
 
 
-class SaveLessonPairsForUserView(generics.UpdateAPIView):
-    permission_classes = (IsAuthenticated,)
-    queryset = UserVariant.objects.all()
-    serializer_class = SaveLessonPairsForUserSerializer
-    lookup_field = 'pk'
 
-
-save_lesson_pairs = SaveLessonPairsForUserView.as_view()
