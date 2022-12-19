@@ -84,7 +84,12 @@ ROOT_URLCONF = 'Test_HUB.urls'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'base.renderers.CustomRenderer',
+        # 'base.renderers.CustomBrowsableAPIRenderer',
+    ),
+    'EXCEPTION_HANDLER': 'base.renderers.custom_exception_handler',
 }
 TEMPLATES = [
     {
