@@ -3,7 +3,9 @@ from rest_framework import status, exceptions
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from rest_framework.views import set_rollback
+from rest_framework.views import set_rollback, exception_handler
+
+from base.exceptions import MainException, UnexpectedError
 
 
 class CustomRenderer(JSONRenderer):
@@ -16,9 +18,8 @@ class CustomRenderer(JSONRenderer):
             "result": data,
             "message": None
         }
-
         if not str(status_code).startswith('2'):
-            response["status"] = "error"
+            response["status"] = False
             response["data"] = None
             try:
                 response["message"] = data["detail"]
@@ -28,28 +29,6 @@ class CustomRenderer(JSONRenderer):
         return super().render(response, accepted_media_type, renderer_context)
 
 
-# class CustomBrowsableAPIRenderer(BrowsableAPIRenderer):
-#
-#     def render(self, data, accepted_media_type=None, renderer_context=None):
-#         status_code = renderer_context['response'].status_code
-#         response = {
-#             "status": "success",
-#             "code": status_code,
-#             "data": data,
-#             "message": None
-#         }
-#
-#         if not str(status_code).startswith('2'):
-#             response["status"] = "error"
-#             response["data"] = None
-#             try:
-#                 response["message"] = data["detail"]
-#             except KeyError:
-#                 response["data"] = data
-#
-#         return super().render(response,
-#                                                   accepted_media_type,
-#                                                   renderer_context)
 def exception_handler(exc, context):
     """
     Returns the response that should be used for any given exception.
@@ -65,7 +44,7 @@ def exception_handler(exc, context):
     elif isinstance(exc, PermissionDenied):
         exc = exceptions.PermissionDenied()
 
-    if isinstance(exc, exceptions.APIException):
+    if isinstance(exc, MainException):
         headers = {}
         if getattr(exc, 'auth_header', None):
             headers['WWW-Authenticate'] = exc.auth_header
@@ -76,27 +55,21 @@ def exception_handler(exc, context):
             data = exc.detail
         else:
             data = {'detail': exc.detail}
-
+        response = {
+            "status": False,
+            "status_code": exc.exception_status_code,
+            "result": None,
+            "message": exc.detail
+        }
         set_rollback()
-        return Response(data, status=status.HTTP_200_OK, headers=headers)
+        return Response(response, status=status.HTTP_200_OK, headers=headers)
 
     return None
 
 
 def custom_exception_handler(exc, context):
-    # Call REST framework's default exception handler first
-    # to get the standard error response.
     response = exception_handler(exc, context)
-    # response == None is an exception not handled by the DRF framework in the call above
-    if response is not None:
-        print(exc.status_code)
-        print(exc)
-        response.data['status_code'] = exc.status_code
-    else:
-        response = Response({'detail': 'Unhandled server error'},
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        response.data['status_code'] = 500
-
+    if response is None:
+        response = exception_handler(UnexpectedError(), context)
         set_rollback()
-
     return response

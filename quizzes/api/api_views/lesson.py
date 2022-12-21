@@ -76,7 +76,7 @@ lesson_list_variant = LessonListVariantView.as_view()
 
 
 class FullTestLessonList(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
     queryset = TestTypeLesson.objects.select_related('lesson').all()
     serializer_class = FullTestLessonSerializer
 
@@ -86,7 +86,7 @@ class FullTestLessonList(generics.ListAPIView):
             user_variant = UserVariant.objects.select_related(
                 'variant__variant_group__test_type'
             ).get(pk=user_variant_id)
-        except UserVariant.DoesNotExist as e:
+        except UserVariant.DoesNotExist:
             raise exceptions.DoesNotExist()
 
             # raise exceptions.NotAuthenticated()
