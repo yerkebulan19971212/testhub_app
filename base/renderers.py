@@ -43,7 +43,6 @@ def exception_handler(exc, context):
         exc = exceptions.NotFound()
     elif isinstance(exc, PermissionDenied):
         exc = exceptions.PermissionDenied()
-
     if isinstance(exc, MainException):
         headers = {}
         if getattr(exc, 'auth_header', None):

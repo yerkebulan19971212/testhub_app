@@ -84,17 +84,15 @@ class FullTestLessonList(generics.ListAPIView):
         user_variant_id = self.kwargs.get('user_variant_id')
         try:
             user_variant = UserVariant.objects.select_related(
-                'variant__variant_group__test_type'
+                'variant__variant_group__test_type',
             ).get(pk=user_variant_id)
         except UserVariant.DoesNotExist:
             raise exceptions.DoesNotExist()
-
-            # raise exceptions.NotAuthenticated()
         test_type = user_variant.variant.variant_group.test_type
         variant = user_variant.variant
         queryset = super().get_queryset()
         main_lessons = queryset.filter(main=True, test_type=test_type)
-        other_lessons = queryset.objects.filter(
+        other_lessons = queryset.filter(
             lesson_pairs__lesson_group=user_variant.lesson_group
         )
         lessons = main_lessons | other_lessons

@@ -1,4 +1,5 @@
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, \
+    AuthenticationFailed as AuthenticationFailedException
 from django.utils.translation import gettext_lazy as _
 
 
@@ -18,3 +19,7 @@ class DoesNotExist(MainException):
     exception_status_code = 2001
     default_detail = _('Does not exist in db.')
     default_code = 'does_not_exist'
+
+
+class AuthenticationFailed(MainException):
+    exception_status_code = 2002
