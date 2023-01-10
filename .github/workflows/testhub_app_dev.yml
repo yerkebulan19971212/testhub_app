@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -28,3 +27,12 @@ jobs:
 #    - name: Run Tests
 #      run: |
 #        python manage.py test
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: set -eu
+      - uses: mkdir "HOME/.ssh"
+      - uses: echo "${{ secrets.testhub_app }}" > "HOME/.ssh/key"
+      - uses: chmod 600 "HOME/.ssh/key"
