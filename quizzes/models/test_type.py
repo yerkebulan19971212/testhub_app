@@ -8,7 +8,7 @@ class TestType(abstract_models.AbstractBaseName,
                abstract_models.AbstractBaseNameCode,
                abstract_models.Ordering,
                abstract_models.TimeStampedModel):
-    icon = models.ImageField(upload_to='test_type', null=True, blank=True)
+    icon = models.FileField(upload_to='test_type', null=True, blank=True)
 
     class Meta:
         db_table = 'quiz\".\"test_type'

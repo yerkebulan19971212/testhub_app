@@ -8,7 +8,7 @@ class VariantGroup(abstract_models.AbstractBaseName,
                    abstract_models.IsActive,
                    abstract_models.Ordering,
                    abstract_models.TimeStampedModel):
-    icon = models.ImageField(null=True)
+    icon = models.FileField(null=True)
     test_type = models.ForeignKey(
         TestType,
         on_delete=models.CASCADE,
