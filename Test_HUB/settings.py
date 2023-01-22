@@ -210,7 +210,16 @@ STATICFILES_DIRS = (
     os.path.join(CORE_DIR, 'static'),
 )
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+AWS_ACCESS_KEY_ID = '2Q9W2HT8H61JCYV79ZGG'
+AWS_SECRET_ACCESS_KEY = 'gFXHzS9xvzhBN9TGJeoPAELXtOzZ3iObCNDkYvCd'
+AWS_STORAGE_BUCKET_NAME = 'chi-sextans'
+AWS_S3_ENDPOINT_URL = 'https://object.pscloud.io'
+AWS_LOCATION = os.getenv('AWS_LOCATION')
+MEDIA_ROOT = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
