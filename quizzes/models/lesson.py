@@ -8,7 +8,7 @@ class Lesson(abstract_models.AbstractBaseName,
              abstract_models.IsActive,
              abstract_models.Ordering,
              abstract_models.TimeStampedModel):
-    icon = models.ImageField(upload_to='lesson', null=True, blank=True)
+    icon = models.FileField(upload_to='lesson', null=True, blank=True)
 
     class Meta:
         db_table = 'quiz\".\"lesson'
