@@ -1,3 +1,5 @@
+import logging
+
 from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
@@ -11,10 +13,19 @@ from quizzes.filters import QuestionFilter
 from quizzes.filters.question import FullTestQuestionFilter
 from quizzes.models import Answer, Question
 
+logger = logging.getLogger(__name__)
+
 
 class QuestionsListView(generics.ListAPIView):
     queryset = Question.objects.all().order_by('-id')[:20]
     serializer_class = QuestionsSerializer
+
+    def get(self, request, *args, **kwargs):
+        message = {
+            'message': "user visits index()"
+        }
+        logger.info(message)
+        return self.list(request, *args, **kwargs)
 
 
 questions_list = QuestionsListView.as_view()
