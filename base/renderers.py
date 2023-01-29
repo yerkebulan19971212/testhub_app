@@ -17,8 +17,9 @@ class CustomRenderer(JSONRenderer):
             "result": data,
         }
         if not str(status_code).startswith('2'):
-            response["status"] = "error"
-            response["data"] = None
+            response["status"] = False
+            response["status_code"] = 1000
+            response["result"] = None
             try:
                 response["message"] = data["detail"]
             except KeyError:

@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 class QuestionsListView(generics.ListAPIView):
     queryset = Question.objects.all().order_by('-id')[:20]
     serializer_class = QuestionsSerializer
+    pagination_class = SimplePagination
 
     def get(self, request, *args, **kwargs):
         message = {
