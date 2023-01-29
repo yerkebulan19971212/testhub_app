@@ -12,11 +12,10 @@ class CustomRenderer(JSONRenderer):
         status_code = renderer_context['response'].status_code
         response = {
             "status": True,
-            "status_code": status_code,
+            "message": None,
+            "status_code": 0,
             "result": data,
-            "message": None
         }
-
         if not str(status_code).startswith('2'):
             response["status"] = "error"
             response["data"] = None
