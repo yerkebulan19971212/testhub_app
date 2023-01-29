@@ -12,7 +12,7 @@ class CustomRenderer(JSONRenderer):
         status_code = renderer_context['response'].status_code
         response = {
             "status": True,
-            "message": None,
+            "message": "Success",
             "status_code": 0,
             "result": data,
         }
