@@ -5,6 +5,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from base import exceptions
 from quizzes.api.serializers import (LessonSerializer,
                                      LessonWithTestTypeLessonSerializer,
                                      FullTestLessonSerializer)
@@ -81,9 +82,14 @@ class FullTestLessonList(generics.ListAPIView):
 
     def get_queryset(self):
         user_variant_id = self.kwargs.get('user_variant_id')
-        user_variant = UserVariant.objects.select_related(
-            'variant__variant_group__test_type'
-        ).get(pk=user_variant_id)
+        try:
+            user_variant = UserVariant.objects.select_related(
+                'variant__variant_group__test_type'
+            ).get(pk=user_variant_id)
+        except UserVariant.DoesNotExist as e:
+            raise exceptions.DoesNotExist()
+
+            # raise exceptions.NotAuthenticated()
         test_type = user_variant.variant.variant_group.test_type
         variant = user_variant.variant
         queryset = super().get_queryset()
