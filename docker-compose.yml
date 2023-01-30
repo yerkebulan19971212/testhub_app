@@ -1,41 +1,70 @@
 version: '3'
 services:
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
-    container_name: elasticsearch
+  teshub_app:
+    container_name: teshub_app
+    restart: always
+    env_file: .env
+    build: .
     ports:
-      - 9200:9200
-      - 9300:9300
-    environment:
-      discovery.type: single-node
+      - "8000:8000"
     networks:
-      - efk
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.8.0
+      - web_network
+  nginx:
+    container_name: nginx
+    restart: always
+    image: "nginx:latest"
     ports:
-      - 5601:5601
-    networks:
-      - efk
-    links:
-      - elasticsearch
-    depends_on:
-      - elasticsearch
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:7.8.0
+      - "80:80"
+      - "443:443"
+    extra_hosts:
+      - "dockerhost:$DOCKERHOST"
     volumes:
-      - C:/Yerkebulan/projects/testhub_app/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-#      - /path-to-filebeat.yml/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-      - C:/Yerkebulan/projects/testhub_app/logs:/usr/share/filebeat/logs
-#      - /path-to-logs-directory/logs:/usr/share/filebeat/logs
-    environment:
-      ELASTICSEARCH_URL: http://elasticsearch:9200
+      - ./nginx:/etc/nginx/conf.d
     networks:
-      - efk
-    links:
-      - kibana
-      - elasticsearch
+      - web_network
     depends_on:
-      - elasticsearch
+      - teshub_app
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+#    container_name: elasticsearch
+#    ports:
+#      - 9200:9200
+#      - 9300:9300
+#    environment:
+#      discovery.type: single-node
+#    networks:
+#      - efk
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:7.8.0
+#    ports:
+#      - 5601:5601
+#    networks:
+#      - efk
+#    links:
+#      - elasticsearch
+#    depends_on:
+#      - elasticsearch
+#  filebeat:
+#    image: docker.elastic.co/beats/filebeat:7.8.0
+#    volumes:
+#      - C:/Yerkebulan/projects/testhub_app/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+##      - /path-to-filebeat.yml/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+#      - C:/Yerkebulan/projects/testhub_app/logs:/usr/share/filebeat/logs
+##      - /path-to-logs-directory/logs:/usr/share/filebeat/logs
+#    environment:
+#      ELASTICSEARCH_URL: http://elasticsearch:9200
+#    networks:
+#      - efk
+#    links:
+#      - kibana
+#      - elasticsearch
+#    depends_on:
+#      - elasticsearch
 networks:
-  efk:
+  web_network:
     driver: bridge
