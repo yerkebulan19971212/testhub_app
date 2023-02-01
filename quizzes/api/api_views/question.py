@@ -5,6 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
+from base.exceptions import DoesNotExist
 from base.paginate import SimplePagination
 from quizzes.api.serializers import QuestionsSerializer
 from quizzes.api.serializers.question import QuestionDetailSerializer, \
@@ -25,6 +26,7 @@ class QuestionsListView(generics.ListAPIView):
         message = {
             'message': "user visits index()"
         }
+        raise DoesNotExist()
         logger.info(message)
         return self.list(request, *args, **kwargs)
 
