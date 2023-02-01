@@ -35,6 +35,7 @@ jobs:
         echo "${{ secrets.TESTENV_SSH_KEY }}" > "$HOME/.ssh/key"
         chmod 600 "$HOME/.ssh/key"
         ssh-keyscan -H "${{ secrets.TESTENV_IP }}" >>"$HOME/.ssh/known_hosts"
+        cat "$HOME/.ssh/known_hosts"
     - name: Deploy
       run: |
         rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no" \
