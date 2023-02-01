@@ -4,6 +4,7 @@ from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from base.exceptions import DoesNotExist
 from base.paginate import SimplePagination
@@ -23,6 +24,7 @@ class QuestionsListView(generics.ListAPIView):
     pagination_class = SimplePagination
 
     def get(self, request, *args, **kwargs):
+        return Response({"detail": "OK"})
         message = {
             'message': "user visits index()"
         }
