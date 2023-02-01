@@ -44,6 +44,7 @@ jobs:
         --exclude "${{ env.env_file }}" \
         --archive  \
         --compress \
+        . \
         "${{ secrets.TESTENV_USER }}@${{ secrets.TESTENV_IP }}:${{ env.path }}"
     - name: Connect to remote server
       uses: appleboy/ssh-action@v0.1.7
