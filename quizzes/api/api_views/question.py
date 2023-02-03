@@ -2,7 +2,7 @@ import logging
 
 from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -69,6 +69,20 @@ class FullTestQuestionView(generics.ListAPIView):
     ).prefetch_related('answers').all()
     filter_backends = [DjangoFilterBackend]
     filterset_class = FullTestQuestionFilter
+
+    def get(self, request, *args, **kwargs):
+        data = {}
+        questions = self.list(request, *args, **kwargs).data
+        data['questions'] = questions
+        user_answers = []
+        for q in questions:
+            user_answers.append({
+                "question": q.get('id'),
+                "answers": [],
+                "is_mark": False
+            })
+        data["user_answers"] = user_answers
+        return Response(data, status=status.HTTP_200_OK)
 
 
 full_test_question = FullTestQuestionView.as_view()
