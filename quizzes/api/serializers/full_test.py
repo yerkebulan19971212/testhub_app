@@ -8,3 +8,7 @@ class StudentAnswersSerializer(serializers.Serializer):
         child=serializers.IntegerField(required=True),
         required=True
     )
+
+
+class FinishFullTestSerializer(serializers.Serializer):
+    user_variant = serializers.IntegerField(required=True)

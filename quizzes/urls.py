@@ -41,7 +41,7 @@ ent_urlpatterns = [
     path('variant-chose-lesson-pairs/<int:pk>/', save_lesson_pairs),
     path('lesson-list/<int:user_variant_id>/', test_lesson_list),
     path('lesson-information-list/<int:user_variant_id>/', test_lesson_information_list),
-    path('questions/', full_test_question),
+    # path('questions/', full_test_question),
     path('pass_answer/', pass_answer)
 ]
 
