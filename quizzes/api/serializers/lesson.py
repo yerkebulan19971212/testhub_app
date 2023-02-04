@@ -54,8 +54,8 @@ class SaveLessonPairsForUserSerializer(serializers.ModelSerializer):
 
         lesson_group = LessonGroup.objects.filter(
             lesson_pairs__lesson_id__in=lessons
-        ).annotate(lesson_count=Count('id')).filter(
-            lesson_count__lt=2
+        ).annotate(lesson_count=Count('lesson_pairs__lesson_id')).filter(
+            lesson_count=2
         ).first()
         validated_data['lesson_group'] = lesson_group
         return super().update(instance, validated_data)
