@@ -150,3 +150,39 @@ class FullTestLessonList(generics.ListAPIView):
 
 
 test_lesson_list = FullTestLessonList.as_view()
+
+
+class FullTestLessonInformationList(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = TestTypeLesson.objects.select_related('lesson').all()
+    serializer_class = FullTestLessonSerializer
+
+    def get_queryset(self):
+        user_variant_id = self.kwargs.get('user_variant_id')
+        try:
+            user_variant = UserVariant.objects.select_related(
+                'lesson_group',
+                'variant__variant_group__test_type'
+            ).get(pk=user_variant_id)
+        except UserVariant.DoesNotExist as e:
+            raise exceptions.DoesNotExist()
+
+        test_type = user_variant.variant.variant_group.test_type
+        variant = user_variant.variant
+        queryset = super().get_queryset()
+        main_lessons = queryset.filter(main=True, test_type=test_type)
+        other_lessons = queryset.filter(
+            lesson_pairs__lesson_group=user_variant.lesson_group
+        )
+        lessons = main_lessons | other_lessons
+        lessons = lessons.annotate(
+            number_of_questions=Coalesce(
+                Count('lesson_question_level__questions',
+                      filter=Q(
+                          lesson_question_level__questions__variant_questions__variant=variant)),
+                0)
+        ).order_by('-main', 'lesson__order')
+        return lessons
+
+
+test_lesson_information_list = FullTestLessonInformationList.as_view()

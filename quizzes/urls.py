@@ -4,7 +4,7 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    create_flash_cards,
                                    create_quiz_event_by_lesson_view,
                                    detail_info_question, finish_by_lesson_view,
-                                   lesson_list,
+                                   lesson_list,test_lesson_information_list,
                                    lesson_list_with_test_type_lesson_view,
                                    list_favorites_questions, list_flash_card,
                                    pass_answer_by_lesson_view, questions_list,
@@ -40,6 +40,7 @@ ent_urlpatterns = [
     path('variant-lesson-list/', lesson_list_variant),
     path('variant-chose-lesson-pairs/<int:pk>/', save_lesson_pairs),
     path('lesson-list/<int:user_variant_id>/', test_lesson_list),
+    path('lesson-information-list/<int:user_variant_id>/', test_lesson_information_list),
     path('questions/', full_test_question)
 ]
 
