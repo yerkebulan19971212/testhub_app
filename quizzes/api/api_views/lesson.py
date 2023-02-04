@@ -123,7 +123,7 @@ class FullTestLessonList(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         lesson_data = self.list(request, *args, **kwargs).data
         user_variant_id = self.kwargs.get('user_variant_id')
-        user_answers = []
+
         for lesson in lesson_data:
             lesson_id = lesson["id"]
             questions = Question.objects\
@@ -133,6 +133,7 @@ class FullTestLessonList(generics.ListAPIView):
                     lesson_question_level__test_type_lesson_id=lesson_id,
                     variant_questions__variant__user_variant__id=user_variant_id
                 )
+            user_answers = []
             for q in questions:
                 user_answers.append({
                     "question": q.id,
