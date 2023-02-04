@@ -5,7 +5,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+from rest_framework.views import APIView
+from coreapi import Field
 from .models import EmailOTP, PhoneOTP, User
 from .serializer import (AvatarSerializer, ChangePasswordSerializer,
                          EmailOtpSerializer, EmailOTPValidateSerializer,
@@ -219,7 +220,22 @@ class ChangePasswordView(UpdateAPIView):
     def get_object(self):
         return self.request.user
 
+
 class UploadAvatarView(UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = AvatarSerializer
     lookup_field = 'pk'
+
+
+class GetSchemaView(APIView):
+    adss = Field(
+        name="param",
+        required=True,
+        location="query",
+        type="string",
+        description="A description of the parameter",
+    )
+
+    def get(self, request, format=None):
+        # your logic here
+        return Response(data={'message': 'Success'}, status=status.HTTP_200_OK)

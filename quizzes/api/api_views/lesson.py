@@ -8,9 +8,11 @@ from rest_framework.response import Response
 from base import exceptions
 from quizzes.api.serializers import (LessonSerializer,
                                      LessonWithTestTypeLessonSerializer,
-                                     FullTestLessonSerializer)
+                                     FullTestLessonSerializer,
+                                     FullTestQuestionSerializer)
 from quizzes.filters import LessonFilter
-from quizzes.models import Lesson, LessonGroup, TestTypeLesson, UserVariant
+from quizzes.models import Lesson, LessonGroup, TestTypeLesson, UserVariant, \
+    Question
 
 
 class LessonListView(generics.ListAPIView):
@@ -84,6 +86,7 @@ class FullTestLessonList(generics.ListAPIView):
         user_variant_id = self.kwargs.get('user_variant_id')
         try:
             user_variant = UserVariant.objects.select_related(
+                'lesson_group',
                 'variant__variant_group__test_type'
             ).get(pk=user_variant_id)
         except UserVariant.DoesNotExist as e:
@@ -116,6 +119,34 @@ class FullTestLessonList(generics.ListAPIView):
                 0),
         ).order_by('-main', 'lesson__order')
         return lessons
+
+    def get(self, request, *args, **kwargs):
+        lesson_data = self.list(request, *args, **kwargs).data
+        user_variant_id = self.kwargs.get('user_variant_id')
+        user_answers = []
+        for lesson in lesson_data:
+            lesson_id = lesson["id"]
+            questions = Question.objects\
+                .select_related('lesson_question_level__question_level')\
+                .prefetch_related('answers')\
+                .filter(
+                    lesson_question_level__test_type_lesson_id=lesson_id,
+                    variant_questions__variant__user_variant__id=user_variant_id
+                )
+            for q in questions:
+                user_answers.append({
+                    "question": q.id,
+                    "answers": [],
+                    "is_mark": False
+                })
+            questions_data = FullTestQuestionSerializer(questions, many=True)
+            lesson['questions'] = questions_data.data
+            lesson['user_answers'] = user_answers
+
+        data = {
+            "lessons": lesson_data,
+        }
+        return Response(data)
 
 
 test_lesson_list = FullTestLessonList.as_view()

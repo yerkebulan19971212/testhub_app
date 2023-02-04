@@ -7,7 +7,7 @@ from .api_views.views import update_user_information
 from .views import (ChangePasswordView, ForgotPasswordView,
                     GenerateEmailOtpView, GeneratePhoneOtpView, StaffLoginView,
                     UploadAvatarView, UserRegisterView, ValidateEmailOTPView,
-                    ValidatePhoneOTPView)
+                    ValidatePhoneOTPView, GetSchemaView)
 
 urlpatterns = [
     path('register/', views.user_register, name='register'),
@@ -24,5 +24,6 @@ urlpatterns = [
     path('staff-login/', StaffLoginView.as_view()),
     path('avatar/<int:pk>/', UploadAvatarView.as_view()),
     path('pass-edit/', ChangePasswordView.as_view()),  # Пароль ауыстыру
-    path('update/', update_user_information)
+    path('update/', update_user_information),
+    path('supdate/', GetSchemaView.as_view())
 ]

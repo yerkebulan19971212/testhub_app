@@ -34,6 +34,7 @@ class TestLang(str, Choice):
 
 class QuizzesType(str, Choice):
     BY_LESSON = 'BY_LESSON'
+    FULL_TEST_ENT = 'FULL_TEST_ENT'
 
 
 class Status(str, Choice):
