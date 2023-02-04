@@ -12,7 +12,7 @@ from quizzes.api.serializers import (LessonSerializer,
                                      FullTestQuestionSerializer)
 from quizzes.filters import LessonFilter
 from quizzes.models import Lesson, LessonGroup, TestTypeLesson, UserVariant, \
-    Question
+    Question, PassAnswer
 
 
 class LessonListView(generics.ListAPIView):
@@ -123,6 +123,7 @@ class FullTestLessonList(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         lesson_data = self.list(request, *args, **kwargs).data
         user_variant_id = self.kwargs.get('user_variant_id')
+        user = self.request.user
 
         for lesson in lesson_data:
             lesson_id = lesson["id"]
@@ -135,9 +136,15 @@ class FullTestLessonList(generics.ListAPIView):
                 )
             user_answers = []
             for q in questions:
+                pass_answers = PassAnswer.objects.filter(
+                    user=user,
+                    question=q,
+                    user_variant=user_variant_id
+                )
+                answers = [p.answer_id for p in pass_answers]
                 user_answers.append({
                     "question": q.id,
-                    "answers": [],
+                    "answers": answers,
                     "is_mark": False
                 })
             questions_data = FullTestQuestionSerializer(questions, many=True)
