@@ -13,6 +13,7 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    tag_list_view, test_type_view,
                                    user_variants_list, variant_groups,
                                    save_lesson_pairs, lesson_list_variant,
+                                   finish_full_test,
                                    test_lesson_list)
 from quizzes.api.api_views.question import full_test_question
 
@@ -41,8 +42,9 @@ ent_urlpatterns = [
     path('variant-chose-lesson-pairs/<int:pk>/', save_lesson_pairs),
     path('lesson-list/<int:user_variant_id>/', test_lesson_list),
     path('lesson-information-list/<int:user_variant_id>/', test_lesson_information_list),
-    # path('questions/', full_test_question),
-    path('pass_answer/', pass_answer)
+    path('questions/', full_test_question),
+    path('pass_answer/', pass_answer),
+    path('finish/<int:user_variant_id>/', finish_full_test)
 ]
 
 tag_urlpatterns = [

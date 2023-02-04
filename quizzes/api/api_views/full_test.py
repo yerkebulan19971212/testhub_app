@@ -1,13 +1,18 @@
 from django.db import transaction
+from django.db.models import Count, F, Func, Q, Sum
+from django.db.models.functions import Coalesce
 from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework import permissions
+from rest_framework.views import APIView
 
-from base.constant import ChoiceType
-from base.service import get_multi_score
+from base import exceptions
+from base.constant import ChoiceType, Status
+from base.service import get_multi_score, get_lessons
 from quizzes.api.serializers import (StudentAnswersSerializer,
                                      FinishFullTestSerializer)
-from quizzes.models import Question, PassAnswer, QuestionScore
+from quizzes.models import Question, PassAnswer, QuestionScore, UserVariant, \
+    TestTypeLesson, TestFullScore
 
 
 class PassStudentAnswerView(generics.CreateAPIView):
@@ -78,14 +83,71 @@ class PassStudentAnswerView(generics.CreateAPIView):
 pass_answer = PassStudentAnswerView.as_view()
 
 
-class FinishFullTestView(generics.CreateAPIView):
+class FinishFullTestView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = FinishFullTestSerializer
+    # serializer_class = StudentAnswersSerializer
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
-        data = self.request.data
-        user_variant_id = data.get('user_variant')
+        user_variant_id = self.kwargs.get('user_variant_id')
+        try:
+            user_variant = UserVariant.objects.select_related(
+                'lesson_group',
+                'variant__variant_group__test_type'
+            ).get(pk=user_variant_id)
+        except UserVariant.DoesNotExist as e:
+            raise exceptions.DoesNotExist()
+        queryset = TestTypeLesson.objects.select_related('lesson').all()
+        lessons = get_lessons(user_variant, queryset)
+        lessons = lessons.annotate(
+            num_question=Coalesce(
+                Count('lesson_question_level__questions', filter=Q(
+                    lesson_question_level__questions__variant_questions__variant__user_variant__id=user_variant_id
+                )), 0),
+            pass_answer=Coalesce(
+                Count('lesson_question_level__questions__pass_answers', filter=Q(
+                    lesson_question_level__questions__variant_questions__variant__user_variant__id=user_variant_id
+                )), 0),
+            points=Coalesce(
+                Sum('lesson_question_level__question_level__point',
+                    filter=Q(
+                        lesson_question_level__questions__variant_questions__variant__user_variant__id=user_variant_id
+                    )
+                    ),
+                0)
+        ).annotate(
+            unattem=F('num_question') - F('pass_answer')
+        ).order_by('-main', 'lesson__order')
+        user_variant.status = Status.PASSED
+        user_variant.save()
+        test_full_score = []
+        for lesson in lessons:
+            user_score = QuestionScore.objects.aggregate(
+                user_score=Coalesce(
+                    Sum(
+                        'score',
+                        filter=Q(
+                            user_variant=user_variant,
+                            question__lesson_question_level__test_type_lesson_id=lesson.id
+                        )
+                    ),
+                    0))
+            test_full_score.append(TestFullScore(
+                user=user,
+                user_variant=user_variant,
+                unattem=lesson.unattem,
+                user_score=user_score["user_score"],
+                number_of_question=lesson.num_question,
+                number_of_score=lesson.points,
+                accuracy=int(round(100 / lesson.points * user_score["user_score"]))
+            ))
+        TestFullScore.objects.filter(
+            user=user,
+            user_variant=user_variant
+        ).delete()
+        TestFullScore.objects.bulk_create(test_full_score)
+
+        return Response({"detail": "Success"})
 
 
 finish_full_test = FinishFullTestView.as_view()

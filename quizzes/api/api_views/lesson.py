@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from base import exceptions
+from base.service import get_lessons
 from quizzes.api.serializers import (LessonSerializer,
                                      LessonWithTestTypeLessonSerializer,
                                      FullTestLessonSerializer,
@@ -92,15 +93,9 @@ class FullTestLessonList(generics.ListAPIView):
         except UserVariant.DoesNotExist as e:
             raise exceptions.DoesNotExist()
 
-            # raise exceptions.NotAuthenticated()
-        test_type = user_variant.variant.variant_group.test_type
-        variant = user_variant.variant
         queryset = super().get_queryset()
-        main_lessons = queryset.filter(main=True, test_type=test_type)
-        other_lessons = queryset.filter(
-            lesson_pairs__lesson_group=user_variant.lesson_group
-        )
-        lessons = main_lessons | other_lessons
+        variant = user_variant.variant
+        lessons = get_lessons(user_variant, queryset)
         lessons = lessons.annotate(
             number_of_questions=Coalesce(
                 Count('lesson_question_level__questions',

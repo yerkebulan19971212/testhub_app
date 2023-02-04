@@ -39,6 +39,8 @@ class QuizzesType(str, Choice):
 
 class Status(str, Choice):
     NOT_PASSED = 'NOT_PASSED'
+    CONTINUE = 'CONTINUE'
+    PASSED = 'PASSED'
 
 
 class ChoiceType(int, Choice):

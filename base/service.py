@@ -45,3 +45,12 @@ def get_multi_score(correct_p, answer_p):
                 correct_answer_count == len(correct_p) - 1):
             return 1
     return 0
+
+
+def get_lessons(user_variant, queryset):
+    test_type = user_variant.variant.variant_group.test_type
+    main_lessons = queryset.filter(main=True, test_type=test_type)
+    other_lessons = queryset.filter(
+        lesson_pairs__lesson_group=user_variant.lesson_group
+    )
+    return main_lessons | other_lessons
