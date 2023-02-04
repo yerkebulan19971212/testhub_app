@@ -139,6 +139,7 @@ class FinishFullTestView(APIView):
                 user_score=user_score["user_score"],
                 number_of_question=lesson.num_question,
                 number_of_score=lesson.points,
+                test_type_lesson=lesson,
                 accuracy=int(round(100 / lesson.points * user_score["user_score"]))
             ))
         TestFullScore.objects.filter(
