@@ -1,6 +1,6 @@
 from django.db import transaction
-from django.db.models import Count, F, Func, Q, Sum
-from django.db.models.functions import Coalesce
+from django.db.models import Count, F, Func, Q, Sum, Avg, Max
+from django.db.models.functions import Coalesce, Round
 from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework import permissions
@@ -10,7 +10,8 @@ from base import exceptions
 from base.constant import ChoiceType, Status
 from base.service import get_multi_score, get_lessons
 from quizzes.api.serializers import (StudentAnswersSerializer,
-                                     FinishFullTestSerializer)
+                                     FinishFullTestSerializer,
+                                     GetFullTestResultSerializer)
 from quizzes.models import Question, PassAnswer, QuestionScore, UserVariant, \
     TestTypeLesson, TestFullScore
 
@@ -63,7 +64,8 @@ class PassStudentAnswerView(generics.CreateAPIView):
                             user_answers = list(set(user_answers))
                             correct_answers = list(
                                 set([ans for ans in correct_answers]))
-                            score += get_multi_score(user_answers, correct_answers)
+                            score += get_multi_score(user_answers,
+                                                     correct_answers)
                     QuestionScore.objects.filter(
                         user_variant_id=user_variant_id,
                         question_id=question_id
@@ -85,6 +87,7 @@ pass_answer = PassStudentAnswerView.as_view()
 
 class FinishFullTestView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
+
     # serializer_class = StudentAnswersSerializer
 
     def post(self, request, *args, **kwargs):
@@ -105,9 +108,10 @@ class FinishFullTestView(APIView):
                     lesson_question_level__questions__variant_questions__variant__user_variant__id=user_variant_id
                 )), 0),
             pass_answer=Coalesce(
-                Count('lesson_question_level__questions__pass_answers', filter=Q(
-                    lesson_question_level__questions__variant_questions__variant__user_variant__id=user_variant_id
-                )), 0),
+                Count('lesson_question_level__questions__pass_answers',
+                      filter=Q(
+                          lesson_question_level__questions__variant_questions__variant__user_variant__id=user_variant_id
+                      )), 0),
             points=Coalesce(
                 Sum('lesson_question_level__question_level__point',
                     filter=Q(
@@ -140,7 +144,8 @@ class FinishFullTestView(APIView):
                 number_of_question=lesson.num_question,
                 number_of_score=lesson.points,
                 test_type_lesson=lesson,
-                accuracy=int(round(100 / lesson.points * user_score["user_score"]))
+                accuracy=int(
+                    round(100 / lesson.points * user_score["user_score"]))
             ))
         TestFullScore.objects.filter(
             user=user,
@@ -152,3 +157,48 @@ class FinishFullTestView(APIView):
 
 
 finish_full_test = FinishFullTestView.as_view()
+
+
+class GetFullTestResultView(generics.ListAPIView):
+    permissions = (permissions.IsAuthenticated,)
+    serializer_class = GetFullTestResultSerializer
+    queryset = TestFullScore.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+        user_variant_id = self.kwargs.get('user_variant_id')
+        queryset = super().get_queryset().filter(
+            user=user,
+            user_variant_id=user_variant_id
+        )
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+        lesson_score = self.list(request, *args, **kwargs).data
+        user_variant_id = self.kwargs.get('user_variant_id')
+        # user_variant = UserVariant.objects.get(pk=user_variant_id)
+        test_full_score = TestFullScore.objects.all().values(
+            'user_variant__variant'
+        ).annotate(
+            user_score_ball=Coalesce(Sum('user_score'), 0)
+        ).aggregate(
+            avg_score=Round(Avg('user_score_ball')),
+            max_score=Max('user_score_ball')
+        )
+
+        number_of_score = 0
+        user_score = 0
+        for ls in lesson_score:
+            number_of_score += ls["number_of_score"]
+            user_score += ls["user_score"]
+        data = {
+            "others_info": test_full_score,
+            "user_score": user_score,
+            "number_of_score": number_of_score,
+            "score_by_lessons": lesson_score,
+        }
+        return Response(data)
+
+
+get_full_test_result = GetFullTestResultView.as_view()
