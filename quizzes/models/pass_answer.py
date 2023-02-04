@@ -17,6 +17,13 @@ class PassAnswer(abstract_models.TimeStampedModel):
         null=True,
         related_name='pass_answers'
     )
+    user_variant = models.ForeignKey(
+        'quizzes.UserVariant',
+        on_delete=models.CASCADE,
+        db_index=True,
+        null=True,
+        related_name='pass_answers'
+    )
     question = models.ForeignKey(
         'quizzes.Question',
         on_delete=models.CASCADE,

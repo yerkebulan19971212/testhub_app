@@ -14,3 +14,4 @@ from .tag import tag_list_view
 from .test_type import test_type_view
 from .test_type_lesson import get_lesson_test_type_lesson_view
 from .variants import save_lesson_pairs, user_variants_list, variant_groups
+from .full_test import pass_answer
