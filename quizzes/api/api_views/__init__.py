@@ -15,3 +15,4 @@ from .test_type import test_type_view
 from .test_type_lesson import get_lesson_test_type_lesson_view
 from .variants import save_lesson_pairs, user_variants_list, variant_groups
 from .full_test import pass_answer, finish_full_test, get_full_test_result
+from .info import grade_view

@@ -7,15 +7,13 @@ from .models import (Answer, CommonQuestion, Favorite, FlashCard, Lesson,
                      NumberOfQuestions, PassAnswer, Question, QuestionLevel,
                      QuizEvent, QuizEventQuestion, TestType, TestTypeLesson,
                      TestTypeLessonGroup, UserVariant, Variant,
-                     VariantQuestion)
+                     VariantQuestion, Grade, GradeError)
 from .models.variant_group import VariantGroup
 
 admin.site.register([
     Lesson,
-
     LessonPair,
     LessonQuestionLevel,
-
     QuestionLevel,
     TestType,
     TestTypeLesson,
@@ -29,7 +27,9 @@ admin.site.register([
     Favorite,
     PassAnswer,
     QuizEvent,
-    QuizEventQuestion
+    QuizEventQuestion,
+    Grade,
+    GradeError
 ])
 
 

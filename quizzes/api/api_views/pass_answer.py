@@ -43,8 +43,7 @@ class PassAnswerByLessonView(generics.CreateAPIView):
             }, status=status.HTTP_400_BAD_REQUEST)
         return Response({
             "message": "Success",
-            "result"
-            "": None,
+            "result": None,
             "status_code": 0,
             "status": True
         }, status=status.HTTP_200_OK)

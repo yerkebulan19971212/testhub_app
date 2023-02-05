@@ -14,7 +14,7 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    user_variants_list, variant_groups,
                                    save_lesson_pairs, lesson_list_variant,
                                    finish_full_test, get_full_test_result,
-                                   test_lesson_list)
+                                   test_lesson_list, grade_view)
 from quizzes.api.api_views.question import full_test_question
 
 lesson_urlpatterns = [
@@ -55,6 +55,10 @@ tag_urlpatterns = [
 favorite_urlpatterns = [
     path('', create_favorite_questions),
     path('list/', list_favorites_questions),
+]
+
+info_urlpatterns = [
+    path('grade/', grade_view),
 ]
 
 urlpatterns = [

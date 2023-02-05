@@ -46,3 +46,11 @@ class Status(str, Choice):
 class ChoiceType(int, Choice):
     CHOICE = 0
     MULTI_CHOICE = 0
+
+
+class GradeType(int, Choice):
+    VERY_BAD = 1
+    BAD = 2
+    AVERAGE = 3
+    GOOD = 4
+    EXCELLENT = 5

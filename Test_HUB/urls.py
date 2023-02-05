@@ -8,7 +8,12 @@ from django.conf.urls.static import static
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from quizzes.urls import favorite_urlpatterns, tag_urlpatterns, ent_urlpatterns
+from quizzes.urls import (
+    favorite_urlpatterns,
+    tag_urlpatterns,
+    ent_urlpatterns,
+    info_urlpatterns
+)
 
 
 schema_view = get_schema_view(
@@ -30,6 +35,7 @@ api_v1_urlpatterns = [
     path('favorite/', include(favorite_urlpatterns)),
     path('tag/', include(tag_urlpatterns)),
     path('full-test/', include(ent_urlpatterns)),
+    path('info/', include(info_urlpatterns)),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0),
