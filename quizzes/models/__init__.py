@@ -25,3 +25,4 @@ from .score import QuestionScore  # noqa
 from .test_full_score import TestFullScore  # noqa
 from .grade import Grade  # noqa
 from .grade_error import GradeError  # noqa
+from .question_mark import Mark  # noqa

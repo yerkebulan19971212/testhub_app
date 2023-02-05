@@ -59,6 +59,7 @@ class FullTestQuestionSerializer(serializers.ModelSerializer):
     choice = serializers.IntegerField(
         source='lesson_question_level.question_level.choice'
     )
+    is_favorite = serializers.BooleanField()
 
     class Meta:
         model = Question
@@ -73,5 +74,6 @@ class FullTestQuestionSerializer(serializers.ModelSerializer):
             'is_active',
             'choice',
             'math',
-            'answers',
+            'is_favorite',
+            'answers'
         )

@@ -1,5 +1,6 @@
-from django.db.models import Sum, Q, Count
-from django.db.models.functions import Coalesce
+from django.db.models import Sum, Q, Count, Prefetch, Exists, Value, \
+    BooleanField, OuterRef
+from django.db.models.functions import Coalesce, Cast
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -13,7 +14,7 @@ from quizzes.api.serializers import (LessonSerializer,
                                      FullTestQuestionSerializer)
 from quizzes.filters import LessonFilter
 from quizzes.models import Lesson, LessonGroup, TestTypeLesson, UserVariant, \
-    Question, PassAnswer
+    Question, PassAnswer, Mark, Favorite
 
 
 class LessonListView(generics.ListAPIView):
@@ -122,25 +123,35 @@ class FullTestLessonList(generics.ListAPIView):
 
         for lesson in lesson_data:
             lesson_id = lesson["id"]
+            pass_answers = PassAnswer.objects.all()
             questions = Question.objects\
                 .select_related('lesson_question_level__question_level')\
                 .prefetch_related('answers')\
+                .prefetch_related(Prefetch('pass_answers', queryset=pass_answers))\
                 .filter(
                     lesson_question_level__test_type_lesson_id=lesson_id,
                     variant_questions__variant__user_variant__id=user_variant_id
-                )
+                )\
+                .annotate(
+                    is_mark=Exists(Mark.objects.filter(
+                        user=user,
+                        user_variant_id=user_variant_id,
+                        question_id=OuterRef('pk')
+                    )))\
+                .annotate(
+                    is_favorite=Exists(Favorite.objects.filter(
+                        user=user,
+                        question_id=OuterRef('pk'),
+                        is_favorite=True
+                    )))
+
             user_answers = []
             for q in questions:
-                pass_answers = PassAnswer.objects.filter(
-                    user=user,
-                    question=q,
-                    user_variant=user_variant_id
-                )
-                answers = [p.answer_id for p in pass_answers]
+                answers = [p.answer_id for p in q.pass_answers.all()]
                 user_answers.append({
                     "question": q.id,
                     "answers": answers,
-                    "is_mark": False
+                    "is_mark": q.is_mark
                 })
             questions_data = FullTestQuestionSerializer(questions, many=True)
             lesson['questions'] = questions_data.data
