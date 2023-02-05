@@ -14,7 +14,7 @@ class Grade(TimeStampedModel):
         choices=GradeType.choices(),
     )
     grade_error = models.ForeignKey(
-        'quizzes.GradeError',
+        'quizzes.InfoError',
         on_delete=models.CASCADE,
         related_name='grade',
         null=True

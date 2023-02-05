@@ -54,3 +54,8 @@ class GradeType(int, Choice):
     AVERAGE = 3
     GOOD = 4
     EXCELLENT = 5
+
+
+class ErrorType(int, Choice):
+    GRADE = 1
+    COMPLAIN = 2
