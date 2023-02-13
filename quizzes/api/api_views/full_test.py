@@ -11,9 +11,10 @@ from base.constant import ChoiceType, Status
 from base.service import get_multi_score, get_lessons
 from quizzes.api.serializers import (StudentAnswersSerializer,
                                      FinishFullTestSerializer,
-                                     GetFullTestResultSerializer)
+                                     GetFullTestResultSerializer,
+                                     MarkSerializer)
 from quizzes.models import Question, PassAnswer, QuestionScore, UserVariant, \
-    TestTypeLesson, TestFullScore
+    TestTypeLesson, TestFullScore, Mark
 
 
 class PassStudentAnswerView(generics.CreateAPIView):
@@ -202,3 +203,28 @@ class GetFullTestResultView(generics.ListAPIView):
 
 
 get_full_test_result = GetFullTestResultView.as_view()
+
+
+class MarkQuestions(generics.CreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = MarkSerializer
+    queryset = Mark.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        question = self.request.data.get('question', None)
+        user_variant = self.request.data.get('user_variant', None)
+        obj, create_status = self.queryset.get_or_create(
+            question_id=question,
+            user_variant_id=user_variant,
+            user=self.request.user
+        )
+        if create_status is False:
+            obj.is_mark = not obj.is_mark
+            obj.save()
+        return Response(
+            {'success': True},
+            status=status.HTTP_200_OK
+        )
+
+
+create_mark_questions = MarkQuestions.as_view()

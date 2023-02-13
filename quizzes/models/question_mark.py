@@ -19,6 +19,7 @@ class Mark(abstract_models.TimeStampedModel):
         on_delete=models.CASCADE,
         related_name='marks'
     )
+    is_mark = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'quiz\".\"mark'

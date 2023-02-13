@@ -15,7 +15,8 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    save_lesson_pairs, lesson_list_variant,
                                    finish_full_test, get_full_test_result,
                                    test_lesson_list, grade_view,
-                                   complain_question_view)
+                                   complain_question_view,
+                                   create_mark_questions)
 from quizzes.api.api_views.question import full_test_question
 
 lesson_urlpatterns = [
@@ -46,7 +47,8 @@ ent_urlpatterns = [
     path('get-full-test-result/<int:user_variant_id>/', get_full_test_result),
     path('questions/', full_test_question),
     path('pass_answer/', pass_answer),
-    path('finish/<int:user_variant_id>/', finish_full_test)
+    path('finish/<int:user_variant_id>/', finish_full_test),
+    path('mark/', create_mark_questions)
 ]
 
 tag_urlpatterns = [

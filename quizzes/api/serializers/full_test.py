@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from quizzes.models import TestFullScore
+from quizzes.models import TestFullScore, Mark
 
 
 class StudentAnswersSerializer(serializers.Serializer):
@@ -27,7 +27,8 @@ class FinishFullTestSerializer(serializers.Serializer):
 
 class GetFullTestResultSerializer(serializers.ModelSerializer):
     lesson_id = serializers.IntegerField(source='test_type_lesson.id')
-    lesson_name = serializers.CharField(source='test_type_lesson.lesson.name_kz')
+    lesson_name = serializers.CharField(
+        source='test_type_lesson.lesson.name_kz')
 
     class Meta:
         model = TestFullScore
@@ -39,4 +40,13 @@ class GetFullTestResultSerializer(serializers.ModelSerializer):
             'number_of_question',
             'number_of_score',
             'accuracy'
+        )
+
+
+class MarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Mark
+        fields = (
+            'question',
+            'user_variant',
         )

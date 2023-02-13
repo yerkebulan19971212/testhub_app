@@ -136,7 +136,8 @@ class FullTestLessonList(generics.ListAPIView):
                     is_mark=Exists(Mark.objects.filter(
                         user=user,
                         user_variant_id=user_variant_id,
-                        question_id=OuterRef('pk')
+                        question_id=OuterRef('pk'),
+                        is_mark=True
                     )))\
                 .annotate(
                     is_favorite=Exists(Favorite.objects.filter(
