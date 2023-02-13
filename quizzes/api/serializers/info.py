@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from quizzes.models import Grade, ComplainQuestion
+from quizzes.models import Grade, ComplainQuestion, InfoError
 
 
 class GradeSerializer(serializers.ModelSerializer):
@@ -19,4 +19,13 @@ class ComplainQuestionSerializer(serializers.ModelSerializer):
             'question',
             'complain_error',
             'comment'
+        )
+
+
+class InfoErrorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InfoError
+        fields = (
+            'id',
+            'error_name'
         )

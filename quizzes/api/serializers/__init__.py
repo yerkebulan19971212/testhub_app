@@ -14,4 +14,5 @@ from .test_type_lesson import GetLessonTestTypeLessonSerializer
 from .variants import UserVariantsSerializer, VariantGroupSerializer
 from .full_test import (StudentAnswersSerializer, FinishFullTestSerializer,
                         GetFullTestResultSerializer, MarkSerializer)
-from .info import GradeSerializer, ComplainQuestionSerializer
+from .info import (GradeSerializer, ComplainQuestionSerializer,
+                   InfoErrorSerializer)

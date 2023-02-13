@@ -16,7 +16,7 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    finish_full_test, get_full_test_result,
                                    test_lesson_list, grade_view,
                                    complain_question_view,
-                                   create_mark_questions)
+                                   create_mark_questions, complain_info_list_view, grade_info_list_view)
 from quizzes.api.api_views.question import full_test_question
 
 lesson_urlpatterns = [
@@ -63,6 +63,8 @@ favorite_urlpatterns = [
 info_urlpatterns = [
     path('grade/', grade_view),
     path('complain-question_view/', complain_question_view),
+    path('grade-info-list/', grade_info_list_view),
+    path('complain-info-list/', complain_info_list_view),
 ]
 
 urlpatterns = [
