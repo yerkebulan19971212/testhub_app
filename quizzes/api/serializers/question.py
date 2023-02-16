@@ -29,7 +29,7 @@ class QuestionsSerializer(serializers.ModelSerializer):
 
 class QuestionDetailSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True)
-    is_favorite = serializers.SerializerMethodField()
+    is_favorite = serializers.BooleanField()
 
     class Meta:
         model = Question
@@ -42,16 +42,10 @@ class QuestionDetailSerializer(serializers.ModelSerializer):
             'modified',
             'order',
             'is_active',
+            'is_favorite',
+            'math',
             'answers',
-            'is_favorite'
         )
-
-    def get_is_favorite(self, obj):
-        try:
-            status = (obj.favorites.get(user=self.context['request'].user))
-            return status.is_favorite
-        except:
-            return False
 
 
 class FullTestQuestionSerializer(serializers.ModelSerializer):

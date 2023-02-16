@@ -1,6 +1,6 @@
 import logging
 
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Exists, OuterRef
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -13,7 +13,7 @@ from quizzes.api.serializers.question import QuestionDetailSerializer, \
     FullTestQuestionSerializer
 from quizzes.filters import QuestionFilter
 from quizzes.filters.question import FullTestQuestionFilter
-from quizzes.models import Answer, Question
+from quizzes.models import Answer, Question, Favorite
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +56,17 @@ class DetailInfoQuestionView(generics.RetrieveAPIView):
     serializer_class = QuestionDetailSerializer
     queryset = Question.objects.all()
     lookup_field = 'id'
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = super().get_queryset().annotate(
+            is_favorite=Exists(
+                Favorite.objects.filter(
+                    user=user,
+                    question_id=OuterRef('pk'),
+                    is_favorite=True
+                )))
+        return queryset
 
 
 detail_info_question = DetailInfoQuestionView.as_view()
