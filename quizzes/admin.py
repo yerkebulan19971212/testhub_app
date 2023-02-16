@@ -28,8 +28,7 @@ admin.site.register([
     PassAnswer,
     QuizEvent,
     QuizEventQuestion,
-    Grade,
-    InfoError
+    Grade
 ])
 
 
@@ -85,3 +84,19 @@ class LessonGroupAdmin(admin.ModelAdmin):
     inlines = [
         LessonPairInline,
     ]
+
+
+@admin.register(InfoError)
+class InfoErrorAdmin(admin.ModelAdmin):
+    list_display = (
+        'error_name',
+        'id',
+        'error_type',
+        'grade_type',
+        'is_active',
+        'created',
+        'modified'
+    )
+    search_fields = ('error_name', )
+    list_filter = ('is_active', 'error_type', 'grade_type')
+    readonly_fields = ('pk', 'created', 'modified')

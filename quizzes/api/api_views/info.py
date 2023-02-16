@@ -4,7 +4,9 @@ from rest_framework import permissions
 from base.constant import ErrorType
 from quizzes.api.serializers import GradeSerializer, \
     ComplainQuestionSerializer, InfoErrorSerializer
+from quizzes.filters.info import InfoFilterByGradeType
 from quizzes.models import InfoError
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class GradeCreateView(generics.CreateAPIView):
@@ -22,6 +24,8 @@ class GradeInfoErrorListView(generics.ListAPIView):
     serializer_class = InfoErrorSerializer
     queryset = InfoError.objects.filter(error_type=ErrorType.GRADE,
                                         is_active=True)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = InfoFilterByGradeType
 
 
 grade_info_list_view = GradeInfoErrorListView.as_view()
@@ -41,6 +45,8 @@ complain_question_view = ComplainQuestionView.as_view()
 class ComplainInfoErrorListView(GradeInfoErrorListView):
     queryset = InfoError.objects.filter(error_type=ErrorType.COMPLAIN,
                                         is_active=True)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = InfoFilterByGradeType
 
 
 complain_info_list_view = ComplainInfoErrorListView.as_view()

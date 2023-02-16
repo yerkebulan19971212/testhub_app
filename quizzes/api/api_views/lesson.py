@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from base import exceptions
+from base.constant import Status
 from base.service import get_lessons
 from quizzes.api.serializers import (LessonSerializer,
                                      LessonWithTestTypeLessonSerializer,
@@ -91,6 +92,8 @@ class FullTestLessonList(generics.ListAPIView):
                 'lesson_group',
                 'variant__variant_group__test_type'
             ).get(pk=user_variant_id)
+            user_variant.status = Status.CONTINUE
+            user_variant.save()
         except UserVariant.DoesNotExist as e:
             raise exceptions.DoesNotExist()
 
