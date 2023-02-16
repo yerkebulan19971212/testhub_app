@@ -22,6 +22,7 @@ from .variant import Variant  # noqa
 from .variant_group import VariantGroup  # noqa
 from .variant_question import VariantQuestion  # noqa
 from .score import QuestionScore  # noqa
+from .quizze_event_score import QuestionQuizEventScore  # noqa
 from .test_full_score import TestFullScore  # noqa
 from .grade import Grade  # noqa
 from .grade_error import InfoError  # noqa

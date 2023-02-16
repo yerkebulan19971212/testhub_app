@@ -4,9 +4,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from base.constant import ChoiceType
+from base.service import get_multi_score
 from quizzes.api.serializers import (FinishByLessonSerializer,
                                      PassAnswerSerializer)
-from quizzes.models import PassAnswer, Question, QuizEventQuestion
+from quizzes.models import PassAnswer, Question, QuizEventQuestion, \
+    QuestionQuizEventScore, Answer
 
 
 class PassAnswerByLessonView(generics.CreateAPIView):
@@ -19,6 +21,8 @@ class PassAnswerByLessonView(generics.CreateAPIView):
         user_answers = self.request.data.get('user_answers')
         quiz_event = self.kwargs.get('quiz_event')
         pass_ans = []
+        quiz_event_score = []
+        score = 0
         try:
             with transaction.atomic():
                 for user_answer in user_answers:
@@ -31,11 +35,30 @@ class PassAnswerByLessonView(generics.CreateAPIView):
                             user=user,
                             quiz_event_id=quiz_event
                         ))
+                    correct_answers = Answer.objects.filter(
+                        correct=True,
+                        question_id=question
+                    )
+                    correct_answers_list = [c.id for c in correct_answers]
+                    score += get_multi_score(answers, correct_answers_list)
+                    quiz_event_score.append(QuestionQuizEventScore(
+                        question_id=question,
+                        user=user,
+                        quiz_event_id=quiz_event,
+                        score=score
+                    ))
+
                 PassAnswer.objects.filter(
                     user=user,
                     quiz_event_id=quiz_event
                 ).delete()
                 PassAnswer.objects.bulk_create(pass_ans)
+
+                QuestionQuizEventScore.objects.filter(
+                    quiz_event_id=quiz_event,
+                    user=user
+                ).delete()
+                QuestionQuizEventScore.objects.bulk_create(quiz_event_score)
         except Exception as e:
             print(e)
             return Response({
@@ -64,18 +87,18 @@ class FinishByLessonView(generics.CreateAPIView):
         ).filter(quiz_event_questions__quiz_event_id=quiz_event)
         correct_answer_count = 0
         point = 0
+        number_of_score = 0
+        user_score = 0
         for q in questions:
             pass_answers = PassAnswer.objects.filter(
                 question=q, quiz_event_id=quiz_event
             )
             question_level = q.lesson_question_level.question_level
-            point += question_level.point
+            number_of_score += question_level.point
             if question_level.choice == ChoiceType.CHOICE:
                 pass_answers = pass_answers.filter(answer__correct=True)
                 if pass_answers.exists():
-                    correct_answer_count += 1
-
-
+                    user_score += 1
             # else:
             #
             # pass_answers = PassAnswer.objects.select_related(
@@ -86,6 +109,13 @@ class FinishByLessonView(generics.CreateAPIView):
             #     .filter()
             # for p in pass_answers:
             #     pass
+
+        data = {
+            "user_score": user_score,
+            "number_of_score": number_of_score,
+            "accuracy": int(round(100 / number_of_score * number_of_score)),
+            # "score_by_lessons": lesson_score,
+        }
         data = {
             'correct_answer_count': correct_answer_count,
             'answer_count': point
