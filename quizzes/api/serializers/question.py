@@ -9,6 +9,7 @@ class QuestionsSerializer(serializers.ModelSerializer):
     choice = serializers.IntegerField(
         source='lesson_question_level.question_level.choice'
     )
+    is_favorite = serializers.BooleanField(default=False)
 
     class Meta:
         model = Question
@@ -23,6 +24,7 @@ class QuestionsSerializer(serializers.ModelSerializer):
             'is_active',
             'choice',
             'math',
+            'is_favorite',
             'answers',
         )
 
