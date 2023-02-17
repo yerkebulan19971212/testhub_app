@@ -48,6 +48,38 @@ class StaffLoginView(TokenObtainPairView):
         return super().post(request, *args, **kwargs)
 
 
+class StudentLoginView(TokenObtainPairView):
+    """ логин """
+    serializer_class = TokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
+        username = self.request.data.get('username').lower()
+        if "@" in username:
+            user = User.objects.filter(email=username)
+
+        else:
+            user = User.objects.filter(username=username)
+
+        if user:
+            user = user.first()
+
+        else:
+            return Response({"detail": "Такой пользователь не найден"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # role = user.role
+        # if role:
+        #     if str(role.name) == 'client':
+        #         return Response({"detail": "вы не являетесть содтрудником"},
+        #                         status=status.HTTP_400_BAD_REQUEST)
+        # else:
+        #     return Response({"detail": "role net"},
+        #                     status=status.HTTP_400_BAD_REQUEST)
+        return super().post(request, *args, **kwargs)
+
+
+student_login = StudentLoginView.as_view()
+
+
 # class ClientLoginView(TokenObtainPairView):
 #     serializer_class = TokenObtainPairSerializer
 #

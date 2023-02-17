@@ -39,8 +39,8 @@ class PassAnswerByLessonView(generics.CreateAPIView):
                         correct=True,
                         question_id=question
                     )
-                    correct_answers_list = [c.id for c in correct_answers]
-                    score += get_multi_score(answers, correct_answers_list)
+                    answer_ids = Answer.objects.filter(id__in=answers)
+                    score += get_multi_score(answer_ids, correct_answers)
                     quiz_event_score.append(QuestionQuizEventScore(
                         question_id=question,
                         user=user,
