@@ -1,4 +1,6 @@
 from django.db import transaction
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -86,41 +88,32 @@ class FinishByLessonView(generics.CreateAPIView):
             "lesson_question_level",
             "lesson_question_level__question_level"
         ).filter(quiz_event_questions__quiz_event_id=quiz_event)
-        correct_answer_count = 0
-        point = 0
-        number_of_score = 0
-        user_score = 0
-        for q in questions:
-            pass_answers = PassAnswer.objects.filter(
-                question=q, quiz_event_id=quiz_event
+        number_of_score = questions.aggregate(
+            number_of_score=Coalesce(
+                Sum("lesson_question_level__question_level__point"),
+                0
             )
-            question_level = q.lesson_question_level.question_level
-            number_of_score += question_level.point
-            if question_level.choice == ChoiceType.CHOICE:
-                pass_answers = pass_answers.filter(answer__correct=True)
-                if pass_answers.exists():
-                    user_score += 1
-            # else:
-            #
-            # pass_answers = PassAnswer.objects.select_related(
-            #     'question',
-            #     'question__lesson_question_level',
-            #     'question__lesson_question_level__question_level',
-            #     'answer')\
-            #     .filter()
-            # for p in pass_answers:
-            #     pass
+        ).get("number_of_score")
+        question_score = QuestionQuizEventScore.objects.filter(
+            quiz_event_id=quiz_event
+        )
+        user_score = question_score.aggregate(
+            user_score=Coalesce(Sum('score'), 0)
+        ).get("user_score")
+        attempt = question_score.values("question").distinct().count()
+        question_count = questions.count()
+        unattem = question_count - attempt
 
         data = {
             "user_score": user_score,
             "number_of_score": number_of_score,
-            "accuracy": int(round(100 / number_of_score * number_of_score)),
-            # "score_by_lessons": lesson_score,
+            "incorrect_score": number_of_score - user_score,
+            "accuracy": int(round(100 / number_of_score * user_score)),
+            "attempt": question_count,
+            "unattem": unattem,
+            "question_number": question_count,
         }
-        data = {
-            'correct_answer_count': correct_answer_count,
-            'answer_count': point
-        }
+
         return Response({
             "message": "Success",
             "result": data,
