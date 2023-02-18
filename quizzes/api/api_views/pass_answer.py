@@ -22,7 +22,7 @@ class PassAnswerByLessonView(generics.CreateAPIView):
         quiz_event = self.kwargs.get('quiz_event')
         pass_ans = []
         quiz_event_score = []
-        score = 0
+        user_score = 0
         try:
             with transaction.atomic():
                 for user_answer in user_answers:
@@ -40,7 +40,8 @@ class PassAnswerByLessonView(generics.CreateAPIView):
                         question_id=question
                     )
                     answer_ids = Answer.objects.filter(id__in=answers)
-                    score += get_multi_score(answer_ids, correct_answers)
+                    score = get_multi_score(answer_ids, correct_answers)
+                    user_score += score
                     quiz_event_score.append(QuestionQuizEventScore(
                         question_id=question,
                         user=user,
