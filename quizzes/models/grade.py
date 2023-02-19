@@ -19,6 +19,12 @@ class Grade(TimeStampedModel):
         related_name='grade',
         null=True
     )
+    user_variant = models.ForeignKey(
+        'quizzes.UserVariant',
+        on_delete=models.CASCADE,
+        related_name='grade',
+        null=True
+    )
     comment = models.TextField(null=True)
 
     class Meta:

@@ -8,7 +8,8 @@ class GradeSerializer(serializers.ModelSerializer):
         fields = (
             'grade_ball',
             'grade_error',
-            'comment'
+            'comment',
+            'user_variant'
         )
 
 
