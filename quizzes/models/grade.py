@@ -25,6 +25,12 @@ class Grade(TimeStampedModel):
         related_name='grade',
         null=True
     )
+    quiz_event = models.ForeignKey(
+        'quizzes.QuizEvent',
+        on_delete=models.CASCADE,
+        related_name='grade',
+        null=True
+    )
     comment = models.TextField(null=True)
 
     class Meta:

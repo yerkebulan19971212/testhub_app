@@ -9,7 +9,8 @@ class GradeSerializer(serializers.ModelSerializer):
             'grade_ball',
             'grade_error',
             'comment',
-            'user_variant'
+            'user_variant',
+            'quiz_event'
         )
 
 
