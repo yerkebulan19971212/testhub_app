@@ -3,6 +3,7 @@ from rest_framework import status as sts
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from base.paginate import SimplePagination
 from quizzes.api.serializers import FavoritesSerializer, QuestionsSerializer
 from quizzes.models import Favorite, Question
 
@@ -31,13 +32,17 @@ create_favorite_questions = CreateFavoriteQuestions.as_view()
 
 
 class ListFavoritesView(generics.ListAPIView):
-    queryset = Question.objects.all()
+    permission_classes = (IsAuthenticated,)
+    queryset = Question.objects.select_related(
+        'lesson_question_level__question_level'
+    ).all()
     serializer_class = QuestionsSerializer
+    pagination_class = SimplePagination
 
     def get_queryset(self):
-        return self.queryset.filter(
+        return super().get_queryset().filter(
             favorites__is_favorite=True,
-            user=self.request.user
+            favorites__user=self.request.user
         ).prefetch_related(
             'answers'
         )

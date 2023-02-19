@@ -2,7 +2,8 @@ from .create_flash_cards import create_flash_cards
 from .favorites import create_favorite_questions, list_favorites_questions
 from .lesson import (lesson_list, lesson_list_variant,
                      test_lesson_list, test_lesson_information_list,
-                     lesson_list_with_test_type_lesson_view)
+                     lesson_list_with_test_type_lesson_view,
+                     finished_test_lesson_list)
 from .list_flash_cards import list_flash_card
 from .number_of_questions import list_number_of_questions
 from .pass_answer import finish_by_lesson_view, pass_answer_by_lesson_view

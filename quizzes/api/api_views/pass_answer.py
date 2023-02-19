@@ -4,6 +4,7 @@ from django.db.models.functions import Coalesce
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from base.constant import ChoiceType
 from base.service import get_multi_score
@@ -78,9 +79,8 @@ class PassAnswerByLessonView(generics.CreateAPIView):
 pass_answer_by_lesson_view = PassAnswerByLessonView.as_view()
 
 
-class FinishByLessonView(generics.CreateAPIView):
+class FinishByLessonView(APIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = None
 
     def post(self, request, *args, **kwargs):
         quiz_event = self.kwargs.get('quiz_event')

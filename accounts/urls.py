@@ -12,7 +12,7 @@ from .views import (ChangePasswordView, ForgotPasswordView,
 urlpatterns = [
     path('register/', views.user_register, name='register'),
     path('me/', views.me_information, name='me_information'),
-    path('add_test_type/', views.add_test_type),
+    path('add-test-type/', views.add_test_type),
 
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),

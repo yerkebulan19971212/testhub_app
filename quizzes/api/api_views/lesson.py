@@ -13,9 +13,10 @@ from quizzes.api.serializers import (LessonSerializer,
                                      LessonWithTestTypeLessonSerializer,
                                      FullTestLessonSerializer,
                                      FullTestQuestionSerializer)
+from quizzes.api.serializers.answer import AnswerSerializer
 from quizzes.filters import LessonFilter
 from quizzes.models import Lesson, LessonGroup, TestTypeLesson, UserVariant, \
-    Question, PassAnswer, Mark, Favorite
+    Question, PassAnswer, Mark, Favorite, Answer
 
 
 class LessonListView(generics.ListAPIView):
@@ -127,27 +128,28 @@ class FullTestLessonList(generics.ListAPIView):
         for lesson in lesson_data:
             lesson_id = lesson["id"]
             pass_answers = PassAnswer.objects.all()
-            questions = Question.objects\
-                .select_related('lesson_question_level__question_level')\
-                .prefetch_related('answers')\
-                .prefetch_related(Prefetch('pass_answers', queryset=pass_answers))\
+            questions = Question.objects \
+                .select_related('lesson_question_level__question_level') \
+                .prefetch_related('answers') \
+                .prefetch_related(
+                Prefetch('pass_answers', queryset=pass_answers)) \
                 .filter(
-                    lesson_question_level__test_type_lesson_id=lesson_id,
-                    variant_questions__variant__user_variant__id=user_variant_id
-                )\
+                lesson_question_level__test_type_lesson_id=lesson_id,
+                variant_questions__variant__user_variant__id=user_variant_id
+            ) \
                 .annotate(
-                    is_mark=Exists(Mark.objects.filter(
-                        user=user,
-                        user_variant_id=user_variant_id,
-                        question_id=OuterRef('pk'),
-                        is_mark=True
-                    )))\
+                is_mark=Exists(Mark.objects.filter(
+                    user=user,
+                    user_variant_id=user_variant_id,
+                    question_id=OuterRef('pk'),
+                    is_mark=True
+                ))) \
                 .annotate(
-                    is_favorite=Exists(Favorite.objects.filter(
-                        user=user,
-                        question_id=OuterRef('pk'),
-                        is_favorite=True
-                    )))
+                is_favorite=Exists(Favorite.objects.filter(
+                    user=user,
+                    question_id=OuterRef('pk'),
+                    is_favorite=True
+                )))
 
             user_answers = []
             for q in questions:
@@ -204,3 +206,98 @@ class FullTestLessonInformationList(generics.ListAPIView):
 
 
 test_lesson_information_list = FullTestLessonInformationList.as_view()
+
+
+class FullTestFinishedTestLessonList(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = TestTypeLesson.objects.select_related('lesson').all()
+    serializer_class = FullTestLessonSerializer
+
+    def get_queryset(self):
+        user_variant_id = self.kwargs.get('user_variant_id')
+        try:
+            user_variant = UserVariant.objects.select_related(
+                'lesson_group',
+                'variant__variant_group__test_type'
+            ).get(pk=user_variant_id)
+            user_variant.status = Status.CONTINUE
+            user_variant.save()
+        except UserVariant.DoesNotExist as e:
+            raise exceptions.DoesNotExist()
+
+        queryset = super().get_queryset()
+        variant = user_variant.variant
+        lessons = get_lessons(user_variant, queryset)
+        lessons = lessons.annotate(
+            number_of_questions=Coalesce(
+                Count('lesson_question_level__questions',
+                      filter=Q(
+                          lesson_question_level__questions__variant_questions__variant=variant)),
+                0),
+            number_of_score=Coalesce(
+                Sum('lesson_question_level__question_level__point',
+                    filter=Q(
+                        lesson_question_level__questions__variant_questions__variant=variant)),
+                0),
+            my_score=Coalesce(
+                Sum('lesson_question_level__questions__question_score__score',
+                    filter=Q(
+                        lesson_question_level__questions__question_score__user_variant=user_variant)),
+                0),
+        ).order_by('-main', 'lesson__order')
+        return lessons
+
+    def get(self, request, *args, **kwargs):
+        lesson_data = self.list(request, *args, **kwargs).data
+        user_variant_id = self.kwargs.get('user_variant_id')
+        user = self.request.user
+
+        for lesson in lesson_data:
+            lesson_id = lesson["id"]
+            pass_answers = PassAnswer.objects.all()
+            correct_answers = Answer.objects.filter(
+                correct=True,
+                question__lesson_question_level__test_type_lesson_id=lesson_id,
+                question__variant_questions__variant__user_variant__id=user_variant_id
+            )
+            questions = Question.objects \
+                .select_related('lesson_question_level__question_level') \
+                .prefetch_related('answers') \
+                .prefetch_related(
+                Prefetch('pass_answers', queryset=pass_answers)) \
+                .filter(
+                lesson_question_level__test_type_lesson_id=lesson_id,
+                variant_questions__variant__user_variant__id=user_variant_id
+            ) \
+                .annotate(
+                is_mark=Exists(Mark.objects.filter(
+                    user=user,
+                    user_variant_id=user_variant_id,
+                    question_id=OuterRef('pk'),
+                    is_mark=True
+                ))) \
+                .annotate(
+                is_favorite=Exists(Favorite.objects.filter(
+                    user=user,
+                    question_id=OuterRef('pk'),
+                    is_favorite=True
+                )))
+
+            user_answers = []
+            for q in questions:
+                answers = [p.answer_id for p in q.pass_answers.all()]
+                user_answers.append({
+                    "question": q.id,
+                    "answers": answers,
+                    "is_mark": q.is_mark
+                })
+            questions_data = FullTestQuestionSerializer(questions, many=True)
+            correct_answers_l = AnswerSerializer(correct_answers, many=True)
+            lesson['correct_answer'] = correct_answers_l
+            lesson['questions'] = questions_data.data
+            lesson['user_answers'] = user_answers
+        data = {"lessons": lesson_data}
+        return Response(data)
+
+
+finished_test_lesson_list = FullTestLessonList.as_view()
