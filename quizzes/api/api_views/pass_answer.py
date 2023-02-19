@@ -11,7 +11,7 @@ from base.service import get_multi_score
 from quizzes.api.serializers import (FinishByLessonSerializer,
                                      PassAnswerSerializer)
 from quizzes.models import PassAnswer, Question, QuizEventQuestion, \
-    QuestionQuizEventScore, Answer
+    QuestionQuizEventScore, Answer, QuizEvent
 
 
 class PassAnswerByLessonView(generics.CreateAPIView):
@@ -86,6 +86,7 @@ class FinishByLessonView(APIView):
 
     def post(self, request, *args, **kwargs):
         quiz_event = self.kwargs.get('quiz_event')
+        quiz_event_obj = QuizEvent.objects.get(pk=quiz_event)
         questions = Question.objects.select_related(
             "lesson_question_level",
             "lesson_question_level__question_level"
@@ -114,6 +115,8 @@ class FinishByLessonView(APIView):
             "attempt": question_count,
             "unattem": unattem,
             "question_number": question_count,
+            "lesson_id": quiz_event_obj.test_type_lesson_id,
+            "lesson_name": quiz_event_obj.test_type_lesson.lesson.name_kz,
         }
 
         return Response({
