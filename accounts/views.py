@@ -23,9 +23,9 @@ class GoogleLoginView(APIView):
     permission_classes = []
 
     def post(self, request):
-        adapter = GoogleOAuth2Adapter()
+        adapter = GoogleOAuth2Adapter(request=request)
         provider = adapter.get_provider()
-        access_token = request.data.get('access_token')
+        access_token = self.request.data.get('access_token')
         token = provider.sociallogin_from_token({'access_token': access_token})
         user = token.user
         refresh = RefreshToken.for_user(user)
