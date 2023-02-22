@@ -37,14 +37,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
+    'allauth',
     'rest_framework',
+    'django.contrib.sites',
     'django_filters',
     'drf_yasg',
     'accounts.apps.AccountsConfig',
     'quizzes.apps.QuizzesConfig',
     'admin_panel.apps.AdminPanelConfig'
 ]
-
+SIDE = 1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

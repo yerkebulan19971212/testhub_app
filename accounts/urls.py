@@ -1,15 +1,16 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
-
 from accounts.api_views import views
 from .api_views.views import update_user_information
 
 from .views import (ChangePasswordView, ForgotPasswordView,
                     GenerateEmailOtpView, GeneratePhoneOtpView, StaffLoginView,
                     UploadAvatarView, UserRegisterView, ValidateEmailOTPView,
-                    ValidatePhoneOTPView, GetSchemaView, student_login)
+                    ValidatePhoneOTPView, GetSchemaView, student_login,
+                    GoogleLoginView)
 
 urlpatterns = [
+    path('google-login/', GoogleLoginView.as_view(), name='google_login'),
     path('register/', views.user_register, name='register'),
     path('me/', views.me_information, name='me_information'),
     path('add-test-type/', views.add_test_type),
