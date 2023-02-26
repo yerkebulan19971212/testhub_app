@@ -17,8 +17,8 @@ urlpatterns = [
     # path('api/auth/registration/', include('rest_auth.registration.urls')),
     # path('google/', include('allauth.urls')),
 #
-    path('google-login-2/', GoogleJWTView.as_view(), name='google_login'),
-    path('google-login/', GoogleLoginView.as_view(), name='google_login'),
+    path('google-login/', GoogleJWTView.as_view(), name='google_login'),
+    # path('google-login/', GoogleLoginView.as_view(), name='google_login'),
     # path('google-login-3/', GoogleAuthentication.as_view(), name='google_login'),
     path('register/', views.user_register, name='register'),
     path('me/', views.me_information, name='me_information'),

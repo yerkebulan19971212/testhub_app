@@ -1,5 +1,6 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from accounts.api_views import serializers
 from accounts.api_views.serializers import (MeInformationSerializer,
@@ -9,6 +10,32 @@ from accounts.models import User
 
 class UserRegistrationView(generics.CreateAPIView):
     serializer_class = serializers.UserRegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        phone = request.data.get('phone')
+        result = {
+            "phone": True,
+            "email": True
+        }
+        data = {
+            "status": True,
+            "message": "Success",
+            "status_code": 0,
+            "result": None,
+        }
+        if User.objects.filter(phone=phone).exists():
+            result["phone"] = False
+        if User.objects.filter(email=email).exists():
+            result["email"] = False
+        if result["phone"] is False or result["email"] is False:
+            data["result"] = result
+            data["status"] = False
+            data["message"] = "Fail"
+            data["status_code"] = 9001
+        else:
+            data = self.create(request, *args, **kwargs).data
+        return Response(data, status=status.HTTP_200_OK)
 
 
 user_register = UserRegistrationView.as_view()
