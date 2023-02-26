@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 from accounts.api_views import views
 from .api_views.views import update_user_information
-from rest_auth.views import LogoutView
+# from rest_auth.views import LogoutView
 
 from .views import (ChangePasswordView, ForgotPasswordView,
                     GenerateEmailOtpView, GeneratePhoneOtpView, StaffLoginView,
@@ -12,10 +12,10 @@ from .views import (ChangePasswordView, ForgotPasswordView,
                     )
 
 urlpatterns = [
-path('api/auth/', include('rest_auth.urls')),
-    path('api/auth/logout/', LogoutView.as_view(), name='rest_logout'),
-    path('api/auth/registration/', include('rest_auth.registration.urls')),
-    path('google/', include('allauth.urls')),
+# path('api/auth/', include('rest_auth.urls')),
+    # path('api/auth/logout/', LogoutView.as_view(), name='rest_logout'),
+    # path('api/auth/registration/', include('rest_auth.registration.urls')),
+    # path('google/', include('allauth.urls')),
 #
     path('google-login-2/', GoogleJWTView.as_view(), name='google_login'),
     path('google-login/', GoogleLoginView.as_view(), name='google_login'),
