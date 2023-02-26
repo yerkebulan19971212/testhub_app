@@ -27,7 +27,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         password = validated_data.get('password')
         user = super().create(validated_data)
         user.set_password(password)
-        user.set_unusable_password()
+        # user.set_unusable_password()
         user.save()
         return user
 
