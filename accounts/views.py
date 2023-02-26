@@ -57,7 +57,8 @@ class GoogleAuthentication(BaseAuthentication):
 
 class GoogleJWTView(APIView):
     def post(self, request, *args, **kwargs):
-        id_token = request.META.get('HTTP_AUTHORIZATION', None)
+        # id_token = request.META.get('HTTP_AUTHORIZATION', None)
+        id_token = request.data.get('id_token', None)
         if not id_token:
             return None
 
