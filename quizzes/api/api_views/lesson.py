@@ -12,7 +12,8 @@ from base.service import get_lessons
 from quizzes.api.serializers import (LessonSerializer,
                                      LessonWithTestTypeLessonSerializer,
                                      FullTestLessonSerializer,
-                                     FullTestQuestionSerializer)
+                                     FullTestQuestionSerializer,
+                                     FullTestFinishQuestionSerializer)
 from quizzes.api.serializers.answer import AnswerSerializer
 from quizzes.filters import LessonFilter
 from quizzes.models import Lesson, LessonGroup, TestTypeLesson, UserVariant, \
@@ -255,16 +256,11 @@ class FullTestFinishedTestLessonList(generics.ListAPIView):
         for lesson in lesson_data:
             lesson_id = lesson["id"]
             pass_answers = PassAnswer.objects.all()
-            correct_answers = Answer.objects.filter(
-                correct=True,
-                question__lesson_question_level__test_type_lesson_id=lesson_id,
-                question__variant_questions__variant__user_variant__id=user_variant_id
-            )
             questions = Question.objects \
                 .select_related('lesson_question_level__question_level') \
                 .prefetch_related('answers') \
                 .prefetch_related(
-                Prefetch('pass_answers', queryset=pass_answers)) \
+                    Prefetch('pass_answers', queryset=pass_answers))\
                 .filter(
                 lesson_question_level__test_type_lesson_id=lesson_id,
                 variant_questions__variant__user_variant__id=user_variant_id
@@ -281,8 +277,20 @@ class FullTestFinishedTestLessonList(generics.ListAPIView):
                     user=user,
                     question_id=OuterRef('pk'),
                     is_favorite=True
-                )))
-
+                )))\
+                .annotate(
+                    is_correct=Exists(PassAnswer.objects.filter(
+                        user=user,
+                        user_variant_id=user_variant_id,
+                        question_id=OuterRef('pk'),
+                        answer__correct=True
+                    )))\
+                .annotate(
+                    is_passed=Exists(PassAnswer.objects.filter(
+                        user=user,
+                        user_variant_id=user_variant_id,
+                        question_id=OuterRef('pk'),
+                    )))
             user_answers = []
             for q in questions:
                 answers = [p.answer_id for p in q.pass_answers.all()]
@@ -291,13 +299,11 @@ class FullTestFinishedTestLessonList(generics.ListAPIView):
                     "answers": answers,
                     "is_mark": q.is_mark
                 })
-            questions_data = FullTestQuestionSerializer(questions, many=True)
-            correct_answers_l = AnswerSerializer(correct_answers, many=True)
-            lesson['correct_answer'] = correct_answers_l
+            questions_data = FullTestFinishQuestionSerializer(questions, many=True)
             lesson['questions'] = questions_data.data
             lesson['user_answers'] = user_answers
         data = {"lessons": lesson_data}
         return Response(data)
 
 
-finished_test_lesson_list = FullTestLessonList.as_view()
+finished_test_lesson_list = FullTestFinishedTestLessonList.as_view()

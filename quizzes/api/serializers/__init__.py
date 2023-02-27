@@ -6,7 +6,8 @@ from .lesson import (LessonNameSerializer, LessonSerializer,
                      FullTestLessonSerializer)
 from .number_of_questions import NumberOfQuestionsSerializer
 from .pass_answer import FinishByLessonSerializer, PassAnswerSerializer
-from .question import QuestionsSerializer, FullTestQuestionSerializer
+from .question import (QuestionsSerializer, FullTestQuestionSerializer,
+                       FullTestFinishQuestionSerializer)
 from .quiz_event import QuizEventInformationSerializer, QuizEventSerializer
 from .tag import TagListSerializer
 from .test_type import TestTypeOnlyNameSerializer, TestTypeSerializer

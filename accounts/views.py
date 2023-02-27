@@ -66,11 +66,12 @@ class GoogleJWTView(APIView):
             print('sdfsdf')
             # Verify the JWT signature and extract the user ID and email
             response = requests.get(
-                f'https://www.googleapis.com/oauth2/v1/tokeninfo?id_token={id_token}')
+                f'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={id_token}')
             response.raise_for_status()
-            user_id = response.json().get('sub', None)
-            email = response.json().get('email', None)
-        except requests.exceptions.RequestException:
+        except Exception as e:
+            print("!+++++++++=================")
+            print(e)
+            print("@+++++++++=================")
             raise AuthenticationFailed('Failed to verify Google id_token')
         print(response.json())
         print(response.json().get("user_id"))
