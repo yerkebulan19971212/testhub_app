@@ -12,6 +12,7 @@ class LessonSerializer(abstract_serializer.NameSerializer):
             'id',
             'name',
             'icon',
+            'chosen_icon'
         )
 
 
@@ -33,6 +34,7 @@ class LessonWithTestTypeLessonSerializer(abstract_serializer.NameSerializer):
             # 'id',
             'name',
             'icon',
+            'chosen_icon',
             'test_type_lesson_id'
         )
 
@@ -66,6 +68,7 @@ class FullTestLessonSerializer(serializers.ModelSerializer):
     number_of_score = serializers.IntegerField(default=0)
     my_score = serializers.IntegerField(default=0)
     icon = serializers.ImageField(source='lesson.icon')
+    chosen_icon = serializers.ImageField(source='lesson.chosen_icon')
     name = serializers.SerializerMethodField()
 
     class Meta:
@@ -78,7 +81,8 @@ class FullTestLessonSerializer(serializers.ModelSerializer):
             'number_of_questions',
             'number_of_score',
             'my_score',
-            'icon'
+            'icon',
+            'chosen_icon'
         )
 
     def get_name(self, obj):
