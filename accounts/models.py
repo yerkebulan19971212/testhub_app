@@ -67,9 +67,10 @@ class User(AbstractUser, TimeStampedModel):
     )
     username = models.CharField(
         max_length=128,
-        unique=True
+        unique=True,
+        null=True
     )
-    email = models.EmailField(unique=True, db_index=True)
+    email = models.EmailField(unique=True, db_index=True, null=True)
     phone = models.CharField(
         max_length=11, unique=True, db_index=True, blank=True, null=True)
     role = models.ForeignKey('accounts.Role',
@@ -95,8 +96,10 @@ class User(AbstractUser, TimeStampedModel):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        self.email = self.email.lower()
-        self.username = self.username.lower()
+        if self.email:
+            self.email = self.email.lower()
+        if self.username:
+            self.username = self.username.lower()
         return super().save()
 
     def get_full_name(self):

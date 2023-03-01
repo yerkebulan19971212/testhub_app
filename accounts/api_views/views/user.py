@@ -41,6 +41,20 @@ class UserRegistrationView(generics.CreateAPIView):
 user_register = UserRegistrationView.as_view()
 
 
+class UserRegistrationByEmailView(generics.CreateAPIView):
+    serializer_class = serializers.UserRegisterByEmailSerializer
+
+
+user_register_by_email = UserRegistrationByEmailView.as_view()
+
+
+class UserRegistrationByPhoneView(generics.CreateAPIView):
+    serializer_class = serializers.UserRegisterByPhoneSerializer
+
+
+user_register_by_phone = UserRegistrationByPhoneView.as_view()
+
+
 class AddUserTestTypeView(generics.CreateAPIView):
     serializer_class = serializers.AddUserTestTypeSerializer
 

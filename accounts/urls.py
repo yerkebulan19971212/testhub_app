@@ -20,7 +20,8 @@ urlpatterns = [
     path('google-login-2/', GoogleJWTView.as_view(), name='google_login'),
     # path('google-login/', GoogleLoginView.as_view(), name='google_login'),
     # path('google-login-3/', GoogleAuthentication.as_view(), name='google_login'),
-    path('register/', views.user_register, name='register'),
+    path('register-by-email/', views.user_register_by_email, name='register-by-email'),
+    path('register-by-phone/', views.user_register_by_phone, name='register-by-phone'),
     path('me/', views.me_information, name='me_information'),
     path('add-test-type/', views.add_test_type),
 
