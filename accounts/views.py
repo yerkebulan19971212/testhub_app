@@ -1,26 +1,26 @@
 import requests
+# from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from coreapi import Field
 from rest_framework import status
+from rest_framework.authentication import BaseAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.generics import (CreateAPIView, RetrieveAPIView,
                                      UpdateAPIView)
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.views import APIView
-from coreapi import Field
+
 from .models import EmailOTP, PhoneOTP, User
 from .serializer import (AvatarSerializer, ChangePasswordSerializer,
                          EmailOtpSerializer, EmailOTPValidateSerializer,
                          ForgotPasswordSerializer, PhoneOtpSerializer,
-                         PhoneOTPValidateSerializer, UserRegistration)
-
-# from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-
-import requests
-from rest_framework.authentication import BaseAuthentication
-from rest_framework.exceptions import AuthenticationFailed
+                         PhoneOTPValidateSerializer,
+                         TokenObtainPairSerializerByEmail,
+                         TokenObtainPairSerializerByPhone, UserRegistration)
 
 
 class GoogleAuthentication(BaseAuthentication):
@@ -85,7 +85,6 @@ class GoogleJWTView(APIView):
             user.username = user_data['email']
             user.set_unusable_password()
             user.save()
-
 
         # if user:
         refresh = TokenObtainPairSerializer.get_token(user)
@@ -205,34 +204,20 @@ class StudentLoginView(TokenObtainPairView):
 student_login = StudentLoginView.as_view()
 
 
-# class ClientLoginView(TokenObtainPairView):
-#     serializer_class = TokenObtainPairSerializer
-#
-#     def post(self, request, *args, **kwargs):
-#         username = self.request.data.get('username').lower()
-#         if "@" in username:
-#             user = User.objects.filter(email=username)
-#         else:
-#             user = User.objects.filter(username=username)
-#         if user:
-#             user = user.first()
-#         else:
-#             return Response({"detail": "Такой пользователь не найден"},
-#                             status=status.HTTP_400_BAD_REQUEST)
-#         company = user.company
-#         if company and str(user.role.name) == 'client':
-#             if company.confirm is not True:
-#                 return Response({"detail": "Ваша заявка еще не принято"},
-#                                 status=status.HTTP_400_BAD_REQUEST)
-#         role = user.role
-#         if role:
-#             if str(role.name.lower()) != 'client':
-#                 return Response({"detail": "вы не являетесть клиентом"},
-#                                 status=status.HTTP_400_BAD_REQUEST)
-#         else:
-#             return Response({"detail": "role net"},
-#                             status=status.HTTP_400_BAD_REQUEST)
-#         return super().post(request, *args, **kwargs)
+class StudentLoginByPhoneView(TokenObtainPairView):
+    """ Login student by phone """
+    serializer_class = TokenObtainPairSerializerByPhone
+
+
+student_login_by_phone = StudentLoginByPhoneView.as_view()
+
+
+class StudentLoginByEmailView(TokenObtainPairView):
+    """ Login student by email """
+    serializer_class = TokenObtainPairSerializerByEmail
+
+
+student_login_by_email = StudentLoginByEmailView.as_view()
 
 
 class GenerateEmailOtpView(CreateAPIView):

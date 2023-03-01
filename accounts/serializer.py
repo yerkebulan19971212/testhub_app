@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import EmailOTP, PhoneOTP, Role, User
 
@@ -164,6 +165,7 @@ class ForgotPasswordSerializer(serializers.ModelSerializer):
 
         return instance
 
+
 class AvatarSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -171,3 +173,11 @@ class AvatarSerializer(serializers.ModelSerializer):
             'id',
             'avatar'
         )
+
+
+class TokenObtainPairSerializerByPhone(TokenObtainPairSerializer):
+    username_field = 'phone'
+
+
+class TokenObtainPairSerializerByEmail(TokenObtainPairSerializer):
+    username_field = 'email'

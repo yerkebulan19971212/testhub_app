@@ -102,10 +102,11 @@ TEMPLATES = [
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
-# AUTHENTICATION_BACKENDS = (
-#     'django.contrib.auth.backends.ModelBackend',
-#     'Accounts.authentication.EmailAuthBackend',
-# )
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'accounts.authentication.EmailAuthBackend',
+    'accounts.authentication.PhoneAuthBackend',
+)
 
 WSGI_APPLICATION = 'Test_HUB.wsgi.application'
 

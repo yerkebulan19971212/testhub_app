@@ -8,7 +8,8 @@ from .views import (ChangePasswordView, ForgotPasswordView,
                     GenerateEmailOtpView, GeneratePhoneOtpView, StaffLoginView,
                     UploadAvatarView, UserRegisterView, ValidateEmailOTPView,
                     ValidatePhoneOTPView, GetSchemaView, student_login,
-                    GoogleLoginView, GoogleJWTView, GoogleAuthentication
+                    GoogleLoginView, GoogleJWTView, GoogleAuthentication,
+                    student_login_by_phone, student_login_by_email
                     )
 
 urlpatterns = [
@@ -34,6 +35,8 @@ urlpatterns = [
     path('otp-email/phone/', ValidatePhoneOTPView.as_view()),
     path('staff-login/', StaffLoginView.as_view()),
     path('login/', student_login),
+    path('login-phone/', student_login_by_phone),
+    path('login-email/', student_login_by_email),
     path('avatar/<int:pk>/', UploadAvatarView.as_view()),
     path('pass-edit/', ChangePasswordView.as_view()),  # Пароль ауыстыру
     path('update/', update_user_information),
