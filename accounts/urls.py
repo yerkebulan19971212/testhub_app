@@ -8,7 +8,7 @@ from .views import (ChangePasswordView, ForgotPasswordView,
                     GenerateEmailOtpView, GeneratePhoneOtpView, StaffLoginView,
                     UploadAvatarView, UserRegisterView, ValidateEmailOTPView,
                     ValidatePhoneOTPView, GetSchemaView, student_login,
-                    GoogleLoginView, GoogleJWTView, GoogleAuthentication,
+                    GoogleJWTView,
                     student_login_by_phone, student_login_by_email
                     )
 

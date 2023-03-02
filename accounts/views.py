@@ -1,6 +1,4 @@
 import requests
-# from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from coreapi import Field
 from rest_framework import status
 from rest_framework.authentication import BaseAuthentication
@@ -21,38 +19,6 @@ from .serializer import (AvatarSerializer, ChangePasswordSerializer,
                          PhoneOTPValidateSerializer,
                          TokenObtainPairSerializerByEmail,
                          TokenObtainPairSerializerByPhone, UserRegistration)
-
-
-class GoogleAuthentication(BaseAuthentication):
-    def authenticate(self, request):
-        id_token = request.META.get('HTTP_AUTHORIZATION', None)
-        if not id_token:
-            return None
-
-        try:
-            # Verify the JWT signature and extract the user ID and email
-            response = requests.get(
-                f'https://www.googleapis.com/oauth2/v1/tokeninfo?id_token={id_token}')
-            response.raise_for_status()
-            user_id = response.json().get('sub', None)
-            email = response.json().get('email', None)
-        except requests.exceptions.RequestException:
-            raise AuthenticationFailed('Failed to verify Google id_token')
-        print(response.json())
-        print("response.json()")
-        return Response()
-        # Authenticate the user based on the user ID or email
-        # You can implement your own authentication logic here
-        user = None
-        if user_id:
-            user = User.objects.filter(google_user_id=user_id).first()
-        elif email:
-            user = User.objects.filter(email=email).first()
-
-        if user is None:
-            raise AuthenticationFailed('User not found')
-
-        return (user, None)
 
 
 class GoogleJWTView(APIView):
@@ -119,23 +85,6 @@ class GoogleJWTView(APIView):
         # # token = serializer.object.get('token')
         # response_data = {'token': "token"}
         return Response(data, status=status.HTTP_200_OK)
-
-
-class GoogleLoginView(APIView):
-    authentication_classes = []
-    permission_classes = []
-
-    def post(self, request):
-        adapter = GoogleOAuth2Adapter(request=request)
-        provider = adapter.get_provider()
-        access_token = self.request.data.get('access_token')
-        token = provider.sociallogin_from_token({'access_token': access_token})
-        user = token.user
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'access_token': str(refresh.access_token),
-            'refresh_token': str(refresh),
-        })
 
 
 class UserRegisterView(CreateAPIView):
