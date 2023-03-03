@@ -1,6 +1,7 @@
 from django.urls import include, path
 
 from quizzes.api.api_views import (create_favorite_questions,
+                                   user_variants_list_count,
                                    create_flash_cards, pass_answer,
                                    create_quiz_event_by_lesson_view,
                                    detail_info_question, finish_by_lesson_view,
@@ -43,6 +44,7 @@ question_urlpatterns = [
 ent_urlpatterns = [
     path('variant-group-list/', variant_groups),
     path('variant-list/', user_variants_list),
+    path('variant-list-count/', user_variants_list_count),
     path('variant-lesson-list/', lesson_list_variant),
     path('variant-chose-lesson-pairs/<int:pk>/', save_lesson_pairs),
     path('lesson-list/<int:user_variant_id>/', test_lesson_list),

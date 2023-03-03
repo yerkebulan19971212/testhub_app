@@ -13,8 +13,7 @@ class VariantGroupFilter(django_filters.FilterSet):
 
 
 class UserVariantFilter(django_filters.FilterSet):
-    variant_group = filters.NumberFilter(
-        field_name="variant__variant_group", required=True)
+    variant_group = filters.NumberFilter(field_name="variant__variant_group")
 
     class Meta:
         model = UserVariant

@@ -1,6 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from quizzes.api.serializers import (SaveLessonPairsForUserSerializer,
                                      UserVariantsSerializer,
@@ -36,6 +37,26 @@ class UserVariantsView(generics.ListAPIView):
 
 
 user_variants_list = UserVariantsView.as_view()
+
+
+class UserVariantsCountView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserVariantsSerializer
+    queryset = UserVariant.objects.select_related(
+        'variant',
+        'variant__variant_group'
+    ).all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = UserVariantFilter
+
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+        queryset = self.filter_queryset(self.get_queryset())
+        active_count = queryset.filter(user=user).count()
+        return Response({"result": active_count})
+
+
+user_variants_list_count = UserVariantsCountView.as_view()
 
 
 class SaveLessonPairsForUserView(generics.UpdateAPIView):

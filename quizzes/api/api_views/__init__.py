@@ -14,7 +14,7 @@ from .quiz_event import (create_quiz_event_by_lesson_view,
 from .tag import tag_list_view
 from .test_type import test_type_view
 from .test_type_lesson import get_lesson_test_type_lesson_view
-from .variants import save_lesson_pairs, user_variants_list, variant_groups
+from .variants import save_lesson_pairs, user_variants_list_count, user_variants_list, variant_groups
 from .full_test import (pass_answer, finish_full_test, get_full_test_result,
                         create_mark_questions, finish_question_list)
 from .info import (grade_view, complain_question_view, complain_info_list_view,
