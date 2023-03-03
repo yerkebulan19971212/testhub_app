@@ -1,10 +1,13 @@
 from django.db import transaction
-from django.db.models import Count, F, Func, Q, Sum, Avg, Max
+from django.db.models import Count, F, Func, Q, Sum, Avg, Max, Exists, \
+    OuterRef, Prefetch
 from django.db.models.functions import Coalesce, Round
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework import permissions
 from rest_framework.views import APIView
+from django_filters.rest_framework import DjangoFilterBackend
 
 from base import exceptions
 from base.constant import ChoiceType, Status
@@ -12,9 +15,12 @@ from base.service import get_multi_score, get_lessons
 from quizzes.api.serializers import (StudentAnswersSerializer,
                                      FinishFullTestSerializer,
                                      GetFullTestResultSerializer,
-                                     MarkSerializer)
+                                     MarkSerializer,
+                                     FullTestQuestionSerializer,
+                                     FullTestFinishQuestionByLessonSerializer)
+from quizzes.filters.question import FullTestQuestionFilter
 from quizzes.models import Question, PassAnswer, QuestionScore, UserVariant, \
-    TestTypeLesson, TestFullScore, Mark
+    TestTypeLesson, TestFullScore, Mark, Answer, Favorite
 
 
 class PassStudentAnswerView(generics.CreateAPIView):
@@ -228,3 +234,39 @@ class MarkQuestions(generics.CreateAPIView):
 
 
 create_mark_questions = MarkQuestions.as_view()
+
+
+class FinishedQuestionsList(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FullTestFinishQuestionByLessonSerializer
+    queryset = Question.objects.select_related(
+        'lesson_question_level__question_level'
+    ).all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = FullTestQuestionFilter
+
+    def get_queryset(self):
+        user = self.request.user
+        user_variant_id = self.request.data.get('user_variant_id')
+        answers = Answer.objects.filter().annotate(
+            is_correct_answered=Exists(PassAnswer.objects.filter(
+                user=user,
+                answer__correct=True,
+                user_variant_id=user_variant_id,
+                answer_id=OuterRef('pk')
+                ))
+        )
+        queryset = super().get_queryset().prefetch_related(
+            Prefetch('answers', queryset=answers)
+        ).annotate(
+            is_favorite=Exists(
+                Favorite.objects.filter(
+                    user=user,
+                    question_id=OuterRef('pk'),
+                    is_favorite=True
+                ))
+        )
+        return queryset
+
+
+finish_question_list = FinishedQuestionsList.as_view()

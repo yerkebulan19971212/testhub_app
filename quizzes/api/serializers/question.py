@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from quizzes.api.serializers.answer import AnswerSerializer
+from quizzes.api.serializers.answer import AnswerSerializer, \
+    AnswerFinishedSerializer
 from quizzes.models import Favorite, Question
 
 
@@ -93,4 +94,29 @@ class FullTestFinishQuestionSerializer(serializers.ModelSerializer):
             'math',
             'is_passed',
             'is_correct',
+        )
+
+
+class FullTestFinishQuestionByLessonSerializer(serializers.ModelSerializer):
+    answers = AnswerFinishedSerializer(many=True)
+    choice = serializers.IntegerField(
+        source='lesson_question_level.question_level.choice'
+    )
+    is_favorite = serializers.BooleanField()
+
+    class Meta:
+        model = Question
+        fields = (
+            'id',
+            'common_question',
+            'lesson_question_level',
+            'question',
+            'created',
+            'modified',
+            'order',
+            'is_active',
+            'choice',
+            'math',
+            'is_favorite',
+            'answers'
         )

@@ -132,5 +132,8 @@ class UserInformationUpdateSerializer(serializers.ModelSerializer):
             'last_name',
             'phone',
             'language',
-            'test_type'
+            'test_type',
+            'email',
+            'avatar',
+            'city'
         )

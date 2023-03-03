@@ -19,7 +19,7 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    finished_test_lesson_list,
                                    create_mark_questions,
                                    complain_info_list_view,
-                                   grade_info_list_view)
+                                   grade_info_list_view, finish_question_list)
 from quizzes.api.api_views.question import full_test_question
 
 lesson_urlpatterns = [
@@ -52,6 +52,7 @@ ent_urlpatterns = [
     path('questions/', full_test_question),
     path('pass_answer/', pass_answer),
     path('finish/<int:user_variant_id>/', finish_full_test),
+    path('finish-question/', finish_question_list),
     path('mark/', create_mark_questions)
 ]
 
