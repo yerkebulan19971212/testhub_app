@@ -7,7 +7,7 @@ from django.core.mail import EmailMultiAlternatives, send_mail
 from django.core.validators import FileExtensionValidator, MinLengthValidator
 from django.db import models
 
-from base.abstract_models import TimeStampedModel
+from base.abstract_models import TimeStampedModel, IsActive, AbstractBaseName, Ordering, AbstractBaseNameCode
 from base.constant import TestLang
 from base.service import validate_mb_image, validate_size_image
 
@@ -18,8 +18,21 @@ class Role(TimeStampedModel):
     class Meta:
         db_table = 'accounts\".\"role'
 
-    # def __str__(self):
-    #     return f"{self.name}"
+    def __str__(self):
+        return f"{self.name}"
+
+
+class City(AbstractBaseName,
+           AbstractBaseNameCode,
+           Ordering,
+           IsActive,
+           TimeStampedModel):
+
+    class Meta:
+        db_table = 'accounts\".\"city'
+
+    def __str__(self):
+        return f"{self.name_code}"
 
 
 class UserManager(BaseUserManager):
@@ -90,9 +103,15 @@ class User(AbstractUser, TimeStampedModel):
         null=True,
         db_index=True
     )
+    city = models.ForeignKey(
+        'accounts.City',
+        on_delete=models.CASCADE,
+        null=True,
+        db_index=True
+    )
 
-    # def __str__(self):
-    #     return self.email
+    def __str__(self):
+        return self.email
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -125,12 +144,13 @@ class EmailOTP(TimeStampedModel):
         verbose_name_plural = "Email OTP Tokens"
         db_table = 'accounts\".\"email_otp'
 
-    # def __str__(self):
-    #     return "{} - {}".format(self.email, self.otp)
+    def __str__(self):
+        return "{} - {}".format(self.email, self.otp)
 
     @classmethod
     def create_otp_for_email(cls, email, forgot=False):
-        otp = cls.generate_otp(length=getattr(settings, 'EMAIL_LOGIN_OTP_LENGTH', 6))
+        otp = cls.generate_otp(
+            length=getattr(settings, 'EMAIL_LOGIN_OTP_LENGTH', 6))
         email_otp = EmailOTP.objects.create(email=email,
                                             otp=otp,
                                             forgot=forgot)
@@ -170,8 +190,8 @@ class PhoneOTP(TimeStampedModel):
         verbose_name_plural = "Phone OTP Tokens"
         db_table = 'accounts\".\"phone_otp'
 
-    # def __str__(self):
-    #     return "{} - {}".format(self.phone, self.otp)
+    def __str__(self):
+        return "{} - {}".format(self.phone, self.otp)
 
     @classmethod
     def create_otp_for_phone(cls, phone, forgot=False):

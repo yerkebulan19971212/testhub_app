@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from accounts.models import Role, User, UserTestType
+from accounts.models import Role, User, UserTestType, City
 from quizzes.api.serializers import TestTypeOnlyNameSerializer
 
 from .role import RoleSerializer
@@ -89,19 +89,37 @@ class AddUserTestTypeSerializer(serializers.ModelSerializer):
         )
 
 
+class CitySerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = City
+        fields = (
+            'id',
+            'name'
+        )
+
+    @staticmethod
+    def get_name(obj):
+        return obj.name_kz
+
+
 class MeInformationSerializer(serializers.ModelSerializer):
     test_type = TestTypeOnlyNameSerializer()
+    city = CitySerializer()
 
     class Meta:
         model = User
         fields = (
             'id',
+            'avatar',
             'first_name',
             'last_name',
             'phone',
             'email',
             'language',
-            'test_type'
+            'test_type',
+            'city'
         )
 
 
