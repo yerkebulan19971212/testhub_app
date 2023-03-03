@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -73,6 +75,7 @@ class MeInformationView(generics.RetrieveAPIView):
 
 me_information = MeInformationView.as_view()
 
+logger = logging.getLogger(__name__)
 
 class UserInformationUpdateView(generics.UpdateAPIView):
     permission_classes = (IsAuthenticated,)
@@ -82,6 +85,27 @@ class UserInformationUpdateView(generics.UpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        try:
+            print('+++++')
+            print(request.data)
+            print('+++++++')
+            partial = kwargs.pop('partial', False)
+            instance = self.get_object()
+            serializer = self.get_serializer(instance, data=request.data, partial=partial)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+
+            if getattr(instance, '_prefetched_objects_cache', None):
+                # If 'prefetch_related' has been applied to a queryset, we need to
+                # forcibly invalidate the prefetch cache on the instance.
+                instance._prefetched_objects_cache = {}
+        except Exception as e:
+            print(e)
+            logger.info(e)
+
+        return Response(serializer.data)
 
 
 update_user_information = UserInformationUpdateView.as_view()
