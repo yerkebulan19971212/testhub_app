@@ -72,7 +72,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser, TimeStampedModel):
-    avatar = models.ImageField(
+    avatar = models.FileField(
         # upload_to=get_path_upload_avatar,
         blank=True,
         null=True,
