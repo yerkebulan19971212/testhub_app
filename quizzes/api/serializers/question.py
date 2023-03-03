@@ -76,11 +76,9 @@ class FullTestQuestionSerializer(serializers.ModelSerializer):
 
 
 class FullTestFinishQuestionSerializer(serializers.ModelSerializer):
-    answers = AnswerSerializer(many=True)
     choice = serializers.IntegerField(
         source='lesson_question_level.question_level.choice'
     )
-    is_favorite = serializers.BooleanField()
     is_passed = serializers.BooleanField()
     is_correct = serializers.BooleanField()
 
@@ -91,14 +89,8 @@ class FullTestFinishQuestionSerializer(serializers.ModelSerializer):
             'common_question',
             'lesson_question_level',
             'question',
-            'created',
-            'modified',
-            'order',
-            'is_active',
             'choice',
             'math',
-            'is_favorite',
             'is_passed',
             'is_correct',
-            'answers',
         )

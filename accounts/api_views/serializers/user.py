@@ -98,6 +98,7 @@ class MeInformationSerializer(serializers.ModelSerializer):
             'id',
             'first_name',
             'last_name',
+            'phone',
             'email',
             'language',
             'test_type'

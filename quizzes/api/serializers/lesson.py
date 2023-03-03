@@ -90,3 +90,21 @@ class FullTestLessonSerializer(serializers.ModelSerializer):
         if language == 'kz':
             return obj.lesson.name_kz
         return obj.lesson.name_ru
+
+class FullTestFinishLessonSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TestTypeLesson
+        fields = (
+            'id',
+            'name',
+            'language',
+            'main',
+        )
+
+    def get_name(self, obj):
+        language = self.context.get('request').headers.get('language', 'kz')
+        if language == 'kz':
+            return obj.lesson.name_kz
+        return obj.lesson.name_ru

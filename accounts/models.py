@@ -18,8 +18,8 @@ class Role(TimeStampedModel):
     class Meta:
         db_table = 'accounts\".\"role'
 
-    def __str__(self):
-        return f"{self.name}"
+    # def __str__(self):
+    #     return f"{self.name}"
 
 
 class UserManager(BaseUserManager):
@@ -91,8 +91,8 @@ class User(AbstractUser, TimeStampedModel):
         db_index=True
     )
 
-    def __str__(self):
-        return self.email
+    # def __str__(self):
+    #     return self.email
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -125,8 +125,8 @@ class EmailOTP(TimeStampedModel):
         verbose_name_plural = "Email OTP Tokens"
         db_table = 'accounts\".\"email_otp'
 
-    def __str__(self):
-        return "{} - {}".format(self.email, self.otp)
+    # def __str__(self):
+    #     return "{} - {}".format(self.email, self.otp)
 
     @classmethod
     def create_otp_for_email(cls, email, forgot=False):
@@ -170,8 +170,8 @@ class PhoneOTP(TimeStampedModel):
         verbose_name_plural = "Phone OTP Tokens"
         db_table = 'accounts\".\"phone_otp'
 
-    def __str__(self):
-        return "{} - {}".format(self.phone, self.otp)
+    # def __str__(self):
+    #     return "{} - {}".format(self.phone, self.otp)
 
     @classmethod
     def create_otp_for_phone(cls, phone, forgot=False):
