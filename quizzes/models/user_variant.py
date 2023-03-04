@@ -30,6 +30,8 @@ class UserVariant(models.Model):
         related_name='user_variants',
         null=True
     )
+    test_start_time = models.DateTimeField(null=True, blank=True)
+    test_end_time = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'quiz\".\"user_variant'

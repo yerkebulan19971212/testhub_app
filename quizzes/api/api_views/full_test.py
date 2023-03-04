@@ -199,7 +199,21 @@ class GetFullTestResultView(generics.ListAPIView):
         for ls in lesson_score:
             number_of_score += ls["number_of_score"]
             user_score += ls["user_score"]
+        user_count = UserVariant.objects.all().count()
+        user_score_ball = UserVariant.objects.filter().annotate(
+            user_score_ball=Coalesce(Sum('test_full_score__user_score'), 0)
+        ).order_by('-user_score_ball')
+        rating_count = 0
+        for u_v in user_score_ball:
+            rating_count += 1
+            if user_variant_id == u_v.pk:
+                break
+
         data = {
+            "rating": {
+                "all": user_count,
+                "place": rating_count
+            },
             "others_info": test_full_score,
             "user_score": user_score,
             "number_of_score": number_of_score,

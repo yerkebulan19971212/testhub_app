@@ -1,3 +1,6 @@
+from datetime import timedelta, datetime
+from django.utils.timezone import localtime
+
 from django.db.models import Sum, Q, Count, Prefetch, Exists, Value, \
     BooleanField, OuterRef
 from django.db.models.functions import Coalesce, Cast
@@ -125,6 +128,7 @@ class FullTestLessonList(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         lesson_data = self.list(request, *args, **kwargs).data
         user_variant_id = self.kwargs.get('user_variant_id')
+        user_variant = UserVariant.objects.get(pk=user_variant_id)
         user = self.request.user
 
         for lesson in lesson_data:
@@ -165,8 +169,24 @@ class FullTestLessonList(generics.ListAPIView):
             lesson['questions'] = questions_data.data
             lesson['user_answers'] = user_answers
 
+        if not user_variant.test_start_time:
+            user_variant.test_start_time = datetime.now()
+            user_variant.save()
+            difference_duration = timedelta(seconds=0)
+        else:
+            test_start_time = user_variant.test_start_time
+            difference_duration = datetime.now() - localtime(test_start_time).replace(tzinfo=None)
+        duration = user_variant.variant.variant_group.duration # student_test.variant.duration
+        duration = duration - difference_duration
+        duration_time = {
+            "hour": duration.seconds // 3600,
+            "minute": (duration.seconds // 60) % 60,
+            "seconds": duration.seconds % 60
+        }
+
         data = {
-            "lessons": lesson_data,
+            "duration": duration_time,
+            "lessons": lesson_data
         }
         return Response(data)
 
