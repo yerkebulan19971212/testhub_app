@@ -16,8 +16,11 @@ class CreateFavoriteQuestions(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         question = self.request.data.get('question', None)
+        favorite_type = self.request.data.get('favorite_type', None)
+
         obj, create_status = self.queryset.get_or_create(
             question_id=question,
+            favorite_type=favorite_type,
             user=self.request.user
         )
         if create_status is False:
