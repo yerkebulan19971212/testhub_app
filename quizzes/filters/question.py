@@ -4,7 +4,7 @@ from django.contrib.postgres.search import (SearchQuery, SearchRank,
 from django_filters import CharFilter, NumberFilter
 from django_filters import rest_framework as filters
 
-from quizzes.models import Question
+from quizzes.models import Question, Favorite
 
 
 class QuestionFilter(django_filters.FilterSet):
@@ -64,4 +64,16 @@ class FullTestQuestionFilter(django_filters.FilterSet):
         fields = (
             'lesson_id',
             'user_variant_id'
+        )
+
+
+class FavoriteFilter(django_filters.FilterSet):
+    favorite_type = filters.CharFilter(
+        field_name='favorites__favorite_type'
+    )
+
+    class Meta:
+        model = Question
+        fields = (
+            'favorite_type',
         )

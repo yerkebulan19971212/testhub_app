@@ -59,3 +59,9 @@ class GradeType(int, Choice):
 class ErrorType(int, Choice):
     GRADE = 1
     COMPLAIN = 2
+
+
+class FavoriteType(str, Choice):
+    TEST = 'TEST'
+    SEARCH = 'SEARCH'
+    FLASH_CARD = 'FLASH_CARD'

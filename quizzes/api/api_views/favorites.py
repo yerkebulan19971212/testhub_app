@@ -2,9 +2,10 @@ from rest_framework import generics
 from rest_framework import status as sts
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
+from django_filters.rest_framework import DjangoFilterBackend
 from base.paginate import SimplePagination
 from quizzes.api.serializers import FavoritesSerializer, QuestionsSerializer
+from quizzes.filters.question import FavoriteFilter
 from quizzes.models import Favorite, Question
 
 
@@ -37,6 +38,8 @@ class ListFavoritesView(generics.ListAPIView):
         'lesson_question_level__question_level'
     ).all()
     serializer_class = QuestionsSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = FavoriteFilter
     pagination_class = SimplePagination
 
     def get_queryset(self):

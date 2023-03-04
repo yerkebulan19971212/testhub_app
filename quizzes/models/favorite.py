@@ -1,6 +1,7 @@
 from django.db import models
 
 from base import abstract_models
+from base.constant import FavoriteType
 
 
 class Favorite(abstract_models.TimeStampedModel):
@@ -15,6 +16,12 @@ class Favorite(abstract_models.TimeStampedModel):
         related_name='favorites'
     )
     is_favorite = models.BooleanField(default=True)
+    favorite_type = models.CharField(
+        max_length=15,
+        db_index=True,
+        choices=FavoriteType.choices(),
+        default=FavoriteType.TEST
+    )
 
     class Meta:
         db_table = 'quiz\".\"favorite'

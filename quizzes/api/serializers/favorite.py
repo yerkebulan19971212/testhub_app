@@ -9,5 +9,6 @@ class FavoritesSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'question',
+            'favorite_type'
         )
 
