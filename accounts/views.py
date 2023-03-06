@@ -1,5 +1,9 @@
+import math
+
 import requests
 from coreapi import Field
+from django.db.models import Sum, Max, Min
+from django.db.models.functions import Coalesce
 from rest_framework import status
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
@@ -12,6 +16,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from base.constant import Status
+from quizzes.models import UserVariant, QuestionScore
 from .models import EmailOTP, PhoneOTP, User
 from .serializer import (AvatarSerializer, ChangePasswordSerializer,
                          EmailOtpSerializer, EmailOTPValidateSerializer,
@@ -330,3 +336,47 @@ class GetSchemaView(APIView):
     def get(self, request, format=None):
         # your logic here
         return Response(data={'message': 'Success'}, status=status.HTTP_200_OK)
+
+
+class MyProgresView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+        passed_user_variant_count = UserVariant.objects.filter(
+            user=user,
+            status=Status.PASSED
+        ).count()
+        score = QuestionScore.objects.filter(
+            user_variant__user=user,
+            user_variant__status=Status.PASSED,
+        ).aggregate(sum_score=Coalesce(Sum('score'), 0)).get('sum_score')
+
+        max_score = QuestionScore.objects.filter(
+            user_variant__user=user
+        ).values('user_variant').annotate(
+            sum_score=Coalesce(Sum('score'), 0)
+        ).order_by('-sum_score')
+        if max_score:
+            max_score = max_score[0].get('sum_score')
+        else:
+            max_score = 0
+
+        min_score = QuestionScore.objects.filter(
+            user_variant__user=user
+        ).values('user_variant').annotate(
+            sum_score=Coalesce(Sum('score'),0)
+        ).order_by('sum_score')
+        if min_score:
+            min_score = min_score[0].get('sum_score')
+        else:
+            min_score = 0
+
+        return Response({
+            "max_score": max_score,
+            "min_score": min_score,
+            "avg_score": math.ceil(score/passed_user_variant_count)
+        })
+
+
+my_progress = MyProgresView.as_view()

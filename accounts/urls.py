@@ -9,7 +9,7 @@ from .views import (ChangePasswordView, ForgotPasswordView,
                     UploadAvatarView, UserRegisterView, ValidateEmailOTPView,
                     ValidatePhoneOTPView, GetSchemaView, student_login,
                     GoogleJWTView,
-                    student_login_by_phone, student_login_by_email
+                    student_login_by_phone, student_login_by_email, my_progress
                     )
 
 urlpatterns = [
@@ -40,5 +40,6 @@ urlpatterns = [
     path('avatar/<int:pk>/', UploadAvatarView.as_view()),
     path('pass-edit/', ChangePasswordView.as_view()),  # Пароль ауыстыру
     path('update/', update_user_information),
-    path('supdate/', GetSchemaView.as_view())
+    path('supdate/', GetSchemaView.as_view()),
+    path('my-progress/', my_progress)
 ]

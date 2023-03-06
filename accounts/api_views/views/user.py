@@ -88,9 +88,6 @@ class UserInformationUpdateView(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         try:
-            print('+++++')
-            print(request.data)
-            print('+++++++')
             partial = kwargs.pop('partial', False)
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data, partial=partial)
