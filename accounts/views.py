@@ -93,11 +93,6 @@ class GoogleJWTView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class UserRegisterView(CreateAPIView):
-    serializer_class = UserRegistration
-    queryset = User.objects.all()
-
-
 class StaffLoginView(TokenObtainPairView):
     """ логин """
     serializer_class = TokenObtainPairSerializer
@@ -170,6 +165,10 @@ student_login_by_phone = StudentLoginByPhoneView.as_view()
 class StudentLoginByEmailView(TokenObtainPairView):
     """ Login student by email """
     serializer_class = TokenObtainPairSerializerByEmail
+
+    def post(self, request, *args, **kwargs):
+        request.data['email'] = request.data.get('email').lower()
+        return super().post(request, args, kwargs)
 
 
 student_login_by_email = StudentLoginByEmailView.as_view()

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from accounts.models import Role, User, UserTestType, City
+from accounts.models import City, Role, User, UserTestType
 from quizzes.api.serializers import TestTypeOnlyNameSerializer
 
 from .role import RoleSerializer
@@ -27,7 +27,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         password = validated_data.get('password')
         user = super().create(validated_data)
         user.set_password(password)
-        # user.set_unusable_password()
         user.save()
         return user
 
@@ -48,7 +47,7 @@ class UserRegisterByEmailSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data['role'] = Role.objects.get(name="student")
-        validated_data['username'] = validated_data.get('email')
+        validated_data['username'] = validated_data.get('email').lower()
         password = validated_data.get('password')
         user = super().create(validated_data)
         user.set_password(password)
