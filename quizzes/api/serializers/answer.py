@@ -15,6 +15,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 class AnswerFinishedSerializer(serializers.ModelSerializer):
     is_correct_answered = serializers.BooleanField()
+    is_answer_passed = serializers.BooleanField()
 
     class Meta:
         model = Answer
@@ -22,5 +23,6 @@ class AnswerFinishedSerializer(serializers.ModelSerializer):
             'id',
             'answer',
             'math',
+            'is_answer_passed',
             'is_correct_answered'
         )

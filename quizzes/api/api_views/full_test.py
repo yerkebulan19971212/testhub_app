@@ -263,6 +263,11 @@ class FinishedQuestionsList(generics.ListAPIView):
         user = self.request.user
         user_variant_id = self.request.data.get('user_variant_id')
         answers = Answer.objects.filter().annotate(
+            is_answer_passed=Exists(PassAnswer.objects.filter(
+                user=user,
+                user_variant_id=user_variant_id,
+                answer_id=OuterRef('pk')
+            )),
             is_correct_answered=Exists(PassAnswer.objects.filter(
                 user=user,
                 answer__correct=True,
