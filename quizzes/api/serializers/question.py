@@ -103,6 +103,8 @@ class FullTestFinishQuestionByLessonSerializer(serializers.ModelSerializer):
         source='lesson_question_level.question_level.choice'
     )
     is_favorite = serializers.BooleanField()
+    is_passed = serializers.BooleanField()
+    is_correct = serializers.BooleanField()
 
     class Meta:
         model = Question
@@ -118,5 +120,7 @@ class FullTestFinishQuestionByLessonSerializer(serializers.ModelSerializer):
             'choice',
             'math',
             'is_favorite',
+            'is_passed',
+            'is_correct',
             'answers'
         )

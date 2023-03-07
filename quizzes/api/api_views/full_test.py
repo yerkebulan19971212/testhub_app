@@ -279,7 +279,19 @@ class FinishedQuestionsList(generics.ListAPIView):
                     question_id=OuterRef('pk'),
                     is_favorite=True
                 ))
-        )
+        ).annotate(
+            is_correct=Exists(PassAnswer.objects.filter(
+                user=user,
+                user_variant_id=user_variant_id,
+                question_id=OuterRef('pk'),
+                answer__correct=True
+            )))\
+        .annotate(
+            is_passed=Exists(PassAnswer.objects.filter(
+                user=user,
+                user_variant_id=user_variant_id,
+                question_id=OuterRef('pk'),
+            )))
         return queryset
 
 
