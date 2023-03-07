@@ -133,7 +133,7 @@ class FullTestLessonList(generics.ListAPIView):
 
         for lesson in lesson_data:
             lesson_id = lesson["id"]
-            pass_answers = PassAnswer.objects.all()
+            pass_answers = PassAnswer.objects.filter(user_variant_id=user_variant_id)
             questions = Question.objects \
                 .select_related('lesson_question_level__question_level') \
                 .prefetch_related('answers') \
