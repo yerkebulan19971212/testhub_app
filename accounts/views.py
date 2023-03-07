@@ -351,7 +351,7 @@ class MyProgresView(APIView):
             user_variant__user=user,
             user_variant__status=Status.PASSED,
         ).aggregate(sum_score=Coalesce(Sum('score'), 0)).get('sum_score')
-
+        avg_score = score/passed_user_variant_count if passed_user_variant_count else 0
         max_score = QuestionScore.objects.filter(
             user_variant__user=user
         ).values('user_variant').annotate(
@@ -375,7 +375,7 @@ class MyProgresView(APIView):
         return Response({
             "max_score": max_score,
             "min_score": min_score,
-            "avg_score": math.ceil(score/passed_user_variant_count)
+            "avg_score": math.ceil(avg_score)
         })
 
 
