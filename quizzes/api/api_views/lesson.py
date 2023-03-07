@@ -242,7 +242,7 @@ class FullTestFinishedTestLessonList(generics.ListAPIView):
                 'lesson_group',
                 'variant__variant_group__test_type'
             ).get(pk=user_variant_id)
-            user_variant.status = Status.CONTINUE
+            user_variant.status = Status.PASSED
             user_variant.save()
         except UserVariant.DoesNotExist as e:
             raise exceptions.DoesNotExist()
