@@ -18,7 +18,6 @@
         <div>
 
     {% csrf_token %}
-{#    <a class="nav-link {% if page == selected_page %}active{% endif %}" onclick="document.getElementById('form-id').submit();">Add page</a>#}
 
                 <button
                    class="btn btn-info btn-border btn-round btn-sm mr-2">
@@ -26,6 +25,19 @@
                 <i class="fa fa-pencil"></i>
             </span>
                     Generate
+                </button>
+            </div>
+    </form>
+     <form class="success" id="form-id" action="{% url 'admin_panel:add_too_app'  variant_id=variant.pk %}" method="post">
+        <div>
+    {% csrf_token %}
+
+                <button
+                   class="btn btn-info btn-border btn-round btn-sm mr-2">
+            <span class="btn-label">
+                <i class="fa fa-pencil"></i>
+            </span>
+                    Приложение
                 </button>
             </div>
     </form>

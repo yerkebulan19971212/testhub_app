@@ -1,5 +1,6 @@
 import logging
 
+import requests
 from django.db import transaction
 from django.db.models import Count, Q, Prefetch
 from django.db.models.functions import Coalesce
@@ -35,7 +36,8 @@ def create_variant(request, variant_group_id):
 
 
 def variant_list(request, variant_group_id):
-    variants = Variant.objects.filter(variant_group_id=variant_group_id).order_by('order')
+    variants = Variant.objects.filter(
+        variant_group_id=variant_group_id).order_by('order')
     context = {
         "variants": variants
     }
@@ -116,7 +118,8 @@ def questions(request, variant_id, lesson_id):
                             line = f.readline().decode().strip() + ' '
                         if 'end_test_q' in line:
                             Answer.objects.bulk_create(answers_bulk_create)
-                            VariantQuestion.objects.bulk_create(variant_question)
+                            VariantQuestion.objects.bulk_create(
+                                variant_question)
                             break
                 question_added = True
             except Exception as e:
@@ -130,7 +133,7 @@ def questions(request, variant_id, lesson_id):
         lesson_question_level__test_type_lesson_id=lesson_id,
         variant_questions__variant_id=variant_id
     ).prefetch_related(
-            Prefetch('answers', queryset=answers)
+        Prefetch('answers', queryset=answers)
     ).order_by('order')
     context = {
         "questions": questions,
@@ -316,3 +319,83 @@ def generation_variant_questions(request, variant_id):
     context['variant_groups'] = variant_groups
     return render(
         request, 'admin_panel/contents/variant_create.html', context=context)
+
+
+def add_too_app(request, variant_id):
+    context = {}
+    if request.method == 'POST':
+        variant = Variant.objects.get(pk=variant_id)
+        test_type = variant.variant_group.test_type
+        data = {
+            "variant": variant.pk,
+            "variant_group": variant.variant_group.pk,
+            "is_active": False,
+            "sum_question": variant.sum_question,
+        }
+        print(data)
+        print(type(data))
+        print("++++++++++++++++++++++++===")
+        url = 'http://127.0.0.1:8003/api/v1/quizes/variant/'
+        res = requests.post(url=url, json=data)
+        print(res)
+        print(res.json())
+        if res.status_code == 200:
+            res_data = res.json()
+            print(res_data)
+            print("res_data")
+            res_status = res_data.get('status')
+            if res_status:
+                test_type_lessons = TestTypeLesson.objects.filter(
+                    test_type=test_type,
+                    language=TestLang.KAZAKH
+                ).values()
+                for tt in test_type_lessons:
+                    questions = Question.objects.filter(
+                        lesson_question_level__test_type_lesson=tt,
+                        variant_questions__variant=variant
+                    ).values()
+                    for q in questions:
+                        answers = Answer.objects.filter(question_id=q.get('id')).values()
+                        q['answers'] = answers
+                    tt['questions'] = questions
+                url_2 = 'http://127.0.0.1:8003/api/v1/quizes/create-questions/'
+                print(test_type_lessons)
+                print("test_type_lessons")
+                # res_2 = requests.post(url=url_2, json=test_type_lessons)
+                # print(res_2.json())
+
+
+        # variant_group = variant.variant_group
+        # test_type_lessons = TestTypeLesson.objects.filter(
+        #     test_type=test_type,
+        #     language=TestLang.KAZAKH
+        # )
+        #
+        # variant_question = []
+        # try:
+        #     with transaction.atomic():
+        #         for tt in test_type_lessons:
+        #             lesson_question_levels = LessonQuestionLevel \
+        #                 .objects \
+        #                 .select_related('question_level') \
+        #                 .filter(test_type_lesson=tt)
+        #
+        #             for lql in lesson_question_levels[
+        #                        :tt.questions_number // 5 + 1]:
+        #                 questions = Question.objects.filter(
+        #                     variant_questions__isnull=True,
+        #                     variant_group=variant_group,
+        #                     lesson_question_level=lql)
+        #                 if questions.count() >= lql.number_of_questions:
+        #                     questions = questions[:lql.number_of_questions]
+        #                 if questions:
+        #                     variant_question += [
+        #                         VariantQuestion(
+        #                             question=q,
+        #                             variant=variant
+        #                         ) for q in questions]
+        #         VariantQuestion.objects.bulk_create(variant_question)
+        # except Exception as e:
+        #     print(e)
+        return redirect(
+            reverse('admin_panel:variant', kwargs={'id': variant.pk}))
