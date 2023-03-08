@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>{% extends "admin_panel/base.html" %}
+
+{% block title %} Variants {% endblock %}
+{% block name %} Варианты {% endblock %}
+
+{% block content %}
+    <div class="">
+        <div class="card">
+            <div>
+                <a href="#"
+                   class="btn btn-info btn-border btn-round btn-sm mr-2">
+            <span class="btn-label">
+                <i class="fa fa-pencil"></i>
+            </span>
+                    Создать Вариант
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="basic-datatables"
+                           class="display table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>Вариант</th>
+                            <th>ID</th>
+                            <th>Вариант Групп</th>
+                            <th>Количество Вопросов</th>
+                            <th>Главный</th>
+                            <th>Активный</th>
+                            <th>Ордер</th>
+                            <th>Создан</th>
+                            <th>Обновлен</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Вариант</th>
+                            <th>ID</th>
+                            <th>Вариант Групп</th>
+                            <th>Количество Вопросов</th>
+                            <th>Главный</th>
+                            <th>Активный</th>
+                            <th>Ордер</th>
+                            <th>Создан</th>
+                            <th>Изменен</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% for v in variants %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'admin_panel:variant' id=v.pk %}">Вариант
+                                        - {{ v.variant }}</a></td>
+                                <td>{{ v.pk }}</td>
+                                <td>{{ v.variant_group.name_kz }}</td>
+                                <td>{{ v.sum_question }}</td>
+                                <td>{{ v.main }}</td>
+                                <td>{{ v.is_active }}</td>
+                                <td>{{ v.order }}</td>
+                                <td>{{ v.created }}</td>
+                                <td>{{ v.modified }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

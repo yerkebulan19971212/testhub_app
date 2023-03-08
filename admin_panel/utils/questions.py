@@ -2,11 +2,11 @@ import random
 
 from accounts.models import User
 from quizzes.models import CommonQuestion, Question, Answer, Variant, \
-    UserVariant
+    UserVariant, AnswerSign
 from bs4 import BeautifulSoup
 
 
-def create_question(questions_texts, lesson_question_level, variant_group):
+def create_question(questions_texts, lesson_question_level, variant_group, order):
     if not questions_texts and 'new_line' not in questions_texts:
         return None
     questions_detail = questions_texts.split('new_line')
@@ -42,14 +42,18 @@ def create_question(questions_texts, lesson_question_level, variant_group):
         lesson_question_level=lesson_question_level,
         question=BeautifulSoup(question_text, "lxml").text,
         math=math,
-        variant_group=variant_group
+        variant_group=variant_group,
+        order=order
     )
+
+    answer_signs = list(AnswerSign.objects.all().order_by('order'))
     return test_question, [
         Answer(
             question=test_question,
             answer=BeautifulSoup(ans.strip(), "lxml").text,
             correct=True if (i + 1) in correct_answers else False,
-            math=math
+            math=math,
+            answer_sign=answer_signs[i]
         ) for i, ans in enumerate(answers)
     ]
 

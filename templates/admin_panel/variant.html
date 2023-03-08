@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>{% extends "admin_panel/base.html" %}
+
+{% block title %} Variants {% endblock %}
+{% block name %} Варианты {% endblock %}
+
+{% block content %}
+    {{ variant }}
+    <form class="success" id="form-id" action="{% url 'admin_panel:generation_variant_questions'  variant_id=variant.pk %}" method="post">
+        <div>
+
+    {% csrf_token %}
+{#    <a class="nav-link {% if page == selected_page %}active{% endif %}" onclick="document.getElementById('form-id').submit();">Add page</a>#}
+
+                <button
+                   class="btn btn-info btn-border btn-round btn-sm mr-2">
+            <span class="btn-label">
+                <i class="fa fa-pencil"></i>
+            </span>
+                    Generate
+                </button>
+            </div>
+    </form>
+    <div class="">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="basic-datatables"
+                           class="display table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Скачать</th>
+                            <th>ID</th>
+                            <th>Тест тип</th>
+                            <th>Количество Вопросов</th>
+                            <th>Язык</th>
+                            <th>Главный</th>
+                            <th>Создан</th>
+                            <th>Обновлен</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Название</th>
+                            <th>Скачать</th>
+                            <th>ID</th>
+                            <th>Тест тип</th>
+                            <th>Количество Вопросов</th>
+                            <th>Язык</th>
+                            <th>Главный</th>
+                            <th>Создан</th>
+                            <th>Обновлен</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% for les in lessons %}
+                        <tr>
+                            <td><a href="{% url 'admin_panel:questions' variant_id=variant.pk lesson_id=les.pk %}">{{ les.lesson.name_kz }}</a></td>
+                            <td><a href="">Скачать</a></td>
+                            <td>{{ les.pk }}</td>
+                            <td>{{ les.test_type.name_kz }}</td>
+                            <td>{{ les.number_of_questions }}/{{ les.questions_number }}</td>
+                            <td>{{ les.language }}</td>
+                            <td>{{ les.main}}</td>
+                            <td>{{ les.created}}</td>
+                            <td>{{ les.modified}}</td>
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{#    <div class="card-body">#}
+{##}
+{#        <div class="row row-demo-grid">#}
+{#            {% for les in lessons %}#}
+{#                <div class="col-3">#}
+{#                    <div class="card">#}
+{#                        <div class="card-body">#}
+{#                            {{ les.lesson.name_kz }}#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            {% endfor %}#}
+{#        </div>#}
+{##}
+{#    </div>#}
+
+
+{% endblock content %}

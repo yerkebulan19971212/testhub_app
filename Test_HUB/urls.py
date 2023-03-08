@@ -46,7 +46,7 @@ api_v1_urlpatterns = [
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('admin-panel/', include('admin_panel.urls')),
+    path('admin-panel/', include('admin_panel.urls', namespace='admin_panel')),
     path('api/v1/', include(api_v1_urlpatterns)),
 ]
 
