@@ -1,7 +1,7 @@
 import logging
 
 from django.db import transaction
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Prefetch
 from django.db.models.functions import Coalesce
 from django.shortcuts import render, redirect
 import io
@@ -35,7 +35,7 @@ def create_variant(request, variant_group_id):
 
 
 def variant_list(request, variant_group_id):
-    variants = Variant.objects.filter(variant_group_id=variant_group_id)
+    variants = Variant.objects.filter(variant_group_id=variant_group_id).order_by('order')
     context = {
         "variants": variants
     }
@@ -124,10 +124,14 @@ def questions(request, variant_id, lesson_id):
                 message = str(e)
                 question_added = False
 
+    answers = Answer.objects.all().order_by('answer_sign__order')
+
     questions = Question.objects.filter(
         lesson_question_level__test_type_lesson_id=lesson_id,
         variant_questions__variant_id=variant_id
-    ).prefetch_related('answers').order_by('-order')
+    ).prefetch_related(
+            Prefetch('answers', queryset=answers)
+    ).order_by('order')
     context = {
         "questions": questions,
         "variants": variants,
