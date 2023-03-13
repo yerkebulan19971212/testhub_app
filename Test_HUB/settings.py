@@ -67,7 +67,6 @@ if DEBUG:
     # hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     # INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1"]
 
-
 ROOT_URLCONF = 'Test_HUB.urls'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -118,6 +117,14 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
+    },
+    "testhub": {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': "probnyi",
+        'USER': "probnyi",
+        'PASSWORD': "probnyi",
+        'HOST': "86.107.199.59",
+        'PORT': 5432,
     }
 }
 
@@ -184,7 +191,7 @@ LOGGING = {
         },
     },
     'loggers': {
-         '': {
+        '': {
             'level': 'DEBUG',
             'handlers': ['console', 'file']
         }

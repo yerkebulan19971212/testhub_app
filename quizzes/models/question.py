@@ -19,7 +19,7 @@ class Question(abstract_models.Ordering,
         db_index=True,
         related_name='questions'
     )
-    question = models.TextField(db_index=True)
+    question = models.TextField(null=True)
     math = models.BooleanField(default=False)
     variant_group = models.ForeignKey(
         'quizzes.VariantGroup',

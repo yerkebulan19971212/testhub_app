@@ -2,18 +2,15 @@ import math
 
 import requests
 from coreapi import Field
-from django.db.models import Sum, Max, Min
+from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from rest_framework import status
-from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.generics import (CreateAPIView, RetrieveAPIView,
-                                     UpdateAPIView)
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.generics import (CreateAPIView, UpdateAPIView)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from base.constant import Status
@@ -24,32 +21,24 @@ from .serializer import (AvatarSerializer, ChangePasswordSerializer,
                          ForgotPasswordSerializer, PhoneOtpSerializer,
                          PhoneOTPValidateSerializer,
                          TokenObtainPairSerializerByEmail,
-                         TokenObtainPairSerializerByPhone, UserRegistration)
+                         TokenObtainPairSerializerByPhone)
 
 
 class GoogleJWTView(APIView):
     def post(self, request, *args, **kwargs):
-        # id_token = request.META.get('HTTP_AUTHORIZATION', None)
         id_token = request.data.get('id_token', None)
         if not id_token:
             return None
 
         try:
-            print('sdfsdf')
             # Verify the JWT signature and extract the user ID and email
             response = requests.get(
                 f'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token={id_token}')
             response.raise_for_status()
+            user_data = response.json()
         except Exception as e:
-            print("!+++++++++=================")
-            print(e)
-            print("@+++++++++=================")
             raise AuthenticationFailed('Failed to verify Google id_token')
-        print(response.json())
-        print(response.json().get("user_id"))
-        print(response.json().get("email"))
-        print("response.json()")
-        user_data = response.json()
+
         # Get or create user
         user, created = User.objects.get_or_create(
             email=user_data['email'])
@@ -58,38 +47,11 @@ class GoogleJWTView(APIView):
             user.set_unusable_password()
             user.save()
 
-        # if user:
         refresh = TokenObtainPairSerializer.get_token(user)
         data = {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
-        # Verify the Google access token and get the user ID and email
-        # access_token = request.data.get('access_token')
-        # user_info_url = 'https://www.googleapis.com/oauth2/v3/userinfo'
-        # headers = {'Authorization': f'Bearer {access_token}'}
-        # response = requests.get(user_info_url, headers=headers)
-        # response.raise_for_status()
-        # user_info = response.json()
-        # print(user_info)
-        # print("user_info")
-        # google_id = user_info.get('sub')
-        # email = user_info.get('email')
-        #
-        # # Create or update the user with the Google ID and email
-        # try:
-        #     user = User.objects.get(google_id=google_id)
-        #     user.email = email
-        #     user.save()
-        # except User.DoesNotExist:
-        #     user = User.objects.create_user(email=email, google_id=google_id)
-        #
-        # # Generate a JWT token for the user
-        # # serializer = JSONWebTokenSerializer(
-        # #     data={'username': email, 'password': google_id})
-        # # serializer.is_valid(raise_exception=True)
-        # # token = serializer.object.get('token')
-        # response_data = {'token': "token"}
         return Response(data, status=status.HTTP_200_OK)
 
 

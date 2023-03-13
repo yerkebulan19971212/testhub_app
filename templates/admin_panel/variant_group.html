@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>{% extends "admin_panel/base.html" %}
+
+{% block title %} Variants {% endblock %}
+{% block name %} Варианты {% endblock %}
+
+{% block content %}
+    <div class="">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="basic-datatables"
+                           class="display table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>ID</th>
+                            <th>Тест тип</th>
+                            <th>Период</th>
+                            <th>Иконка</th>
+                            <th>Активный</th>
+                            <th>Ордер</th>
+                            <th>Создан</th>
+                            <th>Обновлен</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Название</th>
+                            <th>ID</th>
+                            <th>Тест тип</th>
+                            <th>Период</th>
+                            <th>Иконка</th>
+                            <th>Активный</th>
+                            <th>Ордер</th>
+                            <th>Создан</th>
+                            <th>Обновлен</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% for v in variant_groups %}
+                        <tr>
+                            <td><a href="{% url 'admin_panel:variant_list' variant_group_id=v.pk %}">{{ v.name_kz }}-{{ v.name_ru }}</a></td>
+                            <td>{{ v.pk }}</td>
+                            <td>{{ v.test_type.name_kz }}</td>
+                            <td>{{ v.duration }}</td>
+                            <td>{{ v.icon }}</td>
+                            <td>{{ v.is_active}}</td>
+                            <td>{{ v.order}}</td>
+                            <td>{{ v.created}}</td>
+                            <td>{{ v.modified}}</td>
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

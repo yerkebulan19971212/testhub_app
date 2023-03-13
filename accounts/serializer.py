@@ -1,7 +1,5 @@
 from django.contrib.auth.password_validation import validate_password
-from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import EmailOTP, PhoneOTP, Role, User
@@ -14,48 +12,6 @@ class RoleSerializer(serializers.ModelSerializer):
             'id',
             'name_ru',
         )
-
-
-class UserRegistration(WritableNestedModelSerializer,
-                       serializers.ModelSerializer):
-    role = RoleSerializer(read_only=True)
-
-    class Meta:
-        model = User
-        fields = (
-            'id',
-            'first_name',
-            'last_name',
-            'username',
-            'role',
-            'phone',
-            'email',
-            'password',
-        )
-        extra_kwargs = {
-            'password': {'write_only': True},
-        }
-
-    def validate(self, attrs):
-        email = attrs.get('email')
-        phone = attrs.get('phone')
-        if User.objects.filter(email=email).exists():
-            raise ValidationError("email сущевствует")
-        if User.objects.filter(phone=phone).exists():
-            raise ValidationError("номер сущевствует")
-
-        return attrs
-
-    def create(self, validated_data):
-        validated_data['is_active'] = False
-        validated_data['username'] = str(validated_data['username']).lower()
-        validated_data['email'] = str(validated_data['email']).lower()
-        password = validated_data.get('password')
-        user = super().create(validated_data)
-        user.set_password(password)
-        user.save()
-
-        return user
 
 
 class ChangePasswordSerializer(serializers.ModelSerializer):

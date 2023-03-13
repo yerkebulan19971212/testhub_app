@@ -18,7 +18,6 @@ admin.site.register([
     TestType,
     TestTypeLesson,
     TestTypeLessonGroup,
-    Variant,
     VariantQuestion,
     UserVariant,
     FlashCard,
@@ -97,6 +96,24 @@ class InfoErrorAdmin(admin.ModelAdmin):
         'created',
         'modified'
     )
-    search_fields = ('error_name', )
+    search_fields = ('error_name',)
     list_filter = ('is_active', 'error_type', 'grade_type')
+    readonly_fields = ('pk', 'created', 'modified')
+
+
+@admin.register(Variant)
+class VariantAdmin(admin.ModelAdmin):
+    list_display = (
+        'variant',
+        'variant_group',
+        'id',
+        'sum_question',
+        'main',
+        'is_active',
+        'order',
+        'created',
+        'modified'
+    )
+    search_fields = ('variant', 'variant_group__name_kz')
+    list_filter = ('variant_group', 'is_active', 'main')
     readonly_fields = ('pk', 'created', 'modified')
