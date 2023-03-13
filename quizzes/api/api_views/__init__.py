@@ -1,6 +1,6 @@
 from .create_flash_cards import create_flash_cards
 from .favorites import create_favorite_questions, list_favorites_questions
-from .lesson import (lesson_list, lesson_list_variant,
+from .lesson import (lesson_list, lesson_list_variant,full_test_information,
                      test_lesson_list, test_lesson_information_list,
                      lesson_list_with_test_type_lesson_view,
                      finished_test_lesson_list)
