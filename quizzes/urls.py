@@ -23,7 +23,7 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    grade_info_list_view, finish_question_list,
                                    full_test_information)
 from quizzes.api.api_views.question import full_test_question
-from quizzes.views.script import create_variant, create_question
+# from quizzes.views.script import create_variant, create_question
 
 lesson_urlpatterns = [
     # path('list/', lesson_list, name='lesson_list'),
@@ -81,6 +81,6 @@ urlpatterns = [
     path('test-type-list/', test_type_view),
     path('lesson/', include(lesson_urlpatterns)),
     path('question/', include(question_urlpatterns)),
-    path('variant/', create_variant),
-    path('create-questions/', create_question),
+    # path('variant/', create_variant),
+    # path('create-questions/', create_question),
 ]
