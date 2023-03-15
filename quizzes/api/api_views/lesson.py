@@ -1,6 +1,8 @@
 from datetime import timedelta, datetime
 from django.utils.timezone import localtime
-
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 from django.db.models import Sum, Q, Count, Prefetch, Exists, Value, \
     BooleanField, OuterRef, F
 from django.db.models.functions import Coalesce, Cast
@@ -36,7 +38,6 @@ lesson_list = LessonListView.as_view()
 class LessonListWithTestTypeLessonView(generics.ListAPIView):
     queryset = Lesson.objects.prefetch_related(
         'test_type_lessons',
-        'test_type_lessons__test_type'
     ).all()
     serializer_class = LessonWithTestTypeLessonSerializer
     filter_backends = [DjangoFilterBackend]
@@ -47,6 +48,11 @@ class LessonListWithTestTypeLessonView(generics.ListAPIView):
         queryset = super().get_queryset().filter(
             test_type_lessons__language=language)
         return queryset
+
+    @method_decorator(vary_on_cookie)
+    @method_decorator(cache_page(60 * 60 * 24))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
 
 lesson_list_with_test_type_lesson_view = LessonListWithTestTypeLessonView.as_view()

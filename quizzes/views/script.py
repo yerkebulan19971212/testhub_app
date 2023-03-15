@@ -40,7 +40,8 @@ def get_questions():
                             math = False
                             if common_question:
                                 c, _ = CommonQuestion.objects.get_or_create(
-                                    text=common_question.get('text').replace("<p>", "").replace("</p>", ""),
+                                    text=common_question.get('text').replace(
+                                        "<p>", "").replace("</p>", ""),
                                     # file=common_question.get('file')
                                 )
                             question_text = rr.get('question')
@@ -50,13 +51,15 @@ def get_questions():
                             q, _ = Question.objects.get_or_create(
                                 common_question=c,
                                 lesson_question_level=lesson_question_leve.first(),
-                                question=question_text.replace("<p>", "").replace("</p>", ""),
+                                question=question_text.replace("<p>",
+                                                               "").replace(
+                                    "</p>", ""),
                                 math=math,
                                 order=order_c,
                                 variant_group_id=2
                             )
                             variant_q.append(VariantQuestion(
-                                variant=v,question=q
+                                variant=v, question=q
                             ))
                             answers = rr.get('answer')
                             ans_bulk = []
@@ -68,7 +71,9 @@ def get_questions():
                                 ans_bulk.append(
                                     Answer(
                                         question=q,
-                                        answer=ans.get('answer').replace("<p>", "").replace("</p>", ""),
+                                        answer=ans.get('answer').replace("<p>",
+                                                                         "").replace(
+                                            "</p>", ""),
                                         correct=ans.get('correct'),
                                         math=a_math,
                                         answer_sign=answer_signs[i]
@@ -83,3 +88,19 @@ def get_questions():
         print('error catch')
         print(e)
 
+
+def change_answer_type():
+    Answer.objects.filter(
+        answer__icontains='&nbsp'
+    ).update(
+        math=True
+    )
+    print('don')
+
+def change_question_type():
+    Question.objects.filter(
+        question__contains='&nbsp'
+    ).update(
+        math=True
+    )
+    print('don')

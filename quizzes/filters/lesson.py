@@ -17,4 +17,5 @@ class LessonFilter(django_filters.FilterSet):
         model = Lesson
         fields = (
             'test_type',
+            'math'
         )
