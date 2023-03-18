@@ -23,6 +23,11 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    grade_info_list_view, finish_question_list,
                                    full_test_information)
 from quizzes.api.api_views.question import full_test_question
+from quizzes.views.generation import generation_test_type_view, \
+    generation_variant_groups, generation_variant_list, \
+    generation_get_lesson_test_type_lesson_view, generation_variant_questions, \
+    generation_variant_get_question
+
 # from quizzes.views.script import create_variant, create_question
 
 lesson_urlpatterns = [
@@ -83,4 +88,13 @@ urlpatterns = [
     path('question/', include(question_urlpatterns)),
     # path('variant/', create_variant),
     # path('create-questions/', create_question),
+]
+
+generation_url_patterns = [
+    path('test-type-list/', generation_test_type_view),
+    path('variant-group/', generation_variant_groups),
+    path('variant-list/', generation_variant_list),
+    path('lesson-list/<int:variant_id>/', generation_get_lesson_test_type_lesson_view),
+    path('variant-question-list/', generation_variant_questions),
+    path('question/<int:pk>/', generation_variant_get_question),
 ]

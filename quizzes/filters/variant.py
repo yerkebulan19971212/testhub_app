@@ -21,3 +21,12 @@ class UserVariantFilter(django_filters.FilterSet):
             'variant_group',
             'status'
         )
+
+
+class VariantListFilter(django_filters.FilterSet):
+    variant_group = filters.NumberFilter(
+        field_name="variant_group", required=True)
+
+    class Meta:
+        model = Variant
+        fields = ('variant_group',)

@@ -12,7 +12,8 @@ from quizzes.urls import (
     favorite_urlpatterns,
     tag_urlpatterns,
     ent_urlpatterns,
-    info_urlpatterns
+    info_urlpatterns,
+    generation_url_patterns
 )
 
 
@@ -32,6 +33,7 @@ schema_view = get_schema_view(
 api_v1_urlpatterns = [
     path('user/', include('accounts.urls')),
     path('quizes/', include('quizzes.urls')),
+    path('generation/', include(generation_url_patterns)),
     path('favorite/', include(favorite_urlpatterns)),
     path('tag/', include(tag_urlpatterns)),
     path('full-test/', include(ent_urlpatterns)),

@@ -77,3 +77,21 @@ class FavoriteFilter(django_filters.FilterSet):
         fields = (
             'favorite_type',
         )
+
+
+class GenerateVariantQuestionFilter(django_filters.FilterSet):
+    lesson_id = filters.NumberFilter(
+        field_name="lesson_question_level__test_type_lesson_id",
+        required=True
+    )
+    variant_id = filters.NumberFilter(
+        field_name="variant_questions__variant__id",
+        required=True
+    )
+
+    class Meta:
+        model = Question
+        fields = (
+            'lesson_id',
+            'variant_id'
+        )
