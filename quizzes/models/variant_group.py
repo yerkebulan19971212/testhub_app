@@ -7,6 +7,7 @@ from quizzes.models import TestType
 class VariantGroup(abstract_models.AbstractBaseName,
                    abstract_models.IsActive,
                    abstract_models.Ordering,
+                   abstract_models.AbstractBaseNameCode,
                    abstract_models.TimeStampedModel):
     icon = models.FileField(null=True)
     test_type = models.ForeignKey(
