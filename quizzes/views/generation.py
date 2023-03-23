@@ -1,12 +1,17 @@
+from django.db import transaction
 from django.db.models import Q, Count, Prefetch
 from django.db.models.functions import Coalesce
-from rest_framework import generics
+from rest_framework import generics, status
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from admin_panel.utils.questions import create_question
 from base.paginate import SimplePagination
 from quizzes.api.serializers import TestTypeSerializer
 from quizzes.models import TestType, VariantGroup, Variant, TestTypeLesson, \
-    Question, Answer, CommonQuestion, LessonQuestionLevel, QuestionLevel, Topic
+    Question, Answer, CommonQuestion, LessonQuestionLevel, QuestionLevel, \
+    Topic, AnswerSign
 from .generation_serializer import (GenerationTestTypeSerializer,
                                     GenerationVariantGroupSerializer,
                                     GenerationVariantListSerializer,
@@ -14,11 +19,13 @@ from .generation_serializer import (GenerationTestTypeSerializer,
                                     GenerationQuestionByLessonSerializer,
                                     GenerationCommonQuestionSerializer,
                                     GenerationQuestionLevelSerializer,
-                                    TopicSerializer)
+                                    TopicSerializer,
+                                    GenerationListQuestionByLessonSerializer,
+                                    GenerationLessonQuestionLevelSerializer)
 from ..filters import VariantGroupFilter, TestTypeLessonFilter, TopicFilter
 from ..filters.question import GenerateVariantQuestionFilter, \
     GenerateVariantLessonCommonQuestionFilter, GenerateAllQuestionFilter, \
-    QuestionLevelFilter
+    QuestionLevelFilter, LessonQuestionLevelFilter
 from ..filters.variant import VariantListFilter
 
 
@@ -73,7 +80,7 @@ generation_get_lesson_test_type_lesson_view = GenerationGetLessonTestTypeLessons
 
 
 class GenerationGetQuestionListView(generics.ListAPIView):
-    serializer_class = GenerationQuestionByLessonSerializer
+    serializer_class = GenerationListQuestionByLessonSerializer
     queryset = Question.objects.filter()
     filter_backends = [DjangoFilterBackend]
     filterset_class = GenerateVariantQuestionFilter
@@ -107,6 +114,19 @@ class GenerationGetQuestionView(generics.RetrieveUpdateDestroyAPIView):
 generation_variant_get_question = GenerationGetQuestionView.as_view()
 
 
+class GenerationCreateQuestionView(generics.CreateAPIView):
+    serializer_class = GenerationQuestionByLessonSerializer
+
+    def create(self, request, *args, **kwargs):
+        answer_signs = list(AnswerSign.objects.all().order_by('order'))
+        for i, ans in enumerate(request.data['answers']):
+            ans['answer_sign'] = answer_signs[i].id
+        return super().create(request, *args, **kwargs)
+
+
+add_generate_question = GenerationCreateQuestionView.as_view()
+
+
 class GenerationCommonQuestionListView(generics.ListAPIView):
     serializer_class = GenerationCommonQuestionSerializer
     queryset = CommonQuestion.objects.filter()
@@ -128,14 +148,13 @@ generation_common_question = GenerationCommonQuestionView.as_view()
 
 class GenerationCommonQuestionAddView(generics.CreateAPIView):
     serializer_class = GenerationCommonQuestionSerializer
-    queryset = CommonQuestion.objects.filter()
 
 
 generation_add_common_question = GenerationCommonQuestionAddView.as_view()
 
 
 class GenerationGetAllQuestionListView(generics.ListAPIView):
-    serializer_class = GenerationQuestionByLessonSerializer
+    serializer_class = GenerationListQuestionByLessonSerializer
     queryset = Question.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_class = GenerateAllQuestionFilter
@@ -146,7 +165,7 @@ class GenerationGetAllQuestionListView(generics.ListAPIView):
         queryset = super().filter_queryset(
             super().get_queryset()).prefetch_related(
             Prefetch('answers', queryset=answers)
-        ).order_by('-created')
+        ).order_by('-modified', '-common_question__modified')
         return queryset
 
 
@@ -163,8 +182,17 @@ class GenerationQuestionLevelListView(generics.ListAPIView):
 generation_all_level = GenerationQuestionLevelListView.as_view()
 
 
+class GenerationLessonQuestionLevelListView(generics.ListAPIView):
+    serializer_class = GenerationLessonQuestionLevelSerializer
+    queryset = LessonQuestionLevel.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = LessonQuestionLevelFilter
+
+
+generation_lesson_level = GenerationLessonQuestionLevelListView.as_view()
+
+
 class TopicListView(generics.ListCreateAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
     queryset = Topic.objects.select_related('test_type_lesson').all()
     serializer_class = TopicSerializer
     filter_backends = [DjangoFilterBackend]
@@ -172,3 +200,52 @@ class TopicListView(generics.ListCreateAPIView):
 
 
 topic_list = TopicListView.as_view()
+
+
+class ImportQuestionViews(generics.CreateAPIView):
+    serializer_class = TopicSerializer
+
+    def post(self, request, *args, **kwargs):
+        group_id = request.data.get('group_id')
+        level_id = request.data.get('level_id')
+        topic_id = request.data.get('topic_id')
+        with request.FILES['file'] as f:
+            try:
+                with transaction.atomic():
+                    lesson_question_level = LessonQuestionLevel.objects.get(pk=level_id)
+                    variant_group = VariantGroup.objects.get(pk=group_id)
+                    topic = Topic.objects.get(pk=topic_id)
+                    line = f.readline().decode().strip()
+                    questions_texts = ""
+                    answers_bulk_create = []
+                    while line:
+                        if 'end' in line:
+                            break
+                        if line.strip() == '':
+                            question, answers_list = create_question(
+                                questions_texts=questions_texts,
+                                lesson_question_level=lesson_question_level,
+                                variant_group=variant_group,
+                                topic=topic
+                            )
+                            answers_bulk_create += answers_list
+                            if question is None:
+                                return Response(
+                                    {"detail": "Что то не так"},
+                                    status=status.HTTP_400_BAD_REQUEST
+                                )
+                            questions_texts = ""
+                        else:
+                            questions_texts += line.strip() + "new_line"
+                        line = f.readline().decode().strip() + ' '
+                    Answer.objects.bulk_create(answers_bulk_create)
+            except Exception as e:
+                print(e)
+                message = str(e)
+                return Response(
+                    {"message": message, "success": False}, status=status.HTTP_200_OK)
+        return Response(
+            {"success": True}, status=status.HTTP_200_OK)
+
+
+import_question = ImportQuestionViews.as_view()

@@ -11,7 +11,8 @@ class Topic(abstract_models.AbstractBaseName,
     test_type_lesson = models.ForeignKey(
         'quizzes.TestTypeLesson',
         on_delete=models.CASCADE,
-        db_index=True
+        db_index=True,
+        null=True
     )
 
     class Meta:

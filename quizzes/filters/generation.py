@@ -9,4 +9,4 @@ class TopicFilter(django_filters.FilterSet):
 
     class Meta:
         model = Topic
-        fields = ('test_type_lesson_id',)
+        fields = ('test_type_lesson',)

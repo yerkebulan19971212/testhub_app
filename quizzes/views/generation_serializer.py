@@ -6,7 +6,7 @@ from base.abstract_serializer import NameSerializer
 from quizzes.models import (TestType, VariantGroup, Variant,
                             TestTypeLesson, Lesson, Answer, Question,
                             CommonQuestion, LessonQuestionLevel, QuestionLevel,
-                            Topic)
+                            Topic, TopicQuestion, AnswerSign)
 
 
 class GenerationLessonSerializer(abstract_serializer.NameSerializer):
@@ -106,7 +106,8 @@ class GenerationGetLessonTestTypeLessonSerializer(serializers.ModelSerializer):
 
 
 class GenerationAnswerSerializer(serializers.ModelSerializer):
-    answer_sign = serializers.CharField(source='answer_sign.name_code', read_only=True)
+    answer_sign = serializers.CharField(source='answer_sign.name_code',
+                                        read_only=True)
 
     class Meta:
         model = Answer
@@ -119,6 +120,7 @@ class GenerationAnswerSerializer(serializers.ModelSerializer):
             'answer_sign'
         )
 
+
 class GenerationCommonQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommonQuestion
@@ -130,15 +132,39 @@ class GenerationCommonQuestionSerializer(serializers.ModelSerializer):
         )
 
 
+class AnswerSignSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnswerSign
+        field = (
+            'id'
+        )
+
+
+class GenerationCreateSerializer(serializers.ModelSerializer):
+    # answer_sign = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = Answer
+        fields = (
+            'id',
+            'answer',
+            'correct',
+            'math',
+            'answer_sign'
+        )
+
+    def create(self, validated_data):
+        print(validated_data)
+        print("validated_data")
+        return super().create(validated_data)
+
+
 class GenerationQuestionByLessonSerializer(WritableNestedModelSerializer,
                                            serializers.ModelSerializer):
-    answers = GenerationAnswerSerializer(many=True)
-    choice_type = serializers.IntegerField(source='lesson_question_level.question_level.choice', read_only=True)
+    answers = GenerationCreateSerializer(many=True)
     created = serializers.DateTimeField(read_only=True)
     modified = serializers.DateTimeField(read_only=True)
-    variant_group_name = serializers.CharField(source='variant_group.name_kz',  read_only=True)
-    lesson_question_level = serializers.IntegerField(source='lesson_question_level.id', read_only=True)
-    # common_question = GenerationCommonQuestionSerializer()
+    topic_id = serializers.IntegerField(write_only=True, required=True)
 
     class Meta:
         model = Question
@@ -147,27 +173,60 @@ class GenerationQuestionByLessonSerializer(WritableNestedModelSerializer,
             'common_question',
             'lesson_question_level',
             'question',
+            'topic_id',
             'created',
             'modified',
-            'order',
             'is_active',
-            'choice_type',
             'math',
-            'variant_group_name',
+            'variant_group',
             'created',
             'modified',
             'answers'
         )
 
+    def create(self, validated_data):
+        topic_id = validated_data.pop('topic_id')
+        answer_signs = list(AnswerSign.objects.all().order_by('order'))
+        for i, ans in enumerate(validated_data['answers']):
+            ans['answer_sign'] = answer_signs[i].id
+            print(ans)
+            print(answer_signs[i].id)
+        print(validated_data)
+        print("validated_data")
+        question = super().create(validated_data)
+        TopicQuestion.objects.create(
+            question=question,
+            topic_id=topic_id
+        )
+
+        return question
+
+
+class GenerationListQuestionByLessonSerializer(
+    GenerationQuestionByLessonSerializer):
+    common_question = GenerationCommonQuestionSerializer()
+
 
 class GenerationQuestionLevelSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = QuestionLevel
         fields = (
             'id',
             'name_code'
         )
+
+
+class GenerationLessonQuestionLevelSerializer(serializers.ModelSerializer):
+    name_code = serializers.CharField(source='question_level.name_code')
+
+    class Meta:
+        model = LessonQuestionLevel
+        fields = (
+            'id',
+            'test_type_lesson',
+            'name_code'
+        )
+
 
 class TopicSerializer(abstract_serializer.NameSerializer):
     created = serializers.DateTimeField(read_only=True)
@@ -188,3 +247,10 @@ class TopicSerializer(abstract_serializer.NameSerializer):
             'created',
             'modified'
         )
+
+
+class ImportSerializer(serializers.Serializer):
+    file = serializers.FileField()
+    group_id = serializers.IntegerField()
+    level_id = serializers.IntegerField()
+    topic_id = serializers.IntegerField()

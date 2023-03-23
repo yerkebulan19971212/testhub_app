@@ -24,7 +24,8 @@ class Question(abstract_models.Ordering,
     variant_group = models.ForeignKey(
         'quizzes.VariantGroup',
         on_delete=models.CASCADE,
-        db_index=True)
+        db_index=True
+    )
 
     class Meta:
         db_table = 'quiz\".\"question'
