@@ -1,3 +1,5 @@
+import json
+
 from django.db import transaction
 from django.db.models import Q, Count, Prefetch
 from django.db.models.functions import Coalesce
@@ -209,17 +211,24 @@ class ImportQuestionViews(generics.CreateAPIView):
         group_id = request.data.get('group_id')
         level_id = request.data.get('level_id')
         topic_id = request.data.get('topic_id')
+        topic = None
+        if topic_id.isnumeric():
+            topic = Topic.objects.get(pk=int(topic_id))
+            if not topic:
+                topic = Topic.objects.filter(test_type_lesson__isnull=True)
+                if topic:
+                    topic = topic.first()
         with request.FILES['file'] as f:
             try:
                 with transaction.atomic():
                     lesson_question_level = LessonQuestionLevel.objects.get(pk=level_id)
                     variant_group = VariantGroup.objects.get(pk=group_id)
-                    topic = Topic.objects.get(pk=topic_id)
+
                     line = f.readline().decode().strip()
                     questions_texts = ""
                     answers_bulk_create = []
                     while line:
-                        if 'end' in line:
+                        if 'end_test_q' in line:
                             break
                         if line.strip() == '':
                             question, answers_list = create_question(
