@@ -4,7 +4,9 @@ from drf_writable_nested import WritableNestedModelSerializer
 from base import abstract_serializer
 from base.abstract_serializer import NameSerializer
 from quizzes.models import (TestType, VariantGroup, Variant,
-                            TestTypeLesson, Lesson, Answer, Question)
+                            TestTypeLesson, Lesson, Answer, Question,
+                            CommonQuestion, LessonQuestionLevel, QuestionLevel,
+                            Topic)
 
 
 class GenerationLessonSerializer(abstract_serializer.NameSerializer):
@@ -117,6 +119,16 @@ class GenerationAnswerSerializer(serializers.ModelSerializer):
             'answer_sign'
         )
 
+class GenerationCommonQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommonQuestion
+        fields = (
+            'id',
+            'name_code',
+            'file',
+            'text'
+        )
+
 
 class GenerationQuestionByLessonSerializer(WritableNestedModelSerializer,
                                            serializers.ModelSerializer):
@@ -126,6 +138,7 @@ class GenerationQuestionByLessonSerializer(WritableNestedModelSerializer,
     modified = serializers.DateTimeField(read_only=True)
     variant_group_name = serializers.CharField(source='variant_group.name_kz',  read_only=True)
     lesson_question_level = serializers.IntegerField(source='lesson_question_level.id', read_only=True)
+    # common_question = GenerationCommonQuestionSerializer()
 
     class Meta:
         model = Question
@@ -144,4 +157,34 @@ class GenerationQuestionByLessonSerializer(WritableNestedModelSerializer,
             'created',
             'modified',
             'answers'
+        )
+
+
+class GenerationQuestionLevelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = QuestionLevel
+        fields = (
+            'id',
+            'name_code'
+        )
+
+class TopicSerializer(abstract_serializer.NameSerializer):
+    created = serializers.DateTimeField(read_only=True)
+    modified = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = Topic
+        fields = (
+            'id',
+            'name',
+            'name_kz',
+            'name_ru',
+            'name_en',
+            'is_active',
+            'name_code',
+            'order',
+            'test_type_lesson',
+            'created',
+            'modified'
         )

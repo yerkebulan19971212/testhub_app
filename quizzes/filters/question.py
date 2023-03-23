@@ -4,7 +4,8 @@ from django.contrib.postgres.search import (SearchQuery, SearchRank,
 from django_filters import CharFilter, NumberFilter
 from django_filters import rest_framework as filters
 
-from quizzes.models import Question, Favorite
+from quizzes.models import Question, Favorite, VariantLessonCommonQuestion, \
+    CommonQuestion, QuestionLevel
 
 
 class QuestionFilter(django_filters.FilterSet):
@@ -94,4 +95,54 @@ class GenerateVariantQuestionFilter(django_filters.FilterSet):
         fields = (
             'lesson_id',
             'variant_id'
+        )
+
+
+class GenerateVariantLessonCommonQuestionFilter(django_filters.FilterSet):
+    lesson_id = filters.NumberFilter(
+        field_name="variant_lesson_common_questions__lesson_id",
+    )
+    variant_id = filters.NumberFilter(
+        field_name="variant_lesson_common_questions__variant_id",
+    )
+
+    class Meta:
+        model = CommonQuestion
+        fields = (
+            'lesson_id',
+            'variant_id'
+        )
+
+
+class GenerateAllQuestionFilter(django_filters.FilterSet):
+    lesson_id = filters.NumberFilter(
+        field_name="lesson_question_level__test_type_lesson_id"
+    )
+    variant_id = filters.NumberFilter(
+        field_name="variant_questions__variant__id"
+    )
+    topic_id = filters.NumberFilter(field_name="topic_questions__topic_id")
+    level_id = filters.NumberFilter(
+        field_name="lesson_question_level__question_level_id"
+    )
+
+    class Meta:
+        model = Question
+        fields = (
+            'lesson_id',
+            'variant_id',
+            'level_id',
+            'topic_id'
+        )
+
+
+class QuestionLevelFilter(django_filters.FilterSet):
+    test_type_lesson_id = filters.NumberFilter(
+        field_name="lesson_question_level__test_type_lesson_id"
+    )
+
+    class Meta:
+        model = QuestionLevel
+        fields = (
+            'test_type_lesson_id',
         )

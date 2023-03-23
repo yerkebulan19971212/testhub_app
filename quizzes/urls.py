@@ -26,7 +26,9 @@ from quizzes.api.api_views.question import full_test_question
 from quizzes.views.generation import generation_test_type_view, \
     generation_variant_groups, generation_variant_list, \
     generation_get_lesson_test_type_lesson_view, generation_variant_questions, \
-    generation_variant_get_question
+    generation_variant_get_question, generation_variant_common_question, \
+    generation_common_question, generation_add_common_question, \
+    generation_all_questions, generation_all_level, topic_list
 
 # from quizzes.views.script import create_variant, create_question
 
@@ -97,4 +99,10 @@ generation_url_patterns = [
     path('lesson-list/<int:variant_id>/', generation_get_lesson_test_type_lesson_view),
     path('variant-question-list/', generation_variant_questions),
     path('question/<int:pk>/', generation_variant_get_question),
+    path('common-question-list/', generation_variant_common_question),
+    path('common-question/<int:pk>/', generation_common_question),
+    path('add-common-question/', generation_add_common_question),
+    path('all-question/', generation_all_questions),
+    path('all-level/', generation_all_level),
+    path('topics/', topic_list),
 ]

@@ -3,16 +3,22 @@ from django.db.models.functions import Coalesce
 from rest_framework import generics
 from django_filters.rest_framework import DjangoFilterBackend
 
+from base.paginate import SimplePagination
 from quizzes.api.serializers import TestTypeSerializer
 from quizzes.models import TestType, VariantGroup, Variant, TestTypeLesson, \
-    Question, Answer
+    Question, Answer, CommonQuestion, LessonQuestionLevel, QuestionLevel, Topic
 from .generation_serializer import (GenerationTestTypeSerializer,
                                     GenerationVariantGroupSerializer,
                                     GenerationVariantListSerializer,
                                     GenerationGetLessonTestTypeLessonSerializer,
-                                    GenerationQuestionByLessonSerializer)
-from ..filters import VariantGroupFilter, TestTypeLessonFilter
-from ..filters.question import GenerateVariantQuestionFilter
+                                    GenerationQuestionByLessonSerializer,
+                                    GenerationCommonQuestionSerializer,
+                                    GenerationQuestionLevelSerializer,
+                                    TopicSerializer)
+from ..filters import VariantGroupFilter, TestTypeLessonFilter, TopicFilter
+from ..filters.question import GenerateVariantQuestionFilter, \
+    GenerateVariantLessonCommonQuestionFilter, GenerateAllQuestionFilter, \
+    QuestionLevelFilter
 from ..filters.variant import VariantListFilter
 
 
@@ -101,7 +107,68 @@ class GenerationGetQuestionView(generics.RetrieveUpdateDestroyAPIView):
 generation_variant_get_question = GenerationGetQuestionView.as_view()
 
 
-# class GetUpdateDestroyQuestionView(generics.UpdateAPIView):
-#     queryset = Question.objects.all()
-#     serializer_class = QuestionSerializer
-#     lookup_field = 'pk'
+class GenerationCommonQuestionListView(generics.ListAPIView):
+    serializer_class = GenerationCommonQuestionSerializer
+    queryset = CommonQuestion.objects.filter()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = GenerateVariantLessonCommonQuestionFilter
+
+
+generation_variant_common_question = GenerationCommonQuestionListView.as_view()
+
+
+class GenerationCommonQuestionView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = GenerationCommonQuestionSerializer
+    queryset = CommonQuestion.objects.all()
+    lookup_field = 'pk'
+
+
+generation_common_question = GenerationCommonQuestionView.as_view()
+
+
+class GenerationCommonQuestionAddView(generics.CreateAPIView):
+    serializer_class = GenerationCommonQuestionSerializer
+    queryset = CommonQuestion.objects.filter()
+
+
+generation_add_common_question = GenerationCommonQuestionAddView.as_view()
+
+
+class GenerationGetAllQuestionListView(generics.ListAPIView):
+    serializer_class = GenerationQuestionByLessonSerializer
+    queryset = Question.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = GenerateAllQuestionFilter
+    pagination_class = SimplePagination
+
+    def get_queryset(self):
+        answers = Answer.objects.all().order_by('answer_sign__order')
+        queryset = super().filter_queryset(
+            super().get_queryset()).prefetch_related(
+            Prefetch('answers', queryset=answers)
+        ).order_by('-created')
+        return queryset
+
+
+generation_all_questions = GenerationGetAllQuestionListView.as_view()
+
+
+class GenerationQuestionLevelListView(generics.ListAPIView):
+    serializer_class = GenerationQuestionLevelSerializer
+    queryset = QuestionLevel.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = QuestionLevelFilter
+
+
+generation_all_level = GenerationQuestionLevelListView.as_view()
+
+
+class TopicListView(generics.ListCreateAPIView):
+    # permission_classes = (permissions.IsAuthenticated,)
+    queryset = Topic.objects.select_related('test_type_lesson').all()
+    serializer_class = TopicSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TopicFilter
+
+
+topic_list = TopicListView.as_view()

@@ -28,3 +28,6 @@ from .grade import Grade  # noqa
 from .grade_error import InfoError  # noqa
 from .question_mark import Mark  # noqa
 from .complain_question import ComplainQuestion  # noqa
+from .topic import Topic  # noqa
+from .topic_question import TopicQuestion  # noqa
+from .varaint_lesson_common_question import VariantLessonCommonQuestion  # noqa
