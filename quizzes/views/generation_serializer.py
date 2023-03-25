@@ -254,3 +254,8 @@ class ImportSerializer(serializers.Serializer):
     group_id = serializers.IntegerField()
     level_id = serializers.IntegerField()
     topic_id = serializers.IntegerField()
+
+
+class GenerationSerializer(serializers.Serializer):
+    unique_percent = serializers.IntegerField(required=True)
+    variant_group = serializers.IntegerField(required=True)

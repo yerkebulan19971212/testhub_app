@@ -1,7 +1,8 @@
 import json
+import random
 
 from django.db import transaction
-from django.db.models import Q, Count, Prefetch
+from django.db.models import Q, Count, Prefetch, Max
 from django.db.models.functions import Coalesce
 from rest_framework import generics, status
 from django_filters.rest_framework import DjangoFilterBackend
@@ -9,11 +10,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from admin_panel.utils.questions import create_question
+from base.constant import TestLang
 from base.paginate import SimplePagination
 from quizzes.api.serializers import TestTypeSerializer
 from quizzes.models import TestType, VariantGroup, Variant, TestTypeLesson, \
     Question, Answer, CommonQuestion, LessonQuestionLevel, QuestionLevel, \
-    Topic, AnswerSign
+    Topic, AnswerSign, VariantQuestion
 from .generation_serializer import (GenerationTestTypeSerializer,
                                     GenerationVariantGroupSerializer,
                                     GenerationVariantListSerializer,
@@ -23,7 +25,8 @@ from .generation_serializer import (GenerationTestTypeSerializer,
                                     GenerationQuestionLevelSerializer,
                                     TopicSerializer,
                                     GenerationListQuestionByLessonSerializer,
-                                    GenerationLessonQuestionLevelSerializer)
+                                    GenerationLessonQuestionLevelSerializer,
+                                    ImportSerializer, GenerationSerializer)
 from ..filters import VariantGroupFilter, TestTypeLessonFilter, TopicFilter
 from ..filters.question import GenerateVariantQuestionFilter, \
     GenerateVariantLessonCommonQuestionFilter, GenerateAllQuestionFilter, \
@@ -205,7 +208,7 @@ topic_list = TopicListView.as_view()
 
 
 class ImportQuestionViews(generics.CreateAPIView):
-    serializer_class = TopicSerializer
+    serializer_class = ImportSerializer
 
     def post(self, request, *args, **kwargs):
         group_id = request.data.get('group_id')
@@ -221,7 +224,8 @@ class ImportQuestionViews(generics.CreateAPIView):
         with request.FILES['file'] as f:
             try:
                 with transaction.atomic():
-                    lesson_question_level = LessonQuestionLevel.objects.get(pk=level_id)
+                    lesson_question_level = LessonQuestionLevel.objects.get(
+                        pk=level_id)
                     variant_group = VariantGroup.objects.get(pk=group_id)
 
                     line = f.readline().decode().strip()
@@ -252,9 +256,133 @@ class ImportQuestionViews(generics.CreateAPIView):
                 print(e)
                 message = str(e)
                 return Response(
-                    {"message": message, "success": False}, status=status.HTTP_200_OK)
+                    {"message": message, "success": False},
+                    status=status.HTTP_200_OK)
         return Response(
             {"success": True}, status=status.HTTP_200_OK)
 
 
 import_question = ImportQuestionViews.as_view()
+
+
+class GenerationVariantViews(generics.CreateAPIView):
+    serializer_class = GenerationSerializer
+
+    def post(self, request, *args, **kwargs):
+        unique_percent = request.data.get('unique_percent')
+        variant_group = request.data.get('variant_group', None)
+        variants = Variant.objects.all()
+        if variant_group:
+            variants = variants.filter(variant_group_id=variant_group)
+        test_type_lessons = TestTypeLesson.objects.filter(
+            test_type__name_code='ent',
+            language=TestLang.KAZAKH,
+            questions_number__gt=0
+        ).order_by('-main')
+        try:
+            with transaction.atomic():
+                variant = Variant.objects \
+                    .filter(variant_group_id=variant_group) \
+                    .order_by('variant').last()
+                new_variant = Variant.objects.create(
+                    variant_group_id=variant_group,
+                    sum_question=variant.sum_question,
+                    variant=variant.variant + 1,
+                    order=variant.order + 1
+                )
+                variant_question = []
+                variant_ids = [v.id for v in Variant.objects.all()]
+                for tt in test_type_lessons:
+                    question_elements = []
+                    lesson_question_levels = LessonQuestionLevel \
+                        .objects \
+                        .select_related('question_level') \
+                        .filter(test_type_lesson=tt)
+                    if unique_percent < 100 / 5:
+                        unique_percent = 100 // 5
+
+                    if tt.lesson.name_code == 'mathematical_literacy':
+                        lesson_question_levels = lesson_question_levels[:tt.questions_number // 5]
+                        for lql in lesson_question_levels:
+                            question_list = []
+                            unique_question_number = lql.number_of_questions * unique_percent // 100
+                            for v in variant_ids:
+                                var_questions = Question.objects.filter(
+                                    variant_questions__variant_id=v,
+                                    lesson_question_level=lql
+                                )[:unique_question_number]
+                                question_list += list(var_questions)
+                            if len(question_list) >= lql.number_of_questions:
+                                number_of_questions = lql.number_of_questions//2
+                            else:
+                                number_of_questions = lql.number_of_questions
+                            questions = Question.objects.filter(
+                                variant_questions__isnull=True,
+                                variant_group_id=variant_group,
+                                lesson_question_level=lql
+                            )[:number_of_questions]
+                            question_list += list(questions)
+                            question_elements += random.sample(question_list, lql.number_of_questions)
+                    elif tt.lesson.name_code == 'history_of_kazakhstan':
+                        lesson_question_levels = lesson_question_levels[:2]
+                        for lql in lesson_question_levels:
+                            question_list = []
+                            unique_question_number = lql.number_of_questions * unique_percent // 100
+                            for v in variant_ids:
+                                var_questions = Question.objects.filter(
+                                    variant_questions__variant_id=v,
+                                    lesson_question_level=lql
+                                )[:unique_question_number]
+                                question_list += list(var_questions)
+                            if len(question_list) >= lql.number_of_questions:
+                                number_of_questions = lql.number_of_questions // 2
+                            else:
+                                number_of_questions = lql.number_of_questions
+                            questions = Question.objects.filter(
+                                variant_questions__isnull=True,
+                                variant_group_id=variant_group,
+                                lesson_question_level=lql
+                            )[:number_of_questions]
+                            question_list += list(questions)
+                            question_elements += random.sample(question_list, lql.number_of_questions)
+                    elif tt.lesson.name_code == 'reading_literacy':
+                        pass
+                    else:
+                        lesson_question_levels = lesson_question_levels[:tt.questions_number // 5]
+                        lesson_count = 0
+                        for lql in lesson_question_levels:
+                            lesson_count += 1
+                            if lesson_count == 5:
+                                continue
+                            question_list = []
+                            unique_question_number = lql.number_of_questions * unique_percent // 100
+                            for v in variant_ids:
+                                var_questions = Question.objects.filter(
+                                    variant_questions__variant_id=v,
+                                    lesson_question_level=lql
+                                )[:unique_question_number]
+                                question_list += list(var_questions)
+                            if len(question_list) >= lql.number_of_questions:
+                                number_of_questions = lql.number_of_questions // 2
+                            else:
+                                number_of_questions = lql.number_of_questions
+                            questions = Question.objects.filter(
+                                variant_questions__isnull=True,
+                                variant_group_id=variant_group,
+                                lesson_question_level=lql
+                            )[:number_of_questions]
+                            question_list += list(questions)
+                            question_elements += random.sample(question_list, lql.number_of_questions)
+                    for q in question_elements:
+                        variant_question.append(VariantQuestion(
+                            variant=new_variant,
+                            question=q
+                        ))
+                VariantQuestion.objects.bulk_create(variant_question)
+                # transaction.rollback()
+        except Exception as e:
+            print(e)
+        return Response()
+
+
+generation_question = GenerationVariantViews.as_view()

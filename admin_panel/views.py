@@ -256,7 +256,8 @@ def generation_variants(request):
                             questions = Question.objects.filter(
                                 variant_questions__isnull=True,
                                 variant_group_id=variant_group,
-                                lesson_question_level=lql)
+                                lesson_question_level=lql
+                            )
                             if questions.count() >= lql.number_of_questions:
                                 questions = questions[:lql.number_of_questions]
                             if questions:
