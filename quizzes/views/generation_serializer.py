@@ -259,3 +259,7 @@ class ImportSerializer(serializers.Serializer):
 class GenerationSerializer(serializers.Serializer):
     unique_percent = serializers.IntegerField(required=True)
     variant_group = serializers.IntegerField(required=True)
+    # variant_list = serializers.ListField(
+    #     child=serializers.IntegerField(),
+    #     required=True
+    # )

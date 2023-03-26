@@ -270,10 +270,11 @@ class GenerationVariantViews(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         unique_percent = request.data.get('unique_percent')
+        # variant_list = request.data.get('variant_list')
         variant_group = request.data.get('variant_group', None)
-        variants = Variant.objects.all()
+        variants_obj_list = Variant.objects.all()
         if variant_group:
-            variants = variants.filter(variant_group_id=variant_group)
+            variants_obj_list = variants_obj_list.filter(variant_group_id=variant_group)
         test_type_lessons = TestTypeLesson.objects.filter(
             test_type__name_code='ent',
             language=TestLang.KAZAKH,
@@ -291,7 +292,8 @@ class GenerationVariantViews(generics.CreateAPIView):
                     order=variant.order + 1
                 )
                 variant_question = []
-                variant_ids = [v.id for v in Variant.objects.all()]
+                # variants_obj_list = Variant.objects.filter(id__in=variant_list)
+                variant_ids = [v.id for v in variants_obj_list]
                 for tt in test_type_lessons:
                     question_elements = []
                     lesson_question_levels = LessonQuestionLevel \
@@ -382,7 +384,8 @@ class GenerationVariantViews(generics.CreateAPIView):
                 # transaction.rollback()
         except Exception as e:
             print(e)
-        return Response()
+            return Response({"Success": False})
+        return Response({"Success": True})
 
 
 generation_question = GenerationVariantViews.as_view()
