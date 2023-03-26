@@ -384,8 +384,8 @@ class GenerationVariantViews(generics.CreateAPIView):
                 # transaction.rollback()
         except Exception as e:
             print(e)
-            return Response({"Success": False})
-        return Response({"Success": True})
+            return Response({"status": False})
+        return Response({"status": True})
 
 
 generation_question = GenerationVariantViews.as_view()
