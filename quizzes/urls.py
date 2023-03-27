@@ -30,7 +30,8 @@ from quizzes.views.generation import generation_test_type_view, \
     generation_common_question, generation_add_common_question, \
     generation_all_questions, generation_all_level, topic_list, \
     add_generate_question, generation_lesson_level, import_question, \
-    generation_question, save_image
+    generation_question, save_image, generation_update_variant_question, \
+    add_generate_question_variant
 
 # from quizzes.views.script import create_variant, create_question
 
@@ -107,11 +108,13 @@ generation_url_patterns = [
     path('add-common-question/', generation_add_common_question),
     path('all-question/', generation_all_questions),
     path('add-question/', add_generate_question),
+    path('add-question-variant/', add_generate_question_variant),
     path('all-level/', generation_all_level),
     path('all-lesson-level/', generation_lesson_level),
     path('topics/', topic_list),
 
     path('question-image/', save_image),
+    path('update-variant-question/<int:pk>/', generation_update_variant_question),
     path('import-question/', import_question),
     path('', generation_question),
 ]

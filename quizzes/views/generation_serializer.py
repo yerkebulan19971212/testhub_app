@@ -221,7 +221,7 @@ class GenerationListQuestionByLessonSerializer(
     common_question = GenerationCommonQuestionSerializer()
 
 
-class GenerationVariantQuestionByLessonSerializer(serializers.ModelSerializer):
+class GenerationGetVariantQuestionByLessonSerializer(serializers.ModelSerializer):
     question = GenerationListQuestionByLessonSerializer()
 
     class Meta:
@@ -285,3 +285,61 @@ class QuestionAnswerImageSerializer(serializers.ModelSerializer):
         fields = (
             'upload',
         )
+
+
+class GenerationVariantQuestionByLessonSerializer(WritableNestedModelSerializer,
+                                           serializers.ModelSerializer):
+    answers = GenerationCreateSerializer(many=True)
+    created = serializers.DateTimeField(read_only=True)
+    modified = serializers.DateTimeField(read_only=True)
+    topic_id = serializers.IntegerField(write_only=True, required=True)
+    variant_id = serializers.IntegerField(write_only=True, required=True)
+    order = serializers.IntegerField(write_only=True, required=True)
+
+    class Meta:
+        model = Question
+        fields = (
+            'id',
+            'common_question',
+            'lesson_question_level',
+            'question',
+            'topic_id',
+            'variant_id',
+            'created',
+            'modified',
+            'is_active',
+            'math',
+            'variant_group',
+            'created',
+            'modified',
+            'order',
+            'answers'
+        )
+
+    def create(self, validated_data):
+        topic_id = validated_data.pop('topic_id')
+        variant_id = validated_data.pop('variant_id')
+        order = validated_data.pop('order')
+
+        answer_signs = list(AnswerSign.objects.all().order_by('order'))
+        for i, ans in enumerate(validated_data['answers']):
+            ans['answer_sign'] = answer_signs[i].id
+        question = super().create(validated_data)
+        if variant_id:
+            if order is None or order == 0:
+                vq = VariantQuestion.objects.filter(
+                    variant_id=variant_id
+                )
+                if vq:
+                    order = vq.order_by('-order').first().order
+            VariantQuestion.objects.create(
+                question=question,
+                variant_id=variant_id,
+                order=order
+            )
+
+        TopicQuestion.objects.create(
+            question=question,
+            topic_id=topic_id
+        )
+        return question

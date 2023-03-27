@@ -28,7 +28,8 @@ from .generation_serializer import (GenerationTestTypeSerializer,
                                     GenerationLessonQuestionLevelSerializer,
                                     ImportSerializer, GenerationSerializer,
                                     GenerationVariantQuestionByLessonSerializer,
-                                    QuestionAnswerImageSerializer)
+                                    QuestionAnswerImageSerializer,
+                                    GenerationGetVariantQuestionByLessonSerializer)
 from ..filters import VariantGroupFilter, TestTypeLessonFilter, TopicFilter
 from ..filters.question import GenerateVariantQuestionFilter, \
     GenerateVariantLessonCommonQuestionFilter, GenerateAllQuestionFilter, \
@@ -88,7 +89,7 @@ generation_get_lesson_test_type_lesson_view = GenerationGetLessonTestTypeLessons
 
 class GenerationGetQuestionListView(generics.ListAPIView):
     # serializer_class = GenerationListQuestionByLessonSerializer
-    serializer_class = GenerationVariantQuestionByLessonSerializer
+    serializer_class = GenerationGetVariantQuestionByLessonSerializer
     # queryset = Question.objects.filter()
     queryset = VariantQuestion.objects.filter()
     filter_backends = [DjangoFilterBackend]
@@ -135,6 +136,17 @@ class GenerationCreateQuestionView(generics.CreateAPIView):
 
 add_generate_question = GenerationCreateQuestionView.as_view()
 
+class GenerationCreateVariantQuestionView(generics.CreateAPIView):
+    serializer_class = GenerationVariantQuestionByLessonSerializer
+
+    def create(self, request, *args, **kwargs):
+        answer_signs = list(AnswerSign.objects.all().order_by('order'))
+        for i, ans in enumerate(request.data['answers']):
+            ans['answer_sign'] = answer_signs[i].id
+        return super().create(request, *args, **kwargs)
+
+
+add_generate_question_variant = GenerationCreateVariantQuestionView.as_view()
 
 class GenerationCommonQuestionListView(generics.ListAPIView):
     serializer_class = GenerationCommonQuestionSerializer
@@ -391,3 +403,14 @@ class SaveImageView(generics.CreateAPIView):
 
 
 save_image = SaveImageView.as_view()
+
+
+class GenerationUpdateVariantQuestion(generics.UpdateAPIView):
+    serializer_class = GenerationVariantQuestionByLessonSerializer
+    queryset = VariantQuestion.objects.all()
+    lookup_field = 'pk'
+    http_method_names = ['patch']
+
+
+
+generation_update_variant_question = GenerationUpdateVariantQuestion.as_view()
