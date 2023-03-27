@@ -6,7 +6,7 @@ from base.abstract_serializer import NameSerializer
 from quizzes.models import (TestType, VariantGroup, Variant,
                             TestTypeLesson, Lesson, Answer, Question,
                             CommonQuestion, LessonQuestionLevel, QuestionLevel,
-                            Topic, TopicQuestion, AnswerSign)
+                            Topic, TopicQuestion, AnswerSign, VariantQuestion)
 
 
 class GenerationLessonSerializer(abstract_serializer.NameSerializer):
@@ -159,13 +159,25 @@ class GenerationCreateSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
+class GenerationLessonQuestionLevelSerializer(serializers.ModelSerializer):
+    name_code = serializers.CharField(source='question_level.name_code')
+
+    class Meta:
+        model = LessonQuestionLevel
+        fields = (
+            'id',
+            'test_type_lesson',
+            'name_code'
+        )
+
+
 class GenerationQuestionByLessonSerializer(WritableNestedModelSerializer,
                                            serializers.ModelSerializer):
     answers = GenerationCreateSerializer(many=True)
     created = serializers.DateTimeField(read_only=True)
     modified = serializers.DateTimeField(read_only=True)
     topic_id = serializers.IntegerField(write_only=True, required=True)
-    question_order= serializers.IntegerField(source='var')
+    lesson_question_level = GenerationLessonQuestionLevelSerializer()
 
     class Meta:
         model = Question
@@ -208,23 +220,24 @@ class GenerationListQuestionByLessonSerializer(
     common_question = GenerationCommonQuestionSerializer()
 
 
+class GenerationVariantQuestionByLessonSerializer(serializers.ModelSerializer):
+    question = GenerationListQuestionByLessonSerializer()
+
+    class Meta:
+        model = VariantQuestion
+        fields = (
+            'id',
+            'variant',
+            'question',
+            'order',
+        )
+
+
 class GenerationQuestionLevelSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuestionLevel
         fields = (
             'id',
-            'name_code'
-        )
-
-
-class GenerationLessonQuestionLevelSerializer(serializers.ModelSerializer):
-    name_code = serializers.CharField(source='question_level.name_code')
-
-    class Meta:
-        model = LessonQuestionLevel
-        fields = (
-            'id',
-            'test_type_lesson',
             'name_code'
         )
 

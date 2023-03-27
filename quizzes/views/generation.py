@@ -26,7 +26,8 @@ from .generation_serializer import (GenerationTestTypeSerializer,
                                     TopicSerializer,
                                     GenerationListQuestionByLessonSerializer,
                                     GenerationLessonQuestionLevelSerializer,
-                                    ImportSerializer, GenerationSerializer)
+                                    ImportSerializer, GenerationSerializer,
+                                    GenerationVariantQuestionByLessonSerializer)
 from ..filters import VariantGroupFilter, TestTypeLessonFilter, TopicFilter
 from ..filters.question import GenerateVariantQuestionFilter, \
     GenerateVariantLessonCommonQuestionFilter, GenerateAllQuestionFilter, \
@@ -35,7 +36,7 @@ from ..filters.variant import VariantListFilter
 
 
 class GenerationTestTypeView(generics.ListAPIView):
-    queryset = TestType.objects.all()
+    queryset = TestType.objects.all().order_by('order')
     serializer_class = GenerationTestTypeSerializer
 
 
@@ -54,7 +55,7 @@ generation_variant_groups = GenerationVariantGroupsView.as_view()
 
 class VariantsList(generics.ListCreateAPIView):
     serializer_class = GenerationVariantListSerializer
-    queryset = Variant.objects.all()
+    queryset = Variant.objects.all().order_by('-order')
     filter_backends = [DjangoFilterBackend]
     filterset_class = VariantListFilter
 
@@ -85,23 +86,19 @@ generation_get_lesson_test_type_lesson_view = GenerationGetLessonTestTypeLessons
 
 
 class GenerationGetQuestionListView(generics.ListAPIView):
-    serializer_class = GenerationListQuestionByLessonSerializer
-    queryset = Question.objects.filter()
+    # serializer_class = GenerationListQuestionByLessonSerializer
+    serializer_class = GenerationVariantQuestionByLessonSerializer
+    # queryset = Question.objects.filter()
+    queryset = VariantQuestion.objects.filter()
     filter_backends = [DjangoFilterBackend]
     filterset_class = GenerateVariantQuestionFilter
 
     def get_queryset(self):
-        variant_id = self.request.query_params.get('variant_id')
         answers = Answer.objects.all().order_by('answer_sign__order')
         queryset = super().filter_queryset(
             super().get_queryset()).prefetch_related(
-            Prefetch('answers', queryset=answers)
-        ).annotate(
-            question_order=VariantQuestion.objects.filter(
-                variant_id=variant_id,
-                question_id=OuterRef('pk')
-            ).first().order
-        ).order_by('variant_questions__order')
+            Prefetch('question__answers', queryset=answers)
+        ).order_by('order')
         return queryset
 
 
@@ -310,30 +307,7 @@ class GenerationVariantViews(generics.CreateAPIView):
                         unique_percent = 100 // 5
                     if tt.lesson.name_code == 'mathematical_literacy':
                         lesson_question_levels = lesson_question_levels[:tt.questions_number // 5]
-                        for lql in lesson_question_levels:
-                            question_list = []
-                            unique_question_number = lql.number_of_questions * unique_percent // 100
-                            for v in variant_ids:
-                                var_questions = Question.objects.filter(
-                                    variant_questions__variant_id=v,
-                                    lesson_question_level=lql
-                                )[:unique_question_number]
-                                question_list += list(var_questions)
-                            print('d')
-                            if len(question_list) >= lql.number_of_questions:
-                                print('++')
-                                number_of_questions = lql.number_of_questions//2
-                            else:
-                                number_of_questions = lql.number_of_questions
-                            print('dfskjnlk')
-                            questions = Question.objects.filter(
-                                variant_questions__isnull=True,
-                                variant_group_id=variant_group,
-                                lesson_question_level=lql
-                            )[:number_of_questions]
-                            question_list += list(questions)
-                            question_elements += random.sample(question_list, lql.number_of_questions)
-                        question_elements += question_lql_list(
+                        question_elements = question_lql_list(
                             lesson_question_levels=lesson_question_levels,
                             variant_ids=variant_ids,
                             unique_percent=unique_percent,
@@ -341,7 +315,7 @@ class GenerationVariantViews(generics.CreateAPIView):
                         )
                     elif tt.lesson.name_code == 'history_of_kazakhstan':
                         lesson_question_levels = lesson_question_levels[:2]
-                        question_elements += question_lql_list(
+                        question_elements = question_lql_list(
                             lesson_question_levels=lesson_question_levels,
                             variant_ids=variant_ids,
                             unique_percent=unique_percent,
@@ -373,14 +347,18 @@ class GenerationVariantViews(generics.CreateAPIView):
                                 variant_group_id=variant_group,
                                 lesson_question_level=lql
                             )[:number_of_questions]
-
                             question_list += list(set(list(questions)))
                             question_elements += random.sample(question_list, lql.number_of_questions)
+                    order_count = 1
                     for q in question_elements:
                         variant_question.append(VariantQuestion(
                             variant=new_variant,
-                            question=q
+                            question=q,
+                            order=order_count
                         ))
+                        if order_count == 20:
+                            order_count = 25
+                        order_count += 1
                 VariantQuestion.objects.bulk_create(variant_question)
                 # transaction.rollback()
 

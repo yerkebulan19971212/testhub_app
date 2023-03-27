@@ -5,7 +5,7 @@ from django_filters import CharFilter, NumberFilter
 from django_filters import rest_framework as filters
 
 from quizzes.models import Question, Favorite, VariantLessonCommonQuestion, \
-    CommonQuestion, QuestionLevel, LessonQuestionLevel
+    CommonQuestion, QuestionLevel, LessonQuestionLevel, VariantQuestion
 
 
 class QuestionFilter(django_filters.FilterSet):
@@ -82,16 +82,16 @@ class FavoriteFilter(django_filters.FilterSet):
 
 class GenerateVariantQuestionFilter(django_filters.FilterSet):
     lesson_id = filters.NumberFilter(
-        field_name="lesson_question_level__test_type_lesson_id",
+        field_name="question__lesson_question_level__test_type_lesson_id",
         required=True
     )
     variant_id = filters.NumberFilter(
-        field_name="variant_questions__variant__id",
+        field_name="variant__id",
         required=True
     )
 
     class Meta:
-        model = Question
+        model = VariantQuestion
         fields = (
             'lesson_id',
             'variant_id'

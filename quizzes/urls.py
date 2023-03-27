@@ -98,6 +98,7 @@ generation_url_patterns = [
     path('test-type-list/', generation_test_type_view),
     path('variant-group/', generation_variant_groups),
     path('variant-list/', generation_variant_list),
+
     path('lesson-list/<int:variant_id>/', generation_get_lesson_test_type_lesson_view),
     path('variant-question-list/', generation_variant_questions),
     path('question/<int:pk>/', generation_variant_get_question),
