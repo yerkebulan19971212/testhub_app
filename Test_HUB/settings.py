@@ -61,6 +61,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3030",
+    "https://api-dev.testhub.kz",
 ]
 
 if DEBUG:
