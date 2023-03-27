@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from admin_panel.utils.questions import create_question
+from admin_panel.utils.questions import create_question, question_lql_list
 from base.constant import TestLang
 from base.paginate import SimplePagination
 from quizzes.api.serializers import TestTypeSerializer
@@ -54,7 +54,7 @@ generation_variant_groups = GenerationVariantGroupsView.as_view()
 
 class VariantsList(generics.ListCreateAPIView):
     serializer_class = GenerationVariantListSerializer
-    queryset = Variant.objects.all().order_by('-order')
+    queryset = Variant.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_class = VariantListFilter
 
@@ -333,30 +333,22 @@ class GenerationVariantViews(generics.CreateAPIView):
                             )[:number_of_questions]
                             question_list += list(questions)
                             question_elements += random.sample(question_list, lql.number_of_questions)
+                        question_elements += question_lql_list(
+                            lesson_question_levels=lesson_question_levels,
+                            variant_ids=variant_ids,
+                            unique_percent=unique_percent,
+                            variant_group=variant_group
+                        )
                     elif tt.lesson.name_code == 'history_of_kazakhstan':
                         lesson_question_levels = lesson_question_levels[:2]
-                        for lql in lesson_question_levels:
-                            question_list = []
-                            unique_question_number = lql.number_of_questions * unique_percent // 100
-                            for v in variant_ids:
-                                var_questions = Question.objects.filter(
-                                    variant_questions__variant_id=v,
-                                    lesson_question_level=lql
-                                )[:unique_question_number]
-                                question_list += list(var_questions)
-                            if len(question_list) >= lql.number_of_questions:
-                                number_of_questions = lql.number_of_questions // 2
-                            else:
-                                number_of_questions = lql.number_of_questions
-                            questions = Question.objects.filter(
-                                variant_questions__isnull=True,
-                                variant_group_id=variant_group,
-                                lesson_question_level=lql
-                            )[:number_of_questions]
-                            question_list += list(questions)
-                            question_elements += random.sample(question_list, lql.number_of_questions)
+                        question_elements += question_lql_list(
+                            lesson_question_levels=lesson_question_levels,
+                            variant_ids=variant_ids,
+                            unique_percent=unique_percent,
+                            variant_group=variant_group
+                        )
                     elif tt.lesson.name_code == 'reading_literacy':
-                        pass
+                        continue
                     else:
                         lesson_question_levels = lesson_question_levels[:tt.questions_number // 5]
                         lesson_count = 0
@@ -371,7 +363,7 @@ class GenerationVariantViews(generics.CreateAPIView):
                                     variant_questions__variant_id=v,
                                     lesson_question_level=lql
                                 )[:unique_question_number]
-                                question_list += list(var_questions)
+                                question_list += list(set(list(var_questions)))
                             if len(question_list) >= lql.number_of_questions:
                                 number_of_questions = lql.number_of_questions // 2
                             else:
@@ -381,7 +373,8 @@ class GenerationVariantViews(generics.CreateAPIView):
                                 variant_group_id=variant_group,
                                 lesson_question_level=lql
                             )[:number_of_questions]
-                            question_list += list(questions)
+
+                            question_list += list(set(list(questions)))
                             question_elements += random.sample(question_list, lql.number_of_questions)
                     for q in question_elements:
                         variant_question.append(VariantQuestion(

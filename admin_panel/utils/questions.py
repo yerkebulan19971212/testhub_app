@@ -1,4 +1,5 @@
 import random
+from typing import List
 
 from accounts.models import User
 from quizzes.models import CommonQuestion, Question, Answer, Variant, \
@@ -82,3 +83,34 @@ def user_variant():
                 variant=v
             ))
     UserVariant.objects.bulk_create(user_variants)
+
+
+def question_lql_list(
+        lesson_question_levels,
+        variant_ids: List[int],
+        unique_percent: int,
+        variant_group: int
+):
+    question_elements = []
+    for lql in lesson_question_levels:
+        question_list = []
+        unique_question_number = lql.number_of_questions * unique_percent // 100
+        for v in variant_ids:
+            var_questions = Question.objects.filter(
+                variant_questions__variant_id=v,
+                lesson_question_level=lql
+            ).distinct()[:unique_question_number]
+            question_list += list(set(list(var_questions)))
+        if len(question_list) >= lql.number_of_questions:
+            number_of_questions = lql.number_of_questions // 2
+        else:
+            number_of_questions = lql.number_of_questions
+        questions = Question.objects.filter(
+            variant_questions__isnull=True,
+            variant_group_id=variant_group,
+            lesson_question_level=lql
+        )[:number_of_questions]
+        question_list += list(set(list(questions)))
+        question_elements += random.sample(
+            question_list, lql.number_of_questions)
+    return question_elements
