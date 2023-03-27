@@ -2,7 +2,7 @@ import json
 import random
 
 from django.db import transaction
-from django.db.models import Q, Count, Prefetch, Max
+from django.db.models import Q, Count, Prefetch, Max, OuterRef, Subquery
 from django.db.models.functions import Coalesce
 from rest_framework import generics, status
 from django_filters.rest_framework import DjangoFilterBackend
@@ -54,7 +54,7 @@ generation_variant_groups = GenerationVariantGroupsView.as_view()
 
 class VariantsList(generics.ListCreateAPIView):
     serializer_class = GenerationVariantListSerializer
-    queryset = Variant.objects.all()
+    queryset = Variant.objects.all().order_by('-order')
     filter_backends = [DjangoFilterBackend]
     filterset_class = VariantListFilter
 
@@ -91,11 +91,17 @@ class GenerationGetQuestionListView(generics.ListAPIView):
     filterset_class = GenerateVariantQuestionFilter
 
     def get_queryset(self):
+        variant_id = self.request.query_params.get('variant_id')
         answers = Answer.objects.all().order_by('answer_sign__order')
         queryset = super().filter_queryset(
             super().get_queryset()).prefetch_related(
             Prefetch('answers', queryset=answers)
-        ).order_by('order')
+        ).annotate(
+            question_order=VariantQuestion.objects.filter(
+                variant_id=variant_id,
+                question_id=OuterRef('pk')
+            ).first().order
+        ).order_by('variant_questions__order')
         return queryset
 
 
@@ -269,7 +275,7 @@ class GenerationVariantViews(generics.CreateAPIView):
     serializer_class = GenerationSerializer
 
     def post(self, request, *args, **kwargs):
-        unique_percent = request.data.get('unique_percent')
+        unique_percent = int(request.data.get('unique_percent'))
         # variant_list = request.data.get('variant_list')
         variant_group = request.data.get('variant_group', None)
         variants_obj_list = Variant.objects.all()
@@ -295,14 +301,13 @@ class GenerationVariantViews(generics.CreateAPIView):
                 # variants_obj_list = Variant.objects.filter(id__in=variant_list)
                 variant_ids = [v.id for v in variants_obj_list]
                 for tt in test_type_lessons:
+                    print(tt.lesson.name_code)
                     question_elements = []
                     lesson_question_levels = LessonQuestionLevel \
-                        .objects \
-                        .select_related('question_level') \
+                        .objects.select_related('question_level') \
                         .filter(test_type_lesson=tt)
                     if unique_percent < 100 / 5:
                         unique_percent = 100 // 5
-
                     if tt.lesson.name_code == 'mathematical_literacy':
                         lesson_question_levels = lesson_question_levels[:tt.questions_number // 5]
                         for lql in lesson_question_levels:
@@ -314,10 +319,13 @@ class GenerationVariantViews(generics.CreateAPIView):
                                     lesson_question_level=lql
                                 )[:unique_question_number]
                                 question_list += list(var_questions)
+                            print('d')
                             if len(question_list) >= lql.number_of_questions:
+                                print('++')
                                 number_of_questions = lql.number_of_questions//2
                             else:
                                 number_of_questions = lql.number_of_questions
+                            print('dfskjnlk')
                             questions = Question.objects.filter(
                                 variant_questions__isnull=True,
                                 variant_group_id=variant_group,
@@ -382,9 +390,10 @@ class GenerationVariantViews(generics.CreateAPIView):
                         ))
                 VariantQuestion.objects.bulk_create(variant_question)
                 # transaction.rollback()
+
         except Exception as e:
             print(e)
-            return Response({"status": False})
+            return Response({"status": False, "message": str(e)})
         return Response({"status": True})
 
 

@@ -21,6 +21,7 @@ class VariantQuestion(abstract_models.IsActive,
 
     class Meta:
         db_table = 'quiz\".\"variant_question'
+        unique_together = ['variant', 'question']
 
     def __str__(self):
         return f'{self.question} - {self.variant}'

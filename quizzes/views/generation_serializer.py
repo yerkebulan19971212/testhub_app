@@ -165,6 +165,7 @@ class GenerationQuestionByLessonSerializer(WritableNestedModelSerializer,
     created = serializers.DateTimeField(read_only=True)
     modified = serializers.DateTimeField(read_only=True)
     topic_id = serializers.IntegerField(write_only=True, required=True)
+    question_order= serializers.IntegerField(source='var')
 
     class Meta:
         model = Question
