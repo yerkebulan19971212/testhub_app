@@ -27,7 +27,8 @@ from .generation_serializer import (GenerationTestTypeSerializer,
                                     GenerationListQuestionByLessonSerializer,
                                     GenerationLessonQuestionLevelSerializer,
                                     ImportSerializer, GenerationSerializer,
-                                    GenerationVariantQuestionByLessonSerializer)
+                                    GenerationVariantQuestionByLessonSerializer,
+                                    QuestionAnswerImageSerializer)
 from ..filters import VariantGroupFilter, TestTypeLessonFilter, TopicFilter
 from ..filters.question import GenerateVariantQuestionFilter, \
     GenerateVariantLessonCommonQuestionFilter, GenerateAllQuestionFilter, \
@@ -277,7 +278,8 @@ class GenerationVariantViews(generics.CreateAPIView):
         variant_group = request.data.get('variant_group', None)
         variants_obj_list = Variant.objects.all()
         if variant_group:
-            variants_obj_list = variants_obj_list.filter(variant_group_id=variant_group)
+            variants_obj_list = variants_obj_list.filter(
+                variant_group_id=variant_group)
         test_type_lessons = TestTypeLesson.objects.filter(
             test_type__name_code='ent',
             language=TestLang.KAZAKH,
@@ -306,7 +308,8 @@ class GenerationVariantViews(generics.CreateAPIView):
                     if unique_percent < 100 / 5:
                         unique_percent = 100 // 5
                     if tt.lesson.name_code == 'mathematical_literacy':
-                        lesson_question_levels = lesson_question_levels[:tt.questions_number // 5]
+                        lesson_question_levels = lesson_question_levels[
+                                                 :tt.questions_number // 5]
                         question_elements = question_lql_list(
                             lesson_question_levels=lesson_question_levels,
                             variant_ids=variant_ids,
@@ -324,7 +327,8 @@ class GenerationVariantViews(generics.CreateAPIView):
                     elif tt.lesson.name_code == 'reading_literacy':
                         continue
                     else:
-                        lesson_question_levels = lesson_question_levels[:tt.questions_number // 5]
+                        lesson_question_levels = lesson_question_levels[
+                                                 :tt.questions_number // 5]
                         lesson_count = 0
                         for lql in lesson_question_levels:
                             lesson_count += 1
@@ -337,6 +341,10 @@ class GenerationVariantViews(generics.CreateAPIView):
                                     variant_questions__variant_id=v,
                                     lesson_question_level=lql
                                 )[:unique_question_number]
+                                print([q.id for q in var_questions])
+                                print("[q.id for i in questions]")
+                                print(tt.lesson.name_code)
+                                print(lql.question_level.name_code)
                                 question_list += list(set(list(var_questions)))
                             if len(question_list) >= lql.number_of_questions:
                                 number_of_questions = lql.number_of_questions // 2
@@ -347,9 +355,11 @@ class GenerationVariantViews(generics.CreateAPIView):
                                 variant_group_id=variant_group,
                                 lesson_question_level=lql
                             )[:number_of_questions]
-                            question_list += list(set(list(questions)))
-                            question_elements += random.sample(question_list, lql.number_of_questions)
+
+                            question_list += list(questions)
+                            question_elements += random.sample(list(set(list(question_list))),lql.number_of_questions)
                     order_count = 1
+
                     for q in question_elements:
                         variant_question.append(VariantQuestion(
                             variant=new_variant,
@@ -369,3 +379,15 @@ class GenerationVariantViews(generics.CreateAPIView):
 
 
 generation_question = GenerationVariantViews.as_view()
+
+
+class SaveImageView(generics.CreateAPIView):
+    serializer_class = QuestionAnswerImageSerializer
+
+    def post(self, request, *args, **kwargs):
+        data = self.create(request, *args, **kwargs).data
+        response = {"url": data.get('upload')}
+        return Response(response, status=status.HTTP_201_CREATED)
+
+
+save_image = SaveImageView.as_view()

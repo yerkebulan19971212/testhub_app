@@ -6,7 +6,8 @@ from base.abstract_serializer import NameSerializer
 from quizzes.models import (TestType, VariantGroup, Variant,
                             TestTypeLesson, Lesson, Answer, Question,
                             CommonQuestion, LessonQuestionLevel, QuestionLevel,
-                            Topic, TopicQuestion, AnswerSign, VariantQuestion)
+                            Topic, TopicQuestion, AnswerSign, VariantQuestion,
+                            QuestionAnswerImage)
 
 
 class GenerationLessonSerializer(abstract_serializer.NameSerializer):
@@ -277,3 +278,10 @@ class GenerationSerializer(serializers.Serializer):
     #     child=serializers.IntegerField(),
     #     required=True
     # )
+
+class QuestionAnswerImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionAnswerImage
+        fields = (
+            'upload',
+        )
