@@ -1,6 +1,8 @@
 import random
 from typing import List
 
+from django.db.models import Count
+
 from accounts.models import User
 from quizzes.models import CommonQuestion, Question, Answer, Variant, \
     UserVariant, AnswerSign, TopicQuestion
@@ -109,7 +111,9 @@ def question_lql_list(
             variant_questions__isnull=True,
             variant_group_id=variant_group,
             lesson_question_level=lql
-        )[:number_of_questions]
+        ).annotate(
+            variant_question_count=Count('variant_questions')
+        ).order_by('variant_question_count')[:number_of_questions]
         question_list += list(set(list(questions)))
         question_elements += random.sample(
             question_list, lql.number_of_questions)

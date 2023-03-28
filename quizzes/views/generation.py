@@ -352,7 +352,9 @@ class GenerationVariantViews(generics.CreateAPIView):
                                 var_questions = Question.objects.filter(
                                     variant_questions__variant_id=v,
                                     lesson_question_level=lql
-                                )[:unique_question_number]
+                                ).annotate(
+                                    variant_question_count=Count('variant_questions')
+                                ).order_by('variant_question_count')[:unique_question_number]
                                 print([q.id for q in var_questions])
                                 print("[q.id for i in questions]")
                                 print(tt.lesson.name_code)
