@@ -163,7 +163,7 @@ class FullTestLessonList(generics.ListAPIView):
                     user=user,
                     question_id=OuterRef('pk'),
                     is_favorite=True
-                )))
+                ))).order_by('variant_questions__order')
 
             user_answers = []
             for q in questions:
