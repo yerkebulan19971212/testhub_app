@@ -1,6 +1,9 @@
 from rest_framework import generics
 from rest_framework import permissions
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 from base.constant import ErrorType
 from quizzes.api.serializers import GradeSerializer, \
     ComplainQuestionSerializer, InfoErrorSerializer
@@ -47,6 +50,11 @@ class ComplainInfoErrorListView(GradeInfoErrorListView):
                                         is_active=True)
     filter_backends = [DjangoFilterBackend]
     filterset_class = InfoFilterByGradeType
+
+    @method_decorator(vary_on_cookie)
+    @method_decorator(cache_page(60 * 60))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
 
 complain_info_list_view = ComplainInfoErrorListView.as_view()

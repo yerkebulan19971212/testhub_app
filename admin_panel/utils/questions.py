@@ -1,12 +1,17 @@
 import random
+from typing import List
+
+from django.db.models import Count
 
 from accounts.models import User
 from quizzes.models import CommonQuestion, Question, Answer, Variant, \
-    UserVariant, AnswerSign
+    UserVariant, AnswerSign, TopicQuestion
 from bs4 import BeautifulSoup
 
 
-def create_question(questions_texts, lesson_question_level, variant_group, order):
+def create_question(
+        questions_texts, lesson_question_level, variant_group,
+                    order=0, topic=None ):
     if not questions_texts and 'new_line' not in questions_texts:
         return None
     questions_detail = questions_texts.split('new_line')
@@ -45,6 +50,11 @@ def create_question(questions_texts, lesson_question_level, variant_group, order
         variant_group=variant_group,
         order=order
     )
+    if topic:
+        TopicQuestion.objects.get_or_create(
+            topic=topic,
+            question=test_question
+        )
 
     answer_signs = list(AnswerSign.objects.all().order_by('order'))
     return test_question, [
@@ -75,3 +85,36 @@ def user_variant():
                 variant=v
             ))
     UserVariant.objects.bulk_create(user_variants)
+
+
+def question_lql_list(
+        lesson_question_levels,
+        variant_ids: List[int],
+        unique_percent: int,
+        variant_group: int
+):
+    question_elements = []
+    for lql in lesson_question_levels:
+        question_list = []
+        unique_question_number = lql.number_of_questions * unique_percent // 100
+        for v in variant_ids:
+            var_questions = Question.objects.filter(
+                variant_questions__variant_id=v,
+                lesson_question_level=lql
+            ).distinct()[:unique_question_number]
+            question_list += list(set(list(var_questions)))
+        if len(question_list) >= lql.number_of_questions:
+            number_of_questions = lql.number_of_questions // 2
+        else:
+            number_of_questions = lql.number_of_questions
+        questions = Question.objects.filter(
+            variant_questions__isnull=True,
+            variant_group_id=variant_group,
+            lesson_question_level=lql
+        ).annotate(
+            variant_question_count=Count('variant_questions')
+        ).order_by('variant_question_count')[:number_of_questions]
+        question_list += list(set(list(questions)))
+        question_elements += random.sample(
+            question_list, lql.number_of_questions)
+    return question_elements

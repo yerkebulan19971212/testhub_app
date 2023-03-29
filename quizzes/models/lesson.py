@@ -10,6 +10,7 @@ class Lesson(abstract_models.AbstractBaseName,
              abstract_models.TimeStampedModel):
     icon = models.FileField(upload_to='lesson', null=True, blank=True)
     chosen_icon = models.FileField(upload_to='lesson', null=True, blank=True)
+    math = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'quiz\".\"lesson'

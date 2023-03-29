@@ -65,3 +65,7 @@ class FavoriteType(str, Choice):
     TEST = 'TEST'
     SEARCH = 'SEARCH'
     FLASH_CARD = 'FLASH_CARD'
+
+
+class UniversityStatus(str, Choice):
+    NATIONAL = 'TEST'

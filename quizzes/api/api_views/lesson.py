@@ -1,13 +1,16 @@
 from datetime import timedelta, datetime
 from django.utils.timezone import localtime
-
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 from django.db.models import Sum, Q, Count, Prefetch, Exists, Value, \
-    BooleanField, OuterRef
+    BooleanField, OuterRef, F
 from django.db.models.functions import Coalesce, Cast
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from base import exceptions
 from base.constant import Status
@@ -21,7 +24,7 @@ from quizzes.api.serializers import (LessonSerializer,
 from quizzes.api.serializers.answer import AnswerSerializer
 from quizzes.filters import LessonFilter
 from quizzes.models import Lesson, LessonGroup, TestTypeLesson, UserVariant, \
-    Question, PassAnswer, Mark, Favorite, Answer
+    Question, PassAnswer, Mark, Favorite, Answer, QuestionScore
 
 
 class LessonListView(generics.ListAPIView):
@@ -35,7 +38,6 @@ lesson_list = LessonListView.as_view()
 class LessonListWithTestTypeLessonView(generics.ListAPIView):
     queryset = Lesson.objects.prefetch_related(
         'test_type_lessons',
-        'test_type_lessons__test_type'
     ).all()
     serializer_class = LessonWithTestTypeLessonSerializer
     filter_backends = [DjangoFilterBackend]
@@ -46,6 +48,11 @@ class LessonListWithTestTypeLessonView(generics.ListAPIView):
         queryset = super().get_queryset().filter(
             test_type_lessons__language=language)
         return queryset
+
+    @method_decorator(vary_on_cookie)
+    @method_decorator(cache_page(60 * 60 * 24))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
 
 lesson_list_with_test_type_lesson_view = LessonListWithTestTypeLessonView.as_view()
@@ -133,7 +140,8 @@ class FullTestLessonList(generics.ListAPIView):
 
         for lesson in lesson_data:
             lesson_id = lesson["id"]
-            pass_answers = PassAnswer.objects.filter(user_variant_id=user_variant_id)
+            pass_answers = PassAnswer.objects.filter(
+                user_variant_id=user_variant_id)
             questions = Question.objects \
                 .select_related('lesson_question_level__question_level') \
                 .prefetch_related('answers') \
@@ -175,8 +183,9 @@ class FullTestLessonList(generics.ListAPIView):
             difference_duration = timedelta(seconds=0)
         else:
             test_start_time = user_variant.test_start_time
-            difference_duration = datetime.now() - localtime(test_start_time).replace(tzinfo=None)
-        duration = user_variant.variant.variant_group.duration # student_test.variant.duration
+            difference_duration = datetime.now() - localtime(
+                test_start_time).replace(tzinfo=None)
+        duration = user_variant.variant.variant_group.duration  # student_test.variant.duration
         duration = duration - difference_duration
         duration_time = {
             "hour": duration.seconds // 3600,
@@ -230,6 +239,76 @@ class FullTestLessonInformationList(generics.ListAPIView):
 test_lesson_information_list = FullTestLessonInformationList.as_view()
 
 
+class FullTestInformation(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        user_variant_id = self.kwargs.get('user_variant_id')
+        try:
+            user_variant = UserVariant.objects.select_related(
+                'lesson_group',
+                'variant__variant_group__test_type'
+            ).get(pk=user_variant_id)
+        except UserVariant.DoesNotExist as e:
+            raise exceptions.DoesNotExist()
+        queryset = TestTypeLesson.objects.select_related('lesson').all()
+        lessons = get_lessons(user_variant, queryset)
+        lessons = lessons.annotate(
+            num_question=Coalesce(
+                Count('lesson_question_level__questions', filter=Q(
+                    lesson_question_level__questions__variant_questions__variant__user_variant__id=user_variant_id
+                )), 0),
+            pass_answer=Coalesce(
+                Count('lesson_question_level__questions__pass_answers',
+                      filter=Q(
+                          lesson_question_level__questions__variant_questions__variant__user_variant__id=user_variant_id
+                      )), 0),
+            points=Coalesce(
+                Sum('lesson_question_level__question_level__point',
+                    filter=Q(
+                        lesson_question_level__questions__variant_questions__variant__user_variant__id=user_variant_id
+                    )
+                    ),
+                0)
+        ).annotate(
+            unattem=F('num_question') - F('pass_answer')
+        ).order_by('-main', 'lesson__order')
+        user_variant.status = Status.PASSED
+        user_variant.save()
+        data = {
+            "unattem": 0,
+            "attempt": 0,
+            "mark": 0,
+            "user_score": 0,
+            "number_of_question": 0,
+            "number_of_score": 0,
+            "accuracy": 0,
+        }
+        for lesson in lessons:
+            user_score = QuestionScore.objects.aggregate(
+                user_score=Coalesce(
+                    Sum(
+                        'score',
+                        filter=Q(
+                            user_variant=user_variant,
+                            question__lesson_question_level__test_type_lesson_id=lesson.id
+                        )
+                    ),
+                    0))
+            data['unattem'] += lesson.unattem
+            data['attempt'] += lesson.pass_answer
+            data['user_score'] += user_score["user_score"]
+            data['number_of_question'] += lesson.num_question
+            data['number_of_score'] += lesson.points
+        data['accuracy'] += int(
+                round(100 / data['number_of_question'] * data["user_score"]))
+
+        return Response(data)
+
+
+full_test_information = FullTestInformation.as_view()
+
+
 class FullTestFinishedTestLessonList(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = TestTypeLesson.objects.select_related('lesson').all()
@@ -264,25 +343,26 @@ class FullTestFinishedTestLessonList(generics.ListAPIView):
             questions = Question.objects \
                 .select_related('lesson_question_level__question_level') \
                 .prefetch_related(
-                    Prefetch('pass_answers', queryset=pass_answers))\
+                Prefetch('pass_answers', queryset=pass_answers)) \
                 .filter(
                 lesson_question_level__test_type_lesson_id=lesson_id,
                 variant_questions__variant__user_variant__id=user_variant_id
             ) \
                 .annotate(
-                    is_correct=Exists(PassAnswer.objects.filter(
-                        user=user,
-                        user_variant_id=user_variant_id,
-                        question_id=OuterRef('pk'),
-                        answer__correct=True
-                    )))\
+                is_correct=Exists(PassAnswer.objects.filter(
+                    user=user,
+                    user_variant_id=user_variant_id,
+                    question_id=OuterRef('pk'),
+                    answer__correct=True
+                ))) \
                 .annotate(
-                    is_passed=Exists(PassAnswer.objects.filter(
-                        user=user,
-                        user_variant_id=user_variant_id,
-                        question_id=OuterRef('pk'),
-                    )))
-            questions_data = FullTestFinishQuestionSerializer(questions, many=True)
+                is_passed=Exists(PassAnswer.objects.filter(
+                    user=user,
+                    user_variant_id=user_variant_id,
+                    question_id=OuterRef('pk'),
+                )))
+            questions_data = FullTestFinishQuestionSerializer(questions,
+                                                              many=True)
             lesson['questions'] = questions_data.data
         data = {"lessons": lesson_data}
         return Response(data)
