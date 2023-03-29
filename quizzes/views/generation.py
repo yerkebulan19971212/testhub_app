@@ -29,7 +29,8 @@ from .generation_serializer import (GenerationTestTypeSerializer,
                                     ImportSerializer, GenerationSerializer,
                                     GenerationVariantQuestionByLessonSerializer,
                                     QuestionAnswerImageSerializer,
-                                    GenerationGetVariantQuestionByLessonSerializer)
+                                    GenerationGetVariantQuestionByLessonSerializer,
+                                    GenerationMathSerializer)
 from ..filters import VariantGroupFilter, TestTypeLessonFilter, TopicFilter
 from ..filters.question import GenerateVariantQuestionFilter, \
     GenerateVariantLessonCommonQuestionFilter, GenerateAllQuestionFilter, \
@@ -416,3 +417,14 @@ class GenerationUpdateVariantQuestion(generics.UpdateAPIView):
 
 
 generation_update_variant_question = GenerationUpdateVariantQuestion.as_view()
+
+
+class GenerationMathAnswerView(generics.UpdateAPIView):
+    serializer_class = GenerationMathSerializer
+    queryset = Answer.objects.all()
+    lookup_field = 'pk'
+    http_method_names = ['patch']
+
+
+
+generation_math_answer = GenerationMathAnswerView.as_view()

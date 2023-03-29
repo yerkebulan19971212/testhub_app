@@ -221,7 +221,8 @@ class GenerationListQuestionByLessonSerializer(
     common_question = GenerationCommonQuestionSerializer()
 
 
-class GenerationGetVariantQuestionByLessonSerializer(serializers.ModelSerializer):
+class GenerationGetVariantQuestionByLessonSerializer(
+    serializers.ModelSerializer):
     question = GenerationListQuestionByLessonSerializer()
 
     class Meta:
@@ -279,6 +280,7 @@ class GenerationSerializer(serializers.Serializer):
     #     required=True
     # )
 
+
 class QuestionAnswerImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuestionAnswerImage
@@ -287,8 +289,9 @@ class QuestionAnswerImageSerializer(serializers.ModelSerializer):
         )
 
 
-class GenerationVariantQuestionByLessonSerializer(WritableNestedModelSerializer,
-                                           serializers.ModelSerializer):
+class GenerationVariantQuestionByLessonSerializer(
+    WritableNestedModelSerializer,
+    serializers.ModelSerializer):
     answers = GenerationCreateSerializer(many=True)
     created = serializers.DateTimeField(read_only=True)
     modified = serializers.DateTimeField(read_only=True)
@@ -343,3 +346,12 @@ class GenerationVariantQuestionByLessonSerializer(WritableNestedModelSerializer,
             topic_id=topic_id
         )
         return question
+
+
+class GenerationMathSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = (
+            'id',
+            'math',
+        )

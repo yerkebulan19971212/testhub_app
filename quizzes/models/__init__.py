@@ -32,3 +32,4 @@ from .topic import Topic  # noqa
 from .topic_question import TopicQuestion  # noqa
 from .varaint_lesson_common_question import VariantLessonCommonQuestion  # noqa
 from .question_answer_image import QuestionAnswerImage  # noqa
+from .country import Country  # noqa
