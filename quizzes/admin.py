@@ -7,7 +7,8 @@ from .models import (Answer, CommonQuestion, Favorite, FlashCard, Lesson,
                      NumberOfQuestions, PassAnswer, Question, QuestionLevel,
                      QuizEvent, QuizEventQuestion, TestType, TestTypeLesson,
                      TestTypeLessonGroup, UserVariant, Variant,
-                     VariantQuestion, Grade, InfoError, Topic, TopicQuestion)
+                     VariantQuestion, Grade, InfoError, Topic, TopicQuestion,
+                     Country, University)
 from .models.variant_group import VariantGroup
 
 admin.site.register([
@@ -118,4 +119,63 @@ class VariantAdmin(admin.ModelAdmin):
     )
     search_fields = ('variant', 'variant_group__name_kz')
     list_filter = ('variant_group', 'is_active', 'main')
+    readonly_fields = ('pk', 'created', 'modified')
+
+
+@admin.register(Country)
+class CountryAdmin(admin.ModelAdmin):
+    list_display = (
+        'name_kz',
+        'name_ru',
+        'name_en',
+        'id',
+        'icon',
+        'name_code',
+        'is_active',
+        'order',
+        'created',
+        'modified'
+    )
+    search_fields = (
+        'name_kz',
+        'name_ru',
+        'name_en',
+        'id',
+        'name_code',
+    )
+    list_filter = ('is_active', )
+    readonly_fields = ('pk', 'created', 'modified')
+
+
+@admin.register(University)
+class UniversityAdmin(admin.ModelAdmin):
+    list_display = (
+        'name_kz',
+        'name_ru',
+        'name_en',
+        'id',
+        'icon',
+        'short_name',
+        'code',
+        'status',
+        'address',
+        'description',
+        'city',
+        # 'country',
+        'name_code',
+        'is_active',
+        'order',
+        'created',
+        'modified'
+    )
+    search_fields = (
+        'name_kz',
+        'name_ru',
+        'name_en',
+        'id',
+        'name_code',
+        'description',
+        'address'
+    )
+    list_filter = ('is_active', 'city', 'city__country')
     readonly_fields = ('pk', 'created', 'modified')

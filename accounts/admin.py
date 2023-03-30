@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from .models import EmailOTP, PhoneOTP, Role, User, UserTestType
+from .models import EmailOTP, PhoneOTP, Role, User, UserTestType, City
 
 admin.site.register(EmailOTP)
 admin.site.register(PhoneOTP)
-admin.site.register(UserTestType)
+admin.site.register(City)
 
 
 @admin.register(Role)

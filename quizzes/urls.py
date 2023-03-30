@@ -21,7 +21,7 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    create_mark_questions,
                                    complain_info_list_view,
                                    grade_info_list_view, finish_question_list,
-                                   full_test_information)
+                                   full_test_information, university_list,country_list)
 from quizzes.api.api_views.question import full_test_question
 from quizzes.views.generation import generation_test_type_view, \
     generation_variant_groups, generation_variant_list, \
@@ -93,6 +93,11 @@ urlpatterns = [
     path('question/', include(question_urlpatterns)),
     # path('variant/', create_variant),
     # path('create-questions/', create_question),
+]
+
+university_urlpatterns = [
+    path('country-list/', country_list),
+    path('university-list/', university_list),
 ]
 
 generation_url_patterns = [

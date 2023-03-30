@@ -7,7 +7,8 @@ from django.core.mail import EmailMultiAlternatives, send_mail
 from django.core.validators import FileExtensionValidator, MinLengthValidator
 from django.db import models
 
-from base.abstract_models import TimeStampedModel, IsActive, AbstractBaseName, Ordering, AbstractBaseNameCode
+from base.abstract_models import TimeStampedModel, IsActive, AbstractBaseName, \
+    Ordering, AbstractBaseNameCode
 from base.constant import TestLang
 from base.service import validate_mb_image, validate_size_image
 
@@ -27,6 +28,13 @@ class City(AbstractBaseName,
            Ordering,
            IsActive,
            TimeStampedModel):
+    country = models.ForeignKey(
+        'quizzes.Country',
+        related_name='cities',
+        on_delete=models.CASCADE,
+        db_index=True,
+        null=True
+    )
 
     class Meta:
         db_table = 'accounts\".\"city'

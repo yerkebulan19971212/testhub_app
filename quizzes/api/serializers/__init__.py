@@ -20,3 +20,4 @@ from .full_test import (StudentAnswersSerializer, FinishFullTestSerializer,
 from .info import (GradeSerializer, ComplainQuestionSerializer,
                    InfoErrorSerializer)
 from .answer import (AnswerFinishedSerializer,)
+from .universities import CountrySerializer, UniversityListSerializer

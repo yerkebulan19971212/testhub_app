@@ -17,7 +17,7 @@ class Speciality(abstract_models.AbstractBaseName,
 
 
     class Meta:
-        db_table = 'quiz\".\"university'
+        db_table = 'quiz\".\"speciality'
 
     def __str__(self):
         return f' {self.name_ru}'
