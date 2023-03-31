@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from quizzes.models import University, Country
+from quizzes.models import University, Country, Speciality, \
+    UniversitySpeciality
 from base import abstract_serializer
 
 
@@ -30,3 +31,32 @@ class UniversityListSerializer(abstract_serializer.NameSerializer):
             'name_code',
             'speciality_count',
         )
+
+
+class SpecialityListSerializer(abstract_serializer.NameSerializer):
+
+    class Meta:
+        model = Speciality
+        fields = (
+            'id',
+            'icon',
+            'name',
+            'short_name',
+            'name_code',
+            'code',
+        )
+
+
+class UniversitySpecialityListSerializer(abstract_serializer.NameSerializer):
+    speciality = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UniversitySpeciality
+        fields = (
+            'id',
+            'speciality',
+            'score',
+            'grant'
+        )
+    def get_speciality(self, obj):
+        return SpecialityListSerializer(obj.speciality, context=self.context).data

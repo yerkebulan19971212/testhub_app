@@ -21,7 +21,10 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    create_mark_questions,
                                    complain_info_list_view,
                                    grade_info_list_view, finish_question_list,
-                                   full_test_information, university_list,country_list)
+                                   kazakhstan_university_list,
+                                   full_test_information, university_list,
+                                   country_list,
+                                   university_speciality_list)
 from quizzes.api.api_views.question import full_test_question
 from quizzes.views.generation import generation_test_type_view, \
     generation_variant_groups, generation_variant_list, \
@@ -48,7 +51,8 @@ question_urlpatterns = [
     path('test-type-lesson-list/', lesson_list_with_test_type_lesson_view),
     path('list_flash_card/', list_flash_card),
     path('quize-event-by-lesson/', create_quiz_event_by_lesson_view),
-    path('pass-answer-by-lesson/<int:quiz_event>/', pass_answer_by_lesson_view),
+    path('pass-answer-by-lesson/<int:quiz_event>/',
+         pass_answer_by_lesson_view),
     path('finish-by-lesson/<int:quiz_event>/', finish_by_lesson_view),
     # path('create_flash_card/', create_flash_cards),
 ]
@@ -60,13 +64,16 @@ ent_urlpatterns = [
     path('variant-lesson-list/', lesson_list_variant),
     path('variant-chose-lesson-pairs/<int:pk>/', save_lesson_pairs),
     path('lesson-list/<int:user_variant_id>/', test_lesson_list),
-    path('finish-lesson-list/<int:user_variant_id>/', finished_test_lesson_list),
-    path('lesson-information-list/<int:user_variant_id>/', test_lesson_information_list),
+    path('finish-lesson-list/<int:user_variant_id>/',
+         finished_test_lesson_list),
+    path('lesson-information-list/<int:user_variant_id>/',
+         test_lesson_information_list),
     path('get-full-test-result/<int:user_variant_id>/', get_full_test_result),
     path('questions/', full_test_question),
     path('pass_answer/', pass_answer),
     path('finish/<int:user_variant_id>/', finish_full_test),
-    path('full-test-information/<int:user_variant_id>/', full_test_information),
+    path('full-test-information/<int:user_variant_id>/',
+         full_test_information),
     path('finish-question/', finish_question_list),
     path('mark/', create_mark_questions)
 ]
@@ -98,6 +105,8 @@ urlpatterns = [
 university_urlpatterns = [
     path('country-list/', country_list),
     path('university-list/', university_list),
+    path('kazakhstan-university-list/', kazakhstan_university_list),
+    path('speciality-university-list/', university_speciality_list),
 ]
 
 generation_url_patterns = [
@@ -105,7 +114,8 @@ generation_url_patterns = [
     path('variant-group/', generation_variant_groups),
     path('variant-list/', generation_variant_list),
 
-    path('lesson-list/<int:variant_id>/', generation_get_lesson_test_type_lesson_view),
+    path('lesson-list/<int:variant_id>/',
+         generation_get_lesson_test_type_lesson_view),
     path('variant-question-list/', generation_variant_questions),
     path('question/<int:pk>/', generation_variant_get_question),
     path('answer/<int:pk>/', generation_math_answer),
@@ -120,7 +130,8 @@ generation_url_patterns = [
     path('topics/', topic_list),
 
     path('question-image/', save_image),
-    path('update-variant-question/<int:pk>/', generation_update_variant_question),
+    path('update-variant-question/<int:pk>/',
+         generation_update_variant_question),
     path('import-question/', import_question),
     path('', generation_question),
 ]

@@ -8,7 +8,8 @@ from .models import (Answer, CommonQuestion, Favorite, FlashCard, Lesson,
                      QuizEvent, QuizEventQuestion, TestType, TestTypeLesson,
                      TestTypeLessonGroup, UserVariant, Variant,
                      VariantQuestion, Grade, InfoError, Topic, TopicQuestion,
-                     Country, University)
+                     UniversitySpeciality,
+                     Country, University, Speciality)
 from .models.variant_group import VariantGroup
 
 admin.site.register([
@@ -30,7 +31,8 @@ admin.site.register([
     QuizEventQuestion,
     Grade,
     Topic,
-    TopicQuestion
+    TopicQuestion,
+    UniversitySpeciality
 ])
 
 
@@ -178,4 +180,35 @@ class UniversityAdmin(admin.ModelAdmin):
         'address'
     )
     list_filter = ('is_active', 'city', 'city__country')
+    readonly_fields = ('pk', 'created', 'modified')
+
+
+@admin.register(Speciality)
+class SpecialityAdmin(admin.ModelAdmin):
+    list_display = (
+        'name_kz',
+        'name_ru',
+        'name_en',
+        'id',
+        'icon',
+        'short_name',
+        'code',
+        'status',
+        'description',
+        'name_code',
+        'is_active',
+        'order',
+        'created',
+        'modified'
+    )
+    search_fields = (
+        'name_kz',
+        'name_ru',
+        'name_en',
+        'id',
+        'name_code',
+        'description',
+        'address'
+    )
+    list_filter = ('is_active', )
     readonly_fields = ('pk', 'created', 'modified')

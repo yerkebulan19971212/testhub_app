@@ -16,6 +16,8 @@ class UniversitySpeciality(abstract_models.TimeStampedModel):
         related_name='university_specialities',
         db_index=True
     )
+    score = models.IntegerField(default=140)
+    grant = models.IntegerField(default=140)
 
     class Meta:
         db_table = 'quiz\".\"university_speciality'

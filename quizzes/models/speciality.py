@@ -12,7 +12,6 @@ class Speciality(abstract_models.AbstractBaseName,
     short_name = models.CharField(max_length=255)
     code = models.CharField(max_length=255)
     status = models.CharField(max_length=255)
-    address = models.TextField()
     description = models.TextField()
 
 

@@ -9,8 +9,12 @@ from quizzes.api.serializers import (SaveLessonPairsForUserSerializer,
                                      UserVariantsSerializer,
                                      VariantGroupSerializer, CountrySerializer,
                                      UniversityListSerializer)
-from quizzes.filters import CountryFilter, UniversityFilter
-from quizzes.models import UserVariant, VariantGroup, Country, University
+from quizzes.api.serializers.universities import \
+    UniversitySpecialityListSerializer
+from quizzes.filters import CountryFilter, UniversityFilter, \
+    UniversitySpecialityFilter
+from quizzes.models import UserVariant, VariantGroup, Country, University, \
+    Speciality, UniversitySpeciality
 
 
 class CountryListView(generics.ListAPIView):
@@ -43,3 +47,32 @@ class UniversityListView(generics.ListAPIView):
 
 
 university_list = UniversityListView.as_view()
+
+
+class KazakhstanUniversityListView(generics.ListAPIView):
+    serializer_class = UniversityListSerializer
+    queryset = University.objects.filter(is_active=True).annotate(
+        speciality_count=Count(
+            'university_specialities',
+            filter=Q(university_specialities__speciality__is_active=True)
+        )
+    ).filter(
+        city__country__name_code='kazakhstan_kz'
+    ).order_by("order")
+    pagination_class = SimplePagination
+    # filter_backends = [DjangoFilterBackend]
+    # filterset_class = UniversityFilter
+
+
+kazakhstan_university_list = KazakhstanUniversityListView.as_view()
+
+
+class UniversitySpecialityListView(generics.ListAPIView):
+    serializer_class = UniversitySpecialityListSerializer
+    queryset = UniversitySpeciality.objects.filter(speciality__is_active=True)
+    pagination_class = SimplePagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = UniversitySpecialityFilter
+
+
+university_speciality_list = UniversitySpecialityListView.as_view()
