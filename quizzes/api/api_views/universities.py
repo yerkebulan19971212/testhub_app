@@ -10,7 +10,7 @@ from quizzes.api.serializers import (SaveLessonPairsForUserSerializer,
                                      VariantGroupSerializer, CountrySerializer,
                                      UniversityListSerializer)
 from quizzes.api.serializers.universities import \
-    UniversitySpecialityListSerializer
+    UniversitySpecialityListSerializer, UniversitySerializer
 from quizzes.filters import CountryFilter, UniversityFilter, \
     UniversitySpecialityFilter
 from quizzes.models import UserVariant, VariantGroup, Country, University, \
@@ -47,6 +47,20 @@ class UniversityListView(generics.ListAPIView):
 
 
 university_list = UniversityListView.as_view()
+
+
+class UniversityView(generics.RetrieveAPIView):
+    serializer_class = UniversitySerializer
+    queryset = University.objects.filter(is_active=True).prefetch_related('comfort_university__comfort').annotate(
+        speciality_count=Count(
+            'university_specialities',
+            filter=Q(university_specialities__speciality__is_active=True)
+        )
+    )
+    lookup_field = 'pk'
+
+
+university = UniversityView.as_view()
 
 
 class KazakhstanUniversityListView(generics.ListAPIView):

@@ -9,7 +9,8 @@ from .models import (Answer, CommonQuestion, Favorite, FlashCard, Lesson,
                      TestTypeLessonGroup, UserVariant, Variant,
                      VariantQuestion, Grade, InfoError, Topic, TopicQuestion,
                      UniversitySpeciality,
-                     Country, University, Speciality)
+                     Country, University, Speciality, ComfortUniversity,
+                     Comfort)
 from .models.variant_group import VariantGroup
 
 admin.site.register([
@@ -32,7 +33,9 @@ admin.site.register([
     Grade,
     Topic,
     TopicQuestion,
-    UniversitySpeciality
+    UniversitySpeciality,
+    Comfort,
+    ComfortUniversity,
 ])
 
 
@@ -145,12 +148,36 @@ class CountryAdmin(admin.ModelAdmin):
         'id',
         'name_code',
     )
-    list_filter = ('is_active', )
+    list_filter = ('is_active',)
     readonly_fields = ('pk', 'created', 'modified')
+
+
+class SpecialityInline(admin.TabularInline):
+    model = UniversitySpeciality
+    readonly_fields = ('pk',)
+    extra = 0
+    can_delete = True
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},
+    }
+
+
+class ComfortUniversityInline(admin.TabularInline):
+    model = ComfortUniversity
+    readonly_fields = ('pk',)
+    extra = 0
+    can_delete = True
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},
+    }
 
 
 @admin.register(University)
 class UniversityAdmin(admin.ModelAdmin):
+    inlines = [
+        SpecialityInline,
+        ComfortUniversityInline
+    ]
     list_display = (
         'name_kz',
         'name_ru',
@@ -210,5 +237,5 @@ class SpecialityAdmin(admin.ModelAdmin):
         'description',
         'address'
     )
-    list_filter = ('is_active', )
+    list_filter = ('is_active',)
     readonly_fields = ('pk', 'created', 'modified')

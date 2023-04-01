@@ -24,7 +24,7 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    kazakhstan_university_list,
                                    full_test_information, university_list,
                                    country_list,
-                                   university_speciality_list)
+                                   university_speciality_list, university)
 from quizzes.api.api_views.question import full_test_question
 from quizzes.views.generation import generation_test_type_view, \
     generation_variant_groups, generation_variant_list, \
@@ -107,6 +107,7 @@ university_urlpatterns = [
     path('university-list/', university_list),
     path('kazakhstan-university-list/', kazakhstan_university_list),
     path('speciality-university-list/', university_speciality_list),
+    path('university/<int:pk>/', university),
 ]
 
 generation_url_patterns = [

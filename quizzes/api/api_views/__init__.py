@@ -19,4 +19,6 @@ from .full_test import (pass_answer, finish_full_test, get_full_test_result,
                         create_mark_questions, finish_question_list)
 from .info import (grade_view, complain_question_view, complain_info_list_view,
                    grade_info_list_view)
-from .universities import (country_list, university_list, kazakhstan_university_list, university_speciality_list)
+from .universities import (
+    country_list, university_list, kazakhstan_university_list,
+                           university,university_speciality_list)

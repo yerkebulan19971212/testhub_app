@@ -1,6 +1,7 @@
 from django.db import models
 
 from base import abstract_models
+from quizzes.models import Comfort
 
 
 class University(abstract_models.AbstractBaseName,
@@ -20,6 +21,8 @@ class University(abstract_models.AbstractBaseName,
         on_delete=models.CASCADE,
         db_index=True
     )
+    comforts = models.ManyToManyField(Comfort, through='quizzes.ComfortUniversity')
+
     # country = models.ForeignKey(
     #     'quizzes.Country',
     #     related_name='universities',

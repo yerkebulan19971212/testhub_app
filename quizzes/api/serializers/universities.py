@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from quizzes.models import University, Country, Speciality, \
-    UniversitySpeciality
+    UniversitySpeciality, Comfort
 from base import abstract_serializer
 
 
@@ -30,6 +30,29 @@ class UniversityListSerializer(abstract_serializer.NameSerializer):
             'short_name',
             'name_code',
             'speciality_count',
+        )
+class ComfortSerializer(abstract_serializer.NameSerializer):
+    class Meta:
+        model = Comfort
+        fields = (
+            'id',
+            'name',
+            'icon',
+        )
+class UniversitySerializer(abstract_serializer.NameSerializer):
+    speciality_count = serializers.IntegerField(default=0)
+    comforts = ComfortSerializer(many=True, )
+
+    class Meta:
+        model = University
+        fields = (
+            'id',
+            'icon',
+            'name',
+            'short_name',
+            'name_code',
+            'speciality_count',
+            'comforts'
         )
 
 
