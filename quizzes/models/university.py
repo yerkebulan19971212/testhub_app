@@ -10,11 +10,17 @@ class University(abstract_models.AbstractBaseName,
               abstract_models.Ordering,
               abstract_models.TimeStampedModel):
     icon = models.FileField(upload_to='university')
-    short_name = models.CharField(max_length=255)
+    short_name_kz = models.CharField(max_length=255, null=True)
+    short_name_ru = models.CharField(max_length=255, null=True)
+    short_name_en = models.CharField(max_length=255, null=True)
     code = models.CharField(max_length=255)
     status = models.CharField(max_length=255)
-    address = models.TextField()
-    description = models.TextField()
+    address_kz = models.TextField(null=True)
+    address_ru = models.TextField(null=True)
+    address_en = models.TextField(null=True)
+    description_kz = models.TextField(null=True)
+    description_ru = models.TextField(null=True)
+    description_en = models.TextField(null=True)
     city = models.ForeignKey(
         'accounts.City',
         related_name='universities',

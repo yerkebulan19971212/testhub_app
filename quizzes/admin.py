@@ -172,7 +172,8 @@ class ComfortUniversityInline(admin.TabularInline):
     }
 
 
-@admin.register(University)
+# @admin.register(University, group='University')
+# admin.site.register(grou)
 class UniversityAdmin(admin.ModelAdmin):
     inlines = [
         SpecialityInline,
@@ -184,11 +185,17 @@ class UniversityAdmin(admin.ModelAdmin):
         'name_en',
         'id',
         'icon',
-        'short_name',
+        'short_name_kz',
+        'short_name_ru',
+        'short_name_en',
         'code',
         'status',
-        'address',
-        'description',
+        'address_kz',
+        'address_ru',
+        'address_en',
+        'description_kz',
+        'description_ru',
+        'description_en',
         'city',
         # 'country',
         'name_code',
@@ -210,6 +217,16 @@ class UniversityAdmin(admin.ModelAdmin):
     readonly_fields = ('pk', 'created', 'modified')
 
 
+from django.contrib.admin import AdminSite
+class MyAdminSite(AdminSite):
+    site_header = 'My App Administration'
+    site_title = 'My App Admin'
+my_admin_site = MyAdminSite(name='myadmin')
+
+
+my_admin_site.register(University, admin_class=UniversityAdmin, group='Group 1')
+
+
 @admin.register(Speciality)
 class SpecialityAdmin(admin.ModelAdmin):
     list_display = (
@@ -218,10 +235,14 @@ class SpecialityAdmin(admin.ModelAdmin):
         'name_en',
         'id',
         'icon',
-        'short_name',
+        'short_name_kz',
+        'short_name_ru',
+        'short_name_en',
         'code',
         'status',
-        'description',
+        'description_kz',
+        'description_ru',
+        'description_en',
         'name_code',
         'is_active',
         'order',
