@@ -92,6 +92,7 @@ class GenerationGetLessonTestTypeLessonSerializer(serializers.ModelSerializer):
     test_type = GenerationTestTypeSerializer()
     lesson = GenerationLessonSerializer()
     number_of_questions = serializers.IntegerField(default=0)
+    name_code = serializers.CharField(source='lesson.name_code')
 
     class Meta:
         model = TestTypeLesson
@@ -100,6 +101,7 @@ class GenerationGetLessonTestTypeLessonSerializer(serializers.ModelSerializer):
             'lesson',
             'language',
             'test_type',
+            'name_code',
             'main',
             'number_of_questions',
             'questions_number'
@@ -162,13 +164,17 @@ class GenerationCreateSerializer(serializers.ModelSerializer):
 
 class GenerationLessonQuestionLevelSerializer(serializers.ModelSerializer):
     name_code = serializers.CharField(source='question_level.name_code')
+    point = serializers.CharField(source='question_level.point')
+    choice = serializers.CharField(source='question_level.choice')
 
     class Meta:
         model = LessonQuestionLevel
         fields = (
             'id',
             'test_type_lesson',
-            'name_code'
+            'name_code',
+            'point',
+            'choice',
         )
 
 

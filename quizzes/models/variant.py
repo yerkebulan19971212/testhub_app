@@ -16,6 +16,7 @@ class Variant(abstract_models.IsActive,
     )
     sum_question = models.IntegerField(default=0)
     main = models.BooleanField(default=False)
+    generation = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'quiz\".\"variant'

@@ -1,6 +1,8 @@
 import json
 import random
 
+import requests
+from django.conf import settings
 from django.db import transaction
 from django.db.models import Q, Count, Prefetch, Max, OuterRef, Subquery
 from django.db.models.functions import Coalesce
@@ -137,6 +139,7 @@ class GenerationCreateQuestionView(generics.CreateAPIView):
 
 add_generate_question = GenerationCreateQuestionView.as_view()
 
+
 class GenerationCreateVariantQuestionView(generics.CreateAPIView):
     serializer_class = GenerationVariantQuestionByLessonSerializer
 
@@ -148,6 +151,7 @@ class GenerationCreateVariantQuestionView(generics.CreateAPIView):
 
 
 add_generate_question_variant = GenerationCreateVariantQuestionView.as_view()
+
 
 class GenerationCommonQuestionListView(generics.ListAPIView):
     serializer_class = GenerationCommonQuestionSerializer
@@ -307,7 +311,8 @@ class GenerationVariantViews(generics.CreateAPIView):
                     variant_group_id=variant_group,
                     sum_question=variant.sum_question,
                     variant=variant.variant + 1,
-                    order=variant.order + 1
+                    order=variant.order + 1,
+                    generation=True
                 )
                 variant_question = []
                 # variants_obj_list = Variant.objects.filter(id__in=variant_list)
@@ -354,8 +359,10 @@ class GenerationVariantViews(generics.CreateAPIView):
                                     variant_questions__variant_id=v,
                                     lesson_question_level=lql
                                 ).annotate(
-                                    variant_question_count=Count('variant_questions')
-                                ).order_by('variant_question_count')[:unique_question_number]
+                                    variant_question_count=Count(
+                                        'variant_questions')
+                                ).order_by('variant_question_count')[
+                                                :unique_question_number]
                                 print([q.id for q in var_questions])
                                 print("[q.id for i in questions]")
                                 print(tt.lesson.name_code)
@@ -372,7 +379,9 @@ class GenerationVariantViews(generics.CreateAPIView):
                             )[:number_of_questions]
 
                             question_list += list(questions)
-                            question_elements += random.sample(list(set(list(question_list))),lql.number_of_questions)
+                            question_elements += random.sample(
+                                list(set(list(question_list))),
+                                lql.number_of_questions)
                     order_count = 1
 
                     for q in question_elements:
@@ -415,7 +424,6 @@ class GenerationUpdateVariantQuestion(generics.UpdateAPIView):
     http_method_names = ['patch']
 
 
-
 generation_update_variant_question = GenerationUpdateVariantQuestion.as_view()
 
 
@@ -426,5 +434,34 @@ class GenerationMathAnswerView(generics.UpdateAPIView):
     http_method_names = ['patch']
 
 
-
 generation_math_answer = GenerationMathAnswerView.as_view()
+
+
+class SendQuestionToSiteView(APIView):
+    def post(self, request, *args, **kwargs):
+        variant_id = self.request.data.get('variant_id')
+        variant = Variant.objects.get(pk=variant_id)
+        base_url = settings.PROBNYI_URL
+        url = base_url + 'quizzes/get-variant/'
+        res = requests.post(url, json={
+            "variant_id": variant.id,
+            "variant": variant.variant
+        })
+        print({
+            "variant_id": variant.id,
+            "variant": variant.variant
+        })
+        print(res.status_code)
+        print("res.json()")
+        print(res.json())
+        if res.json().get('status') is False:
+            return Response(
+                {"status": False, "detail": res.json().get('detail')}, status=status.HTTP_200_OK
+            )
+        return Response(
+            {"status": True}, status=status.HTTP_200_OK
+        )
+
+
+
+send_questions_to_site = SendQuestionToSiteView.as_view()

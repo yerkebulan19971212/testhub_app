@@ -40,6 +40,8 @@ def get_questions():
                             common_question = rr.get('common_question')
                             c = None
                             math = False
+                            if lesson.math:
+                                math = True
                             if common_question:
                                 c, _ = CommonQuestion.objects.get_or_create(
                                     text=common_question.get('text').replace(

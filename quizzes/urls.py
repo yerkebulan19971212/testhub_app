@@ -34,7 +34,8 @@ from quizzes.views.generation import generation_test_type_view, \
     generation_all_questions, generation_all_level, topic_list, \
     add_generate_question, generation_lesson_level, import_question, \
     generation_question, save_image, generation_update_variant_question, \
-    add_generate_question_variant, generation_math_answer
+    add_generate_question_variant, generation_math_answer, \
+    send_questions_to_site
 
 # from quizzes.views.script import create_variant, create_question
 
@@ -135,4 +136,5 @@ generation_url_patterns = [
          generation_update_variant_question),
     path('import-question/', import_question),
     path('', generation_question),
+    path('send/', send_questions_to_site),
 ]
