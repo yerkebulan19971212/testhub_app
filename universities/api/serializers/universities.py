@@ -68,14 +68,15 @@ class DetailSerializer(abstract_serializer.NameSerializer):
 
 
 class UniversityDetailSerializer(serializers.ModelSerializer):
-    detail = DetailSerializer()
+    icon = serializers.FileField(source='detail.icon')
+    key = serializers.CharField(source='detail.name_kz')
 
     class Meta:
         model = UniversityDetail
         fields = (
-            'detail',
+            'key',
             'value',
-            'dimension'
+            'icon'
         )
 
 
