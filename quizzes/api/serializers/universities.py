@@ -27,7 +27,7 @@ class UniversityListSerializer(abstract_serializer.NameSerializer):
             'id',
             'icon',
             'name',
-            'short_name',
+            # 'short_name',
             'name_code',
             'speciality_count',
         )
@@ -49,7 +49,7 @@ class UniversitySerializer(abstract_serializer.NameSerializer):
             'id',
             'icon',
             'name',
-            'short_name',
+            # 'short_name',
             'name_code',
             'speciality_count',
             'comforts'
@@ -64,7 +64,7 @@ class SpecialityListSerializer(abstract_serializer.NameSerializer):
             'id',
             'icon',
             'name',
-            'short_name',
+            # 'short_name',
             'name_code',
             'code',
         )
