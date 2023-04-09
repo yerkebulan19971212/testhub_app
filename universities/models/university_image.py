@@ -13,7 +13,7 @@ class UniversityImage(abstract_models.TimeStampedModel):
     )
 
     class Meta:
-        db_table = 'quiz\".\"university_image'
+        db_table = 'universities\".\"university_image'
 
     def __str__(self):
         return str(self.university.name_kz)

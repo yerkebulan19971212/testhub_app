@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'accounts.apps.AccountsConfig',
     'quizzes.apps.QuizzesConfig',
-    'admin_panel.apps.AdminPanelConfig'
+    'admin_panel.apps.AdminPanelConfig',
+    'universities.apps.UniversitiesConfig'
 ]
 SIDE = 1
 MIDDLEWARE = [
