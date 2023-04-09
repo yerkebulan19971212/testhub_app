@@ -20,6 +20,7 @@ class CountrySerializer(abstract_serializer.NameSerializer):
 
 class UniversityListSerializer(abstract_serializer.NameSerializer):
     speciality_count = serializers.IntegerField(default=0)
+    short_name = serializers.SerializerMethodField()
 
     class Meta:
         model = University
@@ -27,10 +28,14 @@ class UniversityListSerializer(abstract_serializer.NameSerializer):
             'id',
             'icon',
             'name',
-            # 'short_name',
+            'short_name',
             'name_code',
             'speciality_count',
         )
+
+    def get_short_name(self, obj):
+        return obj.short_name_kz
+
 class ComfortSerializer(abstract_serializer.NameSerializer):
     class Meta:
         model = Comfort
@@ -42,6 +47,7 @@ class ComfortSerializer(abstract_serializer.NameSerializer):
 class UniversitySerializer(abstract_serializer.NameSerializer):
     speciality_count = serializers.IntegerField(default=0)
     comforts = ComfortSerializer(many=True, )
+    short_name =  serializers.SerializerMethodField()
 
     class Meta:
         model = University
@@ -49,14 +55,17 @@ class UniversitySerializer(abstract_serializer.NameSerializer):
             'id',
             'icon',
             'name',
-            # 'short_name',
+            'short_name',
             'name_code',
             'speciality_count',
             'comforts'
         )
+    def get_short_name(self, obj):
+        return obj.short_name_kz
 
 
 class SpecialityListSerializer(abstract_serializer.NameSerializer):
+    short_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Speciality
@@ -64,10 +73,12 @@ class SpecialityListSerializer(abstract_serializer.NameSerializer):
             'id',
             'icon',
             'name',
-            # 'short_name',
+            'short_name',
             'name_code',
             'code',
         )
+    def get_short_name(self, obj):
+        return obj.short_name_kz
 
 
 class UniversitySpecialityListSerializer(abstract_serializer.NameSerializer):
