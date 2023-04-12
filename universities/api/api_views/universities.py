@@ -116,3 +116,21 @@ class SpecialityListView(generics.ListAPIView):
 
 
 speciality_list = SpecialityListView.as_view()
+
+
+class SpecialityView(generics.RetrieveAPIView):
+    serializer_class = SpecialityShowListSerializer
+    queryset = Speciality.objects.filter(is_active=True)
+    pagination_class = SimplePagination
+    lookup_field = 'pk'
+
+    def get_queryset(self):
+        queryset = super().get_queryset().annotate(
+            score=Coalesce(Avg('university_specialities__score', output_field=IntegerField()),0)
+        ).annotate(
+            grant=Coalesce(Sum('university_specialities__grant'),0)
+        )
+        return queryset
+
+
+speciality = SpecialityView.as_view()
