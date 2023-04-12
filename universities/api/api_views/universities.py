@@ -1,4 +1,5 @@
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum, Avg, DecimalField, IntegerField
+from django.db.models.functions import Coalesce, Round
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -9,9 +10,10 @@ from quizzes.api.serializers import (SaveLessonPairsForUserSerializer,
                                      UserVariantsSerializer,
                                      VariantGroupSerializer, CountrySerializer,
                                      UniversityListSerializer)
+from quizzes.filters.university import SpecialityFilter
 from universities.api.serializers.universities import (
     UniversitySpecialityListSerializer,
-    UniversitySerializer
+    UniversitySerializer, SpecialityShowListSerializer
 )
 from quizzes.filters import CountryFilter, UniversityFilter, \
     UniversitySpecialityFilter
@@ -95,3 +97,22 @@ class UniversitySpecialityListView(generics.ListAPIView):
 
 
 university_speciality_list = UniversitySpecialityListView.as_view()
+
+
+class SpecialityListView(generics.ListAPIView):
+    serializer_class = SpecialityShowListSerializer
+    queryset = Speciality.objects.filter(is_active=True)
+    pagination_class = SimplePagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = SpecialityFilter
+
+    def get_queryset(self):
+        queryset = super().get_queryset().annotate(
+            score=Coalesce(Avg('university_specialities__score', output_field=IntegerField()),0)
+        ).annotate(
+            grant=Coalesce(Sum('university_specialities__grant'),0)
+        )
+        return queryset
+
+
+speciality_list = SpecialityListView.as_view()

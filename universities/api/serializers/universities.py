@@ -155,3 +155,24 @@ class UniversitySpecialityListSerializer(abstract_serializer.NameSerializer):
     def get_speciality(self, obj):
         return SpecialityListSerializer(obj.speciality,
                                         context=self.context).data
+
+class SpecialityShowListSerializer(abstract_serializer.NameSerializer):
+    score = serializers.IntegerField(default=0)
+    grant = serializers.IntegerField(default=0)
+    short_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Speciality
+        fields = (
+            'id',
+            'icon',
+            'name',
+            'short_name',
+            'name_code',
+            'code',
+            'score',
+            'grant'
+        )
+
+    def get_short_name(self, obj):
+        return obj.short_name_kz

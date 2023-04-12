@@ -7,7 +7,7 @@ from django_filters import rest_framework as filters
 
 from quizzes.models import Question, Favorite, VariantLessonCommonQuestion, \
     CommonQuestion, QuestionLevel, LessonQuestionLevel, VariantQuestion, \
-    Country, University, UniversitySpeciality
+    Country, University, UniversitySpeciality, Speciality
 
 
 class QuestionFilter(django_filters.FilterSet):
@@ -238,3 +238,14 @@ class UniversitySpecialityFilter(django_filters.FilterSet):
             'university_id',
         )
 
+class SpecialityFilter(django_filters.FilterSet):
+    university_id = filters.NumberFilter(
+        field_name="university_specialities__university_id"
+    )
+
+
+    class Meta:
+        model = Speciality
+        fields = (
+            'university_id',
+        )
