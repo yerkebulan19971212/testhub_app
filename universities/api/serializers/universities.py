@@ -183,7 +183,7 @@ class SpecialityShowListSerializer(abstract_serializer.NameSerializer):
     def get_short_name(self, obj):
         return obj.short_name_kz
 
-    def get_short_name(self, obj):
+    def get_description(self, obj):
         return obj.description_kz
 
 
