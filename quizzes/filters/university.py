@@ -197,8 +197,9 @@ class CountryFilter(django_filters.FilterSet):
 
 
 class UniversityFilter(django_filters.FilterSet):
-    country_id = filters.NumberFilter(
-        field_name="city__country_id"
+    country_id = filters.NumberFilter(field_name="city__country_id")
+    speciality_id = filters.NumberFilter(
+        field_name="university_specialities__speciality_id"
     )
     q = CharFilter(method='search_filter')
 
@@ -206,19 +207,17 @@ class UniversityFilter(django_filters.FilterSet):
         model = University
         fields = (
             'country_id',
+            'speciality_id'
         )
 
     @staticmethod
     def search_filter(queryset, name, value):
-        search_vector = SearchVector("question")
-        search_query = SearchQuery(value)
-        return queryset.annotate(
-            search=search_vector,
-            rank=SearchRank(search_vector, search_query)
-        ).filter(
-            Q(name_kz=value),
-            Q(name_ru=value),
-            Q(name_en=value),
+        # search_vector = SearchVector("question")
+        # search_query = SearchQuery(value)
+        return queryset.filter(
+            Q(name_kz__icontains=value),
+            Q(name_ru__icontains=value),
+            Q(name_en__icontains=value),
         )
 
 

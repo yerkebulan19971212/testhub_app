@@ -164,6 +164,7 @@ class SpecialityShowListSerializer(abstract_serializer.NameSerializer):
     score = serializers.IntegerField(default=0)
     grant = serializers.IntegerField(default=0)
     short_name = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
 
     class Meta:
         model = Speciality
@@ -173,6 +174,7 @@ class SpecialityShowListSerializer(abstract_serializer.NameSerializer):
             'name',
             'short_name',
             'name_code',
+            'description',
             'code',
             'score',
             'grant'
@@ -180,6 +182,9 @@ class SpecialityShowListSerializer(abstract_serializer.NameSerializer):
 
     def get_short_name(self, obj):
         return obj.short_name_kz
+
+    def get_short_name(self, obj):
+        return obj.description_kz
 
 
 class SpecialityGetListSerializer(abstract_serializer.NameSerializer):
