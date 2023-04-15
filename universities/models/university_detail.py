@@ -11,8 +11,9 @@ class UniversityDetail(abstract_models.Ordering,
         related_name='university_details',
         db_index=True
     )
-    value = models.CharField(max_length=128)
-    dimension = models.CharField(max_length=128, default='', null=True, blank=True)
+    value_kz = models.CharField(max_length=128)
+    value_ru = models.CharField(max_length=128, default='')
+    value_en = models.CharField(max_length=128, default='', null=True, blank=True)
     university = models.ForeignKey(
         'quizzes.University',
         on_delete=models.CASCADE,

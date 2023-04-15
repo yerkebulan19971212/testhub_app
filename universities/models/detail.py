@@ -3,9 +3,9 @@ from django.db import models
 
 
 class Detail(abstract_models.TimeStampedModel,
-              abstract_models.AbstractBaseNameCode,
-              abstract_models.IsActive,
-              abstract_models.AbstractBaseName):
+             abstract_models.AbstractBaseNameCode,
+             abstract_models.IsActive,
+             abstract_models.AbstractBaseName):
     icon = models.FileField(upload_to='university_detail')
     is_filter = models.BooleanField(default=False)
 

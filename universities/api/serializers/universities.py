@@ -70,6 +70,7 @@ class DetailSerializer(abstract_serializer.NameSerializer):
 class UniversityDetailSerializer(serializers.ModelSerializer):
     icon = serializers.FileField(source='detail.icon')
     key = serializers.CharField(source='detail.name_kz')
+    value = serializers.SerializerMethodField()
 
     class Meta:
         model = UniversityDetail
@@ -78,6 +79,9 @@ class UniversityDetailSerializer(serializers.ModelSerializer):
             'value',
             'icon'
         )
+
+    def get_value(self, obj):
+        return obj.value_kz
 
 
 class UniversitySerializer(abstract_serializer.NameSerializer):
