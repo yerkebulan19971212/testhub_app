@@ -26,18 +26,24 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    country_list,
                                    university_speciality_list, university)
 from quizzes.api.api_views.question import full_test_question
-from quizzes.views.generation import generation_test_type_view, \
-    generation_variant_groups, generation_variant_list, \
-    generation_get_lesson_test_type_lesson_view, generation_variant_questions, \
-    generation_variant_get_question, generation_variant_common_question, \
-    generation_common_question, generation_add_common_question, \
-    generation_all_questions, generation_all_level, topic_list, \
-    add_generate_question, generation_lesson_level, import_question, \
-    generation_question, save_image, generation_update_variant_question, \
-    add_generate_question_variant, generation_math_answer, \
-    send_questions_to_site
-
-# from quizzes.views.script import create_variant, create_question
+from quizzes.views.generation import (generation_test_type_view,
+                                      generation_variant_groups,
+                                      generation_variant_list,
+                                      generation_get_lesson_test_type_lesson_view,
+                                      generation_variant_questions,
+                                      generation_variant_get_question,
+                                      generation_variant_common_question,
+                                      generation_common_question,
+                                      generation_add_common_question,
+                                      generation_all_questions,
+                                      generation_all_level, topic_list,
+                                      add_generate_question,
+                                      generation_lesson_level, import_question,
+                                      generation_question, save_image,
+                                      generation_update_variant_question,
+                                      add_generate_question_variant,
+                                      generation_math_answer,
+                                      send_questions_to_site)
 
 lesson_urlpatterns = [
     # path('list/', lesson_list, name='lesson_list'),

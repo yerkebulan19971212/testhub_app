@@ -11,7 +11,7 @@ class University(abstract_models.AbstractBaseName,
               abstract_models.Ordering,
               abstract_models.TimeStampedModel):
     icon = models.FileField(upload_to='university')
-    video_link = models.URLField(null=True, blank=True)
+    video_link = models.CharField(max_length=255, null=True, blank=True)
     short_name_kz = models.CharField(max_length=255, null=True)
     short_name_ru = models.CharField(max_length=255, null=True)
     short_name_en = models.CharField(max_length=255, null=True)
