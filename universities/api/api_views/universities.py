@@ -71,7 +71,7 @@ class UniversityView(generics.RetrieveAPIView):
     def get_queryset(self):
         university_details = UniversityDetail.objects.all().order_by('order')
         queryset = self.queryset.prefetch_related(
-            Prefetch('answers', queryset=university_details)
+            Prefetch('university_details', queryset=university_details)
         )
         return queryset
 
