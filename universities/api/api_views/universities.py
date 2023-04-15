@@ -1,4 +1,5 @@
-from django.db.models import Count, Q, Sum, Avg, DecimalField, IntegerField
+from django.db.models import Count, Q, Sum, Avg, DecimalField, IntegerField, \
+    Prefetch
 from django.db.models.functions import Coalesce, Round
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
@@ -19,6 +20,7 @@ from quizzes.filters import CountryFilter, UniversityFilter, \
     UniversitySpecialityFilter
 from quizzes.models import UserVariant, VariantGroup, Country, University, \
     Speciality, UniversitySpeciality
+from universities.models import UniversityDetail
 
 
 class CountryListView(generics.ListAPIView):
@@ -66,6 +68,13 @@ class UniversityView(generics.RetrieveAPIView):
     )
     lookup_field = 'pk'
 
+    def get_queryset(self):
+        university_details = UniversityDetail.objects.all().order_by('order')
+        queryset = self.queryset.prefetch_related(
+            Prefetch('answers', queryset=university_details)
+        )
+        return queryset
+
 
 university = UniversityView.as_view()
 
@@ -81,8 +90,6 @@ class KazakhstanUniversityListView(generics.ListAPIView):
         city__country__name_code='kazakhstan_kz'
     ).order_by("order")
     pagination_class = SimplePagination
-    # filter_backends = [DjangoFilterBackend]
-    # filterset_class = UniversityFilter
 
 
 kazakhstan_university_list = KazakhstanUniversityListView.as_view()
@@ -108,9 +115,10 @@ class SpecialityListView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = super().get_queryset().annotate(
-            score=Coalesce(Avg('university_specialities__score', output_field=IntegerField()),0)
+            score=Coalesce(Avg('university_specialities__score',
+                               output_field=IntegerField()), 0)
         ).annotate(
-            grant=Coalesce(Sum('university_specialities__grant'),0)
+            grant=Coalesce(Sum('university_specialities__grant'), 0)
         )
         return queryset
 
@@ -126,9 +134,10 @@ class SpecialityView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         queryset = super().get_queryset().annotate(
-            score=Coalesce(Avg('university_specialities__score', output_field=IntegerField()),0)
+            score=Coalesce(Avg('university_specialities__score',
+                               output_field=IntegerField()), 0)
         ).annotate(
-            grant=Coalesce(Sum('university_specialities__grant'),0)
+            grant=Coalesce(Sum('university_specialities__grant'), 0)
         )
         return queryset
 
