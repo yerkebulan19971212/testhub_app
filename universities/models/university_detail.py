@@ -3,7 +3,8 @@ from django.db import models
 from base import abstract_models
 
 
-class UniversityDetail(abstract_models.TimeStampedModel):
+class UniversityDetail(abstract_models.Ordering,
+                       abstract_models.TimeStampedModel):
     detail = models.ForeignKey(
         'universities.Detail',
         on_delete=models.CASCADE,

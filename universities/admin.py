@@ -14,9 +14,6 @@ admin.site.register([
     LessonGroupSpeciality
 ])
 
-
-
-
 class UniversityImageInline(admin.TabularInline):
     model = UniversityImage
     readonly_fields = ('pk',)
@@ -27,7 +24,7 @@ class UniversityImageInline(admin.TabularInline):
     }
 
 
-class UniversityDetailImageInline(admin.TabularInline):
+class UniversityDetailInline(admin.TabularInline):
     model = UniversityDetail
     readonly_fields = ('pk',)
     extra = 0
@@ -43,7 +40,7 @@ class UniversityAdmin(admin.ModelAdmin):
         SpecialityInline,
         ComfortUniversityInline,
         UniversityImageInline,
-        UniversityDetailImageInline
+        # UniversityDetailImageInline
     ]
     list_display = (
         'name_kz',

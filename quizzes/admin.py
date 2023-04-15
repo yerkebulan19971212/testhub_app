@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import Textarea
 
-from universities.models import LessonGroupSpeciality
+from universities.models import LessonGroupSpeciality, UniversityDetail
 from .models import (Answer, CommonQuestion, Favorite, FlashCard, Lesson,
                      LessonGroup, LessonPair, LessonQuestionLevel,
                      NumberOfQuestions, PassAnswer, Question, QuestionLevel,
@@ -173,11 +173,22 @@ class ComfortUniversityInline(admin.TabularInline):
     }
 
 
+class UniversityDetailInline(admin.TabularInline):
+    model = UniversityDetail
+    readonly_fields = ('pk',)
+    extra = 0
+    can_delete = True
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},
+    }
+
+
 @admin.register(University)
 class UniversityAdmin(admin.ModelAdmin):
     inlines = [
         SpecialityInline,
-        ComfortUniversityInline
+        ComfortUniversityInline,
+        UniversityDetailInline,
     ]
     list_display = (
         'name_kz',
@@ -193,9 +204,9 @@ class UniversityAdmin(admin.ModelAdmin):
         'address_kz',
         'address_ru',
         'address_en',
-        'description_kz',
-        'description_ru',
-        'description_en',
+        # 'description_kz',
+        # 'description_ru',
+        # 'description_en',
         'city',
         # 'country',
         'name_code',
