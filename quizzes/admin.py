@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import Textarea
 
+from universities.models import LessonGroupSpeciality
 from .models import (Answer, CommonQuestion, Favorite, FlashCard, Lesson,
                      LessonGroup, LessonPair, LessonQuestionLevel,
                      NumberOfQuestions, PassAnswer, Question, QuestionLevel,
@@ -172,8 +173,7 @@ class ComfortUniversityInline(admin.TabularInline):
     }
 
 
-# @admin.register(University, group='University')
-# admin.site.register(grou)
+@admin.register(University)
 class UniversityAdmin(admin.ModelAdmin):
     inlines = [
         SpecialityInline,
@@ -217,18 +217,21 @@ class UniversityAdmin(admin.ModelAdmin):
     readonly_fields = ('pk', 'created', 'modified')
 
 
-from django.contrib.admin import AdminSite
-class MyAdminSite(AdminSite):
-    site_header = 'My App Administration'
-    site_title = 'My App Admin'
-my_admin_site = MyAdminSite(name='myadmin')
-
-
-my_admin_site.register(University, admin_class=UniversityAdmin, group='Group 1')
+class LessonGroupSpecialityInline(admin.TabularInline):
+    model = LessonGroupSpeciality
+    readonly_fields = ('pk',)
+    extra = 0
+    can_delete = True
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},
+    }
 
 
 @admin.register(Speciality)
 class SpecialityAdmin(admin.ModelAdmin):
+    inlines = [
+        LessonGroupSpecialityInline
+    ]
     list_display = (
         'name_kz',
         'name_ru',

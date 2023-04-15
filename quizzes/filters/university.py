@@ -152,23 +152,14 @@ class QuestionLevelFilter(django_filters.FilterSet):
 
 
 class LessonQuestionLevelFilter(django_filters.FilterSet):
-    test_type_lesson_id = filters.NumberFilter(field_name="test_type_lesson_id")
+    test_type_lesson_id = filters.NumberFilter(
+        field_name="test_type_lesson_id")
 
     class Meta:
         model = LessonQuestionLevel
         fields = (
             'test_type_lesson_id',
         )
-
-
-
-
-
-
-
-
-
-
 
 
 class CountryFilter(django_filters.FilterSet):
@@ -181,6 +172,7 @@ class CountryFilter(django_filters.FilterSet):
     # )
     # tag_id = filters.NumberFilter(field_name="tag_questions__tag_id")
     q = CharFilter(method='search_filter')
+
     #
     # class Meta:
     #     model = Country
@@ -231,21 +223,24 @@ class UniversityFilter(django_filters.FilterSet):
 
 
 class UniversitySpecialityFilter(django_filters.FilterSet):
-
     class Meta:
         model = UniversitySpeciality
         fields = (
             'university_id',
         )
 
+
 class SpecialityFilter(django_filters.FilterSet):
     university_id = filters.NumberFilter(
         field_name="university_specialities__university_id"
     )
-
+    country_id = filters.NumberFilter(
+        field_name="university_specialities__university__city__country_id"
+    )
 
     class Meta:
         model = Speciality
         fields = (
             'university_id',
+            'country_id'
         )

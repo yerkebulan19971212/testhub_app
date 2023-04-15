@@ -4,10 +4,10 @@ from base import abstract_models
 
 
 class Speciality(abstract_models.AbstractBaseName,
-              abstract_models.AbstractBaseNameCode,
-              abstract_models.IsActive,
-              abstract_models.Ordering,
-              abstract_models.TimeStampedModel):
+                 abstract_models.AbstractBaseNameCode,
+                 abstract_models.IsActive,
+                 abstract_models.Ordering,
+                 abstract_models.TimeStampedModel):
     icon = models.FileField(upload_to='university')
     short_name_kz = models.CharField(max_length=255, null=True)
     short_name_ru = models.CharField(max_length=255, null=True)
@@ -17,7 +17,6 @@ class Speciality(abstract_models.AbstractBaseName,
     description_kz = models.TextField(null=True)
     description_en = models.TextField(null=True)
     description_ru = models.TextField(null=True)
-
 
     class Meta:
         db_table = 'quiz\".\"speciality'

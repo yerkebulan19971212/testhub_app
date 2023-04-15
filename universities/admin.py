@@ -4,13 +4,17 @@ from django.forms import Textarea
 
 from quizzes.admin import SpecialityInline, ComfortUniversityInline
 from quizzes.models import University
-from universities.models import (UniversityImage, Detail, UniversityDetail)
+from universities.models import (UniversityImage, Detail, UniversityDetail,
+                                 LessonGroupSpeciality)
 
 admin.site.register([
     UniversityImage,
     UniversityDetail,
-    Detail
+    Detail,
+    LessonGroupSpeciality
 ])
+
+
 
 
 class UniversityImageInline(admin.TabularInline):
@@ -33,7 +37,7 @@ class UniversityDetailImageInline(admin.TabularInline):
     }
 
 
-@admin.register(University)
+# @admin.register(University)
 class UniversityAdmin(admin.ModelAdmin):
     inlines = [
         SpecialityInline,
