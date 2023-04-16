@@ -3,7 +3,7 @@ from django.db import models
 from django.forms import Textarea
 
 from universities.models import LessonGroupSpeciality, UniversityDetail, \
-    UniversityImage
+    UniversityImage, GrantCount, SpecialityDetailInfo
 from .models import (Answer, CommonQuestion, Favorite, FlashCard, Lesson,
                      LessonGroup, LessonPair, LessonQuestionLevel,
                      NumberOfQuestions, PassAnswer, Question, QuestionLevel,
@@ -183,6 +183,7 @@ class UniversityDetailInline(admin.TabularInline):
         models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},
     }
 
+
 class UniversityImageInline(admin.TabularInline):
     model = UniversityImage
     readonly_fields = ('pk',)
@@ -240,10 +241,32 @@ class LessonGroupSpecialityInline(admin.TabularInline):
     }
 
 
+class GrantCountInline(admin.TabularInline):
+    model = GrantCount
+    readonly_fields = ('pk',)
+    extra = 0
+    can_delete = True
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},
+    }
+
+
+class DetailSpecialityInforInline(admin.TabularInline):
+    model = SpecialityDetailInfo
+    readonly_fields = ('pk',)
+    extra = 0
+    can_delete = True
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},
+    }
+
+
 @admin.register(Speciality)
 class SpecialityAdmin(admin.ModelAdmin):
     inlines = [
-        LessonGroupSpecialityInline
+        LessonGroupSpecialityInline,
+        GrantCountInline,
+        DetailSpecialityInforInline
     ]
     list_display = (
         'name_kz',
@@ -256,9 +279,9 @@ class SpecialityAdmin(admin.ModelAdmin):
         'short_name_en',
         'code',
         'status',
-        'description_kz',
-        'description_ru',
-        'description_en',
+        # 'description_kz',
+        # 'description_ru',
+        # 'description_en',
         'name_code',
         'is_active',
         'order',

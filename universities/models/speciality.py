@@ -23,7 +23,7 @@ class Speciality(abstract_models.AbstractBaseName,
     avg_salary = models.IntegerField(default=0)
 
     class Meta:
-        db_table = 'quiz\".\"speciality'
+        db_table = 'universities\".\"speciality'
 
     def __str__(self):
         return f' {self.name_ru}'

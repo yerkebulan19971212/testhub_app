@@ -11,8 +11,7 @@ from quizzes.api.serializers import (SaveLessonPairsForUserSerializer,
                                      UniversityListSerializer)
 from quizzes.api.serializers.universities import \
     UniversitySpecialityListSerializer, UniversitySerializer
-from quizzes.filters import CountryFilter, UniversityFilter, \
-    UniversitySpecialityFilter
+from quizzes.filters import CountryFilter, UniversityFilter
 from quizzes.models import UserVariant, VariantGroup, Country, University, \
     Speciality, UniversitySpeciality
 
@@ -86,7 +85,6 @@ class UniversitySpecialityListView(generics.ListAPIView):
     queryset = UniversitySpeciality.objects.filter(speciality__is_active=True)
     pagination_class = SimplePagination
     filter_backends = [DjangoFilterBackend]
-    filterset_class = UniversitySpecialityFilter
 
 
 university_speciality_list = UniversitySpecialityListView.as_view()

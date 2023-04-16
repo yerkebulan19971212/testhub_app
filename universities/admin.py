@@ -3,14 +3,17 @@ from django.db import models
 from django.forms import Textarea
 
 from universities.models import (UniversityImage, Detail, UniversityDetail,
-                                 LessonGroupSpeciality)
+                                 LessonGroupSpeciality, DetailSpeciality, Year)
 
 admin.site.register([
+    Year,
     UniversityImage,
     UniversityDetail,
     Detail,
-    LessonGroupSpeciality
+    LessonGroupSpeciality,
+    DetailSpeciality
 ])
+
 
 class UniversityImageInline(admin.TabularInline):
     model = UniversityImage

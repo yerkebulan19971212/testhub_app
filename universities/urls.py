@@ -9,7 +9,6 @@ urlpatterns = [
     path('country-list/', country_list),
     path('university-list/', university_list),
     path('kazakhstan-university-list/', kazakhstan_university_list),
-    # path('speciality-university-list/', university_speciality_list),
     path('speciality-list/', speciality_list),
     path('speciality/<int:pk>/', speciality),
     path('university/<int:pk>/', university),

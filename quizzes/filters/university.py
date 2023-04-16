@@ -221,14 +221,6 @@ class UniversityFilter(django_filters.FilterSet):
         )
 
 
-class UniversitySpecialityFilter(django_filters.FilterSet):
-    class Meta:
-        model = UniversitySpeciality
-        fields = (
-            'university_id',
-        )
-
-
 class SpecialityFilter(django_filters.FilterSet):
     university_id = filters.NumberFilter(
         field_name="university_specialities__university_id"
