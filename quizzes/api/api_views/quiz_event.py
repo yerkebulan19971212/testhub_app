@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from base.constant import QuizzesType
 from quizzes.api.serializers import (LessonNameSerializer, QuestionsSerializer,
                                      QuizEventInformationSerializer,
-                                     QuizEventSerializer)
+                                     QuizEventSerializer, QuizSerializer)
 from quizzes.filters import QuestionByLessonFilterByEvent
 from quizzes.models import Answer, Question, QuizEvent, QuizEventQuestion, \
     Favorite
@@ -65,15 +65,15 @@ class QuestionsListByLessonView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         answers = Answer.objects.all()
-        return super().get_queryset()\
-            .prefetch_related(Prefetch('answers', queryset=answers))\
+        return super().get_queryset() \
+            .prefetch_related(Prefetch('answers', queryset=answers)) \
             .annotate(
-                is_favorite=Exists(
-                    Favorite.objects.filter(
-                        user=user,
-                        question_id=OuterRef('pk'),
-                        is_favorite=True
-                    )))
+            is_favorite=Exists(
+                Favorite.objects.filter(
+                    user=user,
+                    question_id=OuterRef('pk'),
+                    is_favorite=True
+                )))
 
     def get(self, request, *args, **kwargs):
         quiz_event_id = self.request.query_params.get('quiz_event_id')
@@ -108,3 +108,103 @@ class QuestionsListByLessonView(generics.ListAPIView):
 
 
 questions_list_by_lesson = QuestionsListByLessonView.as_view()
+
+
+class CreateQuizView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = QuizEventSerializer
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        lesson = self.request.data.get('lesson')
+
+        try:
+            quiz_event = QuizEvent.objects.create(
+                quizzes_type=QuizzesType.INFINITY_QUIZ,
+                test_type_lesson_id=lesson
+            )
+        except Exception as e:
+            print(e)
+            return Response(
+                {"status": False},
+                status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "status_code": 0,
+                "message": None,
+                "result": QuizSerializer(quiz_event).data,
+                "status": True},
+            status=status.HTTP_200_OK)
+
+
+create_quiz = CreateQuizView.as_view()
+
+
+class QuizQuestionView(generics.RetrieveAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = Question.objects.select_related(
+        "lesson_question_level__question_level"
+    ).all()
+    serializer_class = QuestionsSerializer
+    # filter_backends = [DjangoFilterBackend]
+    # filterset_class = QuestionByLessonFilterByEvent
+    lookup_field = None
+
+    def get_object(self):
+        user = self.request.user
+        quiz_event_id = int(self.request.query_params.get("quiz_event_id"))
+        quiz_event = QuizEvent.objects.get(pk=quiz_event_id)
+        answers = Answer.objects.all()
+        question = Question.objects.filter(
+            lesson_question_level__test_type_lesson=quiz_event.test_type_lesson
+        ).prefetch_related(Prefetch('answers', queryset=answers)) \
+            .annotate(
+            is_favorite=Exists(
+                Favorite.objects.filter(
+                    user=user,
+                    question_id=OuterRef('pk'),
+                    is_favorite=True
+                ))).order_by('?').first()
+        QuizEventQuestion.objects.create(
+            question=question,
+            user=user,
+            quiz_event=quiz_event
+        )
+
+        return question
+
+
+    # def get(self, request, *args, **kwargs):
+    #     quiz_event_id = self.request.query_params.get('quiz_event_id')
+    #     user = self.request.user
+    #     try:
+    #         quiz_event = QuizEvent.objects.select_related(
+    #             'test_type_lesson',
+    #             'test_type_lesson__lesson'
+    #         ).get(id=quiz_event_id)
+    #         questions = self.list(request, *args, **kwargs).data
+    #         data = LessonNameSerializer([quiz_event.test_type_lesson.lesson],
+    #                                     many=True).data
+    #         data[0]['questions'] = questions
+    #         user_answers = []
+    #         for q in questions:
+    #             user_answers.append({
+    #                 "question": q.get('id'),
+    #                 "answers": [],
+    #                 "is_mark": False
+    #             })
+    #         data[0]["user_answers"] = user_answers
+    #         result = {"lessons": data}
+    #
+    #         return Response({
+    #             "message": "Success",
+    #             "result": result,
+    #             "status_code": 0,
+    #             "status": True
+    #         }, status=status.HTTP_200_OK)
+    #     except Exception as e:
+    #         print(e)
+    #         return Response({}, status=status.HTTP_400_BAD_REQUEST)
+
+
+quiz_question = QuizQuestionView.as_view()

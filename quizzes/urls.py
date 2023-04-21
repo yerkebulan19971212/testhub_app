@@ -24,8 +24,10 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    kazakhstan_university_list,
                                    full_test_information, university_list,
                                    country_list,
-                                   university_speciality_list, university)
+                                   university_speciality_list, university,
+                                   create_quiz)
 from quizzes.api.api_views.question import full_test_question
+from quizzes.api.api_views.quiz_event import quiz_question
 from quizzes.views.generation import (generation_test_type_view,
                                       generation_variant_groups,
                                       generation_variant_list,
@@ -58,6 +60,8 @@ question_urlpatterns = [
     path('test-type-lesson-list/', lesson_list_with_test_type_lesson_view),
     path('list_flash_card/', list_flash_card),
     path('quize-event-by-lesson/', create_quiz_event_by_lesson_view),
+    path('quiz/', create_quiz),
+    path('quiz-quiestion/', quiz_question),
     path('pass-answer-by-lesson/<int:quiz_event>/',
          pass_answer_by_lesson_view),
     path('finish-by-lesson/<int:quiz_event>/', finish_by_lesson_view),

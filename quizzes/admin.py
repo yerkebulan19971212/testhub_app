@@ -3,7 +3,7 @@ from django.db import models
 from django.forms import Textarea
 
 from universities.models import LessonGroupSpeciality, UniversityDetail, \
-    UniversityImage, GrantCount, SpecialityDetailInfo
+    UniversityImage, GrantCount, SpecialityDetailInfo, GrantUniversityCount
 from .models import (Answer, CommonQuestion, Favorite, FlashCard, Lesson,
                      LessonGroup, LessonPair, LessonQuestionLevel,
                      NumberOfQuestions, PassAnswer, Question, QuestionLevel,
@@ -153,7 +153,14 @@ class CountryAdmin(admin.ModelAdmin):
     list_filter = ('is_active',)
     readonly_fields = ('pk', 'created', 'modified')
 
-
+class GrantUniversityCountInline(admin.TabularInline):
+    model = GrantUniversityCount
+    readonly_fields = ('pk',)
+    extra = 0
+    can_delete = True
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 80})},
+    }
 class SpecialityInline(admin.TabularInline):
     model = UniversitySpeciality
     readonly_fields = ('pk',)
@@ -194,13 +201,17 @@ class UniversityImageInline(admin.TabularInline):
     }
 
 
+
+
+
 @admin.register(University)
 class UniversityAdmin(admin.ModelAdmin):
     inlines = [
         SpecialityInline,
         ComfortUniversityInline,
         UniversityDetailInline,
-        UniversityImageInline
+        UniversityImageInline,
+        # GrantUniversityCountInline
     ]
     list_display = (
         'name_kz',

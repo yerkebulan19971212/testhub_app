@@ -129,7 +129,7 @@ class StudentLoginByEmailView(TokenObtainPairView):
     serializer_class = TokenObtainPairSerializerByEmail
 
     def post(self, request, *args, **kwargs):
-        request.data['email'] = request.data.get('email').lower()
+        # request.data['email'] = request.data.get('email').lower()
         return super().post(request, args, kwargs)
 
 
