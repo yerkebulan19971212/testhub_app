@@ -72,7 +72,7 @@ quiz_test_urlpatterns = [
     path('quiz/', create_quiz),
     path('quiz-quiestion/<int:quiz_event_id>/', quiz_question),
     path('pass-answer/', quiz_test_pass_answer),
-    path('check/<int:answer_id>/', quiz_test_check_answer),
+    path('check/<int:question_id>/', quiz_test_check_answer),
     path('finish/<int:quiz_event_id>/', finish_quiz_test),
 ]
 

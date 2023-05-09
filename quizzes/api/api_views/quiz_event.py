@@ -268,11 +268,14 @@ class CheckQuizTestAnswerView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        answer_id = self.kwargs.get('answer_id')
-        answer = Answer.objects.get(pk=answer_id)
+        question_id = self.kwargs.get('question_id')
+        answer = Answer.objects.filter(
+            question_id=question_id,
+            correct=True
+        ).first()
         return Response(
             {
-                "result": answer.correct
+                "result": answer.id
             },
             status=status.HTTP_200_OK
         )
