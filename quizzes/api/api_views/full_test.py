@@ -89,7 +89,7 @@ class PassStudentAnswerView(generics.CreateAPIView):
         return Response({"detail": "Success"})
 
 
-pass_answer = PassStudentAnswerView.as_view()
+full_pass_answer = PassStudentAnswerView.as_view()
 
 
 class FinishFullTestView(APIView):

@@ -11,7 +11,7 @@ from .question import (QuestionsSerializer, FullTestQuestionSerializer,
                        FullTestFinishQuestionSerializer,
                        FullTestFinishQuestionByLessonSerializer)
 from .quiz_event import (QuizEventInformationSerializer, QuizEventSerializer,
-                         QuizSerializer)
+                         QuizSerializer, QuizTestPassAnswerSerializer)
 from .tag import TagListSerializer
 from .test_type import TestTypeOnlyNameSerializer, TestTypeSerializer
 from .test_type_lesson import GetLessonTestTypeLessonSerializer

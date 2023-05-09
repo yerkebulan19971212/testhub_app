@@ -15,8 +15,8 @@ from quizzes.urls import (
     info_urlpatterns,
     university_urlpatterns,
     generation_url_patterns,
+    quiz_test_urlpatterns,
 )
-
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -36,6 +36,7 @@ api_v1_urlpatterns = [
     path('quizes/', include('quizzes.urls')),
     path('university/', include('universities.urls')),
     path('generation/', include(generation_url_patterns)),
+    path('quiz-test/', include(quiz_test_urlpatterns)),
     path('favorite/', include(favorite_urlpatterns)),
     path('tag/', include(tag_urlpatterns)),
     path('full-test/', include(ent_urlpatterns)),

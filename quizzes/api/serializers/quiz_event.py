@@ -40,3 +40,8 @@ class QuizSerializer(serializers.ModelSerializer):
             'lesson',
         )
 
+class QuizTestPassAnswerSerializer(serializers.Serializer):
+    quiz_event_id = serializers.IntegerField(required=True)
+    question_id = serializers.IntegerField(required=True)
+    answer_id = serializers.IntegerField()
+

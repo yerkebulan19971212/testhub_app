@@ -1,16 +1,20 @@
-from django.db.models import Prefetch, Exists, OuterRef
+from django.db import transaction
+from django.db.models import Prefetch, Exists, OuterRef, Sum, Count, Q
+from django.db.models.functions import Coalesce
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from base.constant import QuizzesType
 from quizzes.api.serializers import (LessonNameSerializer, QuestionsSerializer,
                                      QuizEventInformationSerializer,
-                                     QuizEventSerializer, QuizSerializer)
+                                     QuizEventSerializer, QuizSerializer,
+                                     QuizTestPassAnswerSerializer)
 from quizzes.filters import QuestionByLessonFilterByEvent
 from quizzes.models import Answer, Question, QuizEvent, QuizEventQuestion, \
-    Favorite
+    Favorite, PassAnswer, QuestionQuizEventScore
 
 
 class CreateQuizEventByLessonView(generics.CreateAPIView):
@@ -152,7 +156,7 @@ class QuizQuestionView(generics.RetrieveAPIView):
 
     def get_object(self):
         user = self.request.user
-        quiz_event_id = int(self.request.query_params.get("quiz_event_id"))
+        quiz_event_id = self.kwargs.get("quiz_event_id")
         quiz_event = QuizEvent.objects.get(pk=quiz_event_id)
         answers = Answer.objects.all()
         question = Question.objects.filter(
@@ -172,7 +176,6 @@ class QuizQuestionView(generics.RetrieveAPIView):
         )
 
         return question
-
 
     # def get(self, request, *args, **kwargs):
     #     quiz_event_id = self.request.query_params.get('quiz_event_id')
@@ -208,3 +211,147 @@ class QuizQuestionView(generics.RetrieveAPIView):
 
 
 quiz_question = QuizQuestionView.as_view()
+
+
+class PassQuizTestAnswerView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = QuizTestPassAnswerSerializer
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        data = self.request.data
+        quiz_event_id = data.get('quiz_event_id')
+        question_id = data.get('question_id')
+        answer_id = data.get('answer_id')
+
+        if answer_id is None:
+            try:
+                with transaction.atomic():
+
+                    PassAnswer.objects.filter(
+                        user=user,
+                        quiz_event_id=quiz_event_id,
+                        question_id=question_id,
+                        answer_id=answer_id
+                    ).delete()
+                    if answer_id:
+                        PassAnswer.objects.create(
+                            user=user,
+                            quiz_event_id=quiz_event_id,
+                            question_id=question_id,
+                            answer_id=answer_id
+                        )
+                        answer = Answer.objects.get(pk=answer_id)
+                        if answer.correct:
+                            QuestionQuizEventScore.objects.filter(
+                                user=user,
+                                quiz_event_id=quiz_event_id,
+                                question_id=question_id
+                            ).delete()
+                            QuestionQuizEventScore.objects.create(
+                                user=user,
+                                quiz_event_id=quiz_event_id,
+                                question_id=question_id,
+                                score=1
+                            )
+            except Exception as e:
+                print(e)
+                return Response(
+                    {"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "Success"})
+
+
+quiz_test_pass_answer = PassQuizTestAnswerView.as_view()
+
+
+class CheckQuizTestAnswerView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        answer_id = self.kwargs.get('answer_id')
+        answer = Answer.objects.get(pk=answer_id)
+        return Response(
+            {
+                "result": answer.correct
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+quiz_test_check_answer = CheckQuizTestAnswerView.as_view()
+
+
+# class FinishQuizTestAnswerView(APIView):
+#     permission_classes = (IsAuthenticated,)
+#
+#     def post(self, request, *args, **kwargs):
+#         quiz_event_id = self.kwargs.get('quiz_event_id')
+#         score = QuestionQuizEventScore.objects.filter(
+#             quiz_event_id=quiz_event_id
+#         ).aggregate(
+#             all_score=Coalesce(Sum('score'), 0),
+#             all_count=Coalesce(Sum('id'), 0)
+#         )
+#         pass_answer = PassAnswer.objects.filter(
+#             quiz_event_id=quiz_event_id,
+#         ).aggregate(
+#             correct_answer=Coalesce(Count('answer', filter=Q(answer__correct=True)), 0),
+#             all_count=Coalesce(Count('id'), 0)
+#         )
+#
+#         return Response(
+#             {
+#                 "all_score": score.get("all_score"),
+#                 "all_count": pass_answer.get("all_count"),
+#                 "correct_answer": pass_answer.get("correct_answer")
+#                 # "result": answer.correct
+#             },
+#             status=status.HTTP_200_OK
+#         )
+
+class FinishQuizTestAnswerView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        quiz_event = self.kwargs.get('quiz_event_id')
+        quiz_event_obj = QuizEvent.objects.get(pk=quiz_event)
+        questions = Question.objects.select_related(
+            "lesson_question_level",
+            "lesson_question_level__question_level"
+        ).filter(quiz_event_questions__quiz_event_id=quiz_event)
+        number_of_score = questions.aggregate(
+            number_of_score=Coalesce(
+                Sum("lesson_question_level__question_level__point"),
+                0
+            )
+        ).get("number_of_score")
+        question_score = QuestionQuizEventScore.objects.filter(
+            quiz_event_id=quiz_event
+        )
+        user_score = question_score.aggregate(
+            user_score=Coalesce(Sum('score'), 0)
+        ).get("user_score")
+        attempt = question_score.values("question").distinct().count()
+        question_count = questions.count()
+        unattem = question_count - attempt
+
+        data = {
+            "user_score": user_score,
+            "number_of_score": number_of_score,
+            "incorrect_score": number_of_score - user_score,
+            "accuracy": int(round(100 / number_of_score * user_score)),
+            "attempt": question_count,
+            "unattem": unattem,
+            "question_number": question_count,
+            "lesson_id": quiz_event_obj.test_type_lesson_id,
+            "lesson_name": quiz_event_obj.test_type_lesson.lesson.name_kz,
+        }
+
+        return Response({
+            "message": "Success",
+            "result": data,
+            "status_code": 0,
+            "status": True
+        }, status=status.HTTP_200_OK)
+
+finish_quiz_test = FinishQuizTestAnswerView.as_view()

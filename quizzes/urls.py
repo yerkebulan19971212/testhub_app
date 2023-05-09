@@ -2,7 +2,7 @@ from django.urls import include, path
 
 from quizzes.api.api_views import (create_favorite_questions,
                                    user_variants_list_count,
-                                   create_flash_cards, pass_answer,
+                                   create_flash_cards, full_pass_answer,
                                    create_quiz_event_by_lesson_view,
                                    detail_info_question, finish_by_lesson_view,
                                    lesson_list, test_lesson_information_list,
@@ -27,7 +27,8 @@ from quizzes.api.api_views import (create_favorite_questions,
                                    university_speciality_list, university,
                                    create_quiz)
 from quizzes.api.api_views.question import full_test_question
-from quizzes.api.api_views.quiz_event import quiz_question
+from quizzes.api.api_views.quiz_event import quiz_question, \
+    quiz_test_pass_answer, quiz_test_check_answer, finish_quiz_test
 from quizzes.views.generation import (generation_test_type_view,
                                       generation_variant_groups,
                                       generation_variant_list,
@@ -60,12 +61,19 @@ question_urlpatterns = [
     path('test-type-lesson-list/', lesson_list_with_test_type_lesson_view),
     path('list_flash_card/', list_flash_card),
     path('quize-event-by-lesson/', create_quiz_event_by_lesson_view),
-    path('quiz/', create_quiz),
-    path('quiz-quiestion/', quiz_question),
+
     path('pass-answer-by-lesson/<int:quiz_event>/',
          pass_answer_by_lesson_view),
     path('finish-by-lesson/<int:quiz_event>/', finish_by_lesson_view),
     # path('create_flash_card/', create_flash_cards),
+]
+
+quiz_test_urlpatterns = [
+    path('quiz/', create_quiz),
+    path('quiz-quiestion/<int:quiz_event_id>/', quiz_question),
+    path('pass-answer/', quiz_test_pass_answer),
+    path('check/<int:answer_id>/', quiz_test_check_answer),
+    path('finish/<int:quiz_event_id>/', finish_quiz_test),
 ]
 
 ent_urlpatterns = [
@@ -81,7 +89,7 @@ ent_urlpatterns = [
          test_lesson_information_list),
     path('get-full-test-result/<int:user_variant_id>/', get_full_test_result),
     path('questions/', full_test_question),
-    path('pass_answer/', pass_answer),
+    path('pass_answer/', full_pass_answer),
     path('finish/<int:user_variant_id>/', finish_full_test),
     path('full-test-information/<int:user_variant_id>/',
          full_test_information),
