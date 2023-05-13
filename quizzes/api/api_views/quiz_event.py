@@ -223,37 +223,37 @@ class PassQuizTestAnswerView(generics.CreateAPIView):
         quiz_event_id = data.get('quiz_event_id')
         question_id = data.get('question_id')
         answer_id = data.get('answer_id')
+        print(answer_id)
+        print("answer_id")
 
-        if answer_id is None:
+        if answer_id:
             try:
                 with transaction.atomic():
-
                     PassAnswer.objects.filter(
                         user=user,
                         quiz_event_id=quiz_event_id,
                         question_id=question_id,
                         answer_id=answer_id
                     ).delete()
-                    if answer_id:
-                        PassAnswer.objects.create(
+                    PassAnswer.objects.create(
+                        user=user,
+                        quiz_event_id=quiz_event_id,
+                        question_id=question_id,
+                        answer_id=answer_id
+                    )
+                    answer = Answer.objects.get(pk=answer_id)
+                    if answer.correct:
+                        QuestionQuizEventScore.objects.filter(
+                            user=user,
+                            quiz_event_id=quiz_event_id,
+                            question_id=question_id
+                        ).delete()
+                        QuestionQuizEventScore.objects.create(
                             user=user,
                             quiz_event_id=quiz_event_id,
                             question_id=question_id,
-                            answer_id=answer_id
+                            score=1
                         )
-                        answer = Answer.objects.get(pk=answer_id)
-                        if answer.correct:
-                            QuestionQuizEventScore.objects.filter(
-                                user=user,
-                                quiz_event_id=quiz_event_id,
-                                question_id=question_id
-                            ).delete()
-                            QuestionQuizEventScore.objects.create(
-                                user=user,
-                                quiz_event_id=quiz_event_id,
-                                question_id=question_id,
-                                score=1
-                            )
             except Exception as e:
                 print(e)
                 return Response(
