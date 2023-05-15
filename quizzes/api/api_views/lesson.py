@@ -273,7 +273,7 @@ class FullTestInformation(APIView):
         ).annotate(
             unattem=F('num_question') - F('pass_answer')
         ).order_by('-main', 'lesson__order')
-        user_variant.status = Status.PASSED
+        # user_variant.status = Status.PASSED
         user_variant.save()
         data = {
             "unattem": 0,
@@ -321,7 +321,7 @@ class FullTestFinishedTestLessonList(generics.ListAPIView):
                 'lesson_group',
                 'variant__variant_group__test_type'
             ).get(pk=user_variant_id)
-            user_variant.status = Status.PASSED
+            # user_variant.status = Status.PASSED
             user_variant.save()
         except UserVariant.DoesNotExist as e:
             raise exceptions.DoesNotExist()

@@ -129,7 +129,7 @@ class FinishFullTestView(APIView):
         ).annotate(
             unattem=F('num_question') - F('pass_answer')
         ).order_by('-main', 'lesson__order')
-        user_variant.status = Status.PASSED
+        # user_variant.status = Status.PASSED
         user_variant.save()
         test_full_score = []
         for lesson in lessons:
