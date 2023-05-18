@@ -200,25 +200,23 @@ class PassQuizTestAnswerView(generics.CreateAPIView):
         quiz_event_id = data.get('quiz_event_id')
         question_id = data.get('question_id')
         answer_id = data.get('answer_id')
-        print(answer_id)
-        print("answer_id")
 
         if answer_id:
             try:
                 with transaction.atomic():
+                    answer = Answer.objects.get(pk=answer_id)
                     PassAnswer.objects.filter(
                         user=user,
                         quiz_event_id=quiz_event_id,
                         question_id=question_id,
-                        answer_id=answer_id
                     ).delete()
                     PassAnswer.objects.create(
                         user=user,
                         quiz_event_id=quiz_event_id,
                         question_id=question_id,
-                        answer_id=answer_id
+                        answer=answer
                     )
-                    answer = Answer.objects.get(pk=answer_id)
+
                     if answer.correct:
                         QuestionQuizEventScore.objects.filter(
                             user=user,
