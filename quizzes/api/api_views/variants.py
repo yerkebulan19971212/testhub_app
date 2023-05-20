@@ -13,13 +13,17 @@ from quizzes.models import UserVariant, VariantGroup
 
 
 class VariantGroupsView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
     serializer_class = VariantGroupSerializer
     queryset = VariantGroup.objects.filter(is_active=True)
     filter_backends = [DjangoFilterBackend]
     filterset_class = VariantGroupFilter
 
     def get_queryset(self):
-        queryset = self.filter_queryset(super().get_queryset()).annotate(
+        user = self.request.user
+        queryset = self.filter_queryset(super().get_queryset()).filter(
+            variants__user_variant__user=user
+        ).annotate(
             count_variants=Coalesce(
                 Count('variants', filter=Q(variants__is_active=True)),
                 0)
