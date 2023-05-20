@@ -1,3 +1,5 @@
+from django.db.models import Count
+from django.db.models.functions import Coalesce
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -15,6 +17,14 @@ class VariantGroupsView(generics.ListAPIView):
     queryset = VariantGroup.objects.filter(is_active=True)
     filter_backends = [DjangoFilterBackend]
     filterset_class = VariantGroupFilter
+
+    def get_queryset(self):
+        queryset = self.filter_queryset().annotate(
+            count_variants=Coalesce(
+                Count('variants'),
+                0)
+        )
+        return queryset
 
 
 variant_groups = VariantGroupsView.as_view()
