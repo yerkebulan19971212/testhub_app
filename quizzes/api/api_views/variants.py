@@ -32,7 +32,10 @@ class UserVariantsView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = super().get_queryset().filter(user=user)
+        queryset = super().get_queryset().filter(
+            user=user,
+            variant__is_active=True
+        )
         return queryset.order_by('variant__variant')
 
 
@@ -52,7 +55,10 @@ class UserVariantsCountView(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         user = self.request.user
         queryset = self.filter_queryset(self.get_queryset())
-        active_count = queryset.filter(user=user).count()
+        active_count = queryset.filter(
+            user=user,
+            variant__is_active=True
+        ).count()
         return Response({"result": active_count})
 
 
