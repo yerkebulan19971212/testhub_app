@@ -1,3 +1,5 @@
+from django.db.models import Count, Q
+from django.db.models.functions import Coalesce
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -11,10 +13,22 @@ from quizzes.models import UserVariant, VariantGroup
 
 
 class VariantGroupsView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
     serializer_class = VariantGroupSerializer
     queryset = VariantGroup.objects.filter(is_active=True)
     filter_backends = [DjangoFilterBackend]
     filterset_class = VariantGroupFilter
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = self.filter_queryset(super().get_queryset()).filter(
+            variants__user_variant__user=user
+        ).annotate(
+            count_variants=Coalesce(
+                Count('variants', filter=Q(variants__is_active=True)),
+                0)
+        )
+        return queryset
 
 
 variant_groups = VariantGroupsView.as_view()
@@ -32,7 +46,10 @@ class UserVariantsView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = super().get_queryset().filter(user=user)
+        queryset = super().get_queryset().filter(
+            user=user,
+            variant__is_active=True
+        )
         return queryset.order_by('variant__variant')
 
 
@@ -52,7 +69,10 @@ class UserVariantsCountView(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         user = self.request.user
         queryset = self.filter_queryset(self.get_queryset())
-        active_count = queryset.filter(user=user).count()
+        active_count = queryset.filter(
+            user=user,
+            variant__is_active=True
+        ).count()
         return Response({"result": active_count})
 
 
